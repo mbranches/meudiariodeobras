@@ -1,0 +1,10 @@
+services:
+  postgres:
+    container_name: meudiariodeobras-db
+    image: postgres:17
+    environment:
+      POSTGRES_DB: meudiariodeobras
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 123456
+    ports:
+      - "5432:5432"
