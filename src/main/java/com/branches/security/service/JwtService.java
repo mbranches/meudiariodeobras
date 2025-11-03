@@ -2,7 +2,7 @@ package com.branches.security.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.branches.user.domain.UserEntity;
+import com.branches.security.model.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,14 +14,15 @@ public class JwtService {
     private String secret;
     private final String issuer = "meudiariodeobras-backend";
 
-    public String generateToken(UserEntity user) {
+
+    public String generateToken(UserDetailsImpl userDetails) {
         Algorithm algorithm = Algorithm.HMAC256(secret);
 
         return JWT.create()
                 .withIssuer(issuer)
                 .withIssuedAt(creationDate())
                 .withExpiresAt(expirationDate())
-                .withSubject(user.getIdExterno())
+                .withSubject(userDetails.getUser().idExterno())
                 .sign(algorithm);
     }
 
