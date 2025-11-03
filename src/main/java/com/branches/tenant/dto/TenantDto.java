@@ -1,7 +1,9 @@
 package com.branches.tenant.dto;
 
 import com.branches.tenant.domain.TenantEntity;
+import lombok.Builder;
 
+@Builder
 public record TenantDto(
         Long id,
         String idExterno,
