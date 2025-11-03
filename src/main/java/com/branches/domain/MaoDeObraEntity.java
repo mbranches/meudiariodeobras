@@ -1,0 +1,30 @@
+package com.branches.domain;
+
+import com.branches.domain.enums.TipoMaoDeObra;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalTime;
+
+@Setter
+@Getter
+@Entity
+public class MaoDeObraEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(length = 100, nullable = false)
+    private String funcao;
+    @ManyToOne
+    @JoinColumn(name = "grupo_mao_de_obra_id", nullable = false)
+    private GrupoMaoDeObraEntity grupo;
+    @Column(length = 100)
+    private String nome;
+    private LocalTime horaInicio;
+    private LocalTime horaFim;
+    private LocalTime horasIntervalo;
+    private LocalTime horasTrabalhadas;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TipoMaoDeObra tipo;
+}
