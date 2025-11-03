@@ -31,9 +31,8 @@ public class RelatorioEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private StatusRelatorio status;
-    @ManyToOne
-    @JoinColumn(name = "obra_id", nullable = false)
-    private ObraEntity obra;
+    @Column(nullable = false)
+    private Long obraId;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TipoMaoDeObra tipoMaoDeObra;
