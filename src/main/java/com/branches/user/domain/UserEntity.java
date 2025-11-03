@@ -17,7 +17,7 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Builder.Default
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String idExterno = UUID.randomUUID().toString();
     @Column(length = 100, nullable = false)
     private String nome;

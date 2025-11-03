@@ -1,16 +1,17 @@
-package com.branches.domain;
+package com.branches.obra.domain;
 
-import com.branches.domain.enums.StatusObra;
-import com.branches.domain.enums.TipoContratoDeObra;
-import com.branches.domain.enums.TipoMaoDeObra;
+import com.branches.domain.GrupoDeObraEntity;
 import com.branches.shared.config.envers.AuditableTenantOwned;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
+@Getter
 @Entity
 @Builder
 @NoArgsConstructor
@@ -19,6 +20,8 @@ public class ObraEntity extends AuditableTenantOwned {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true, nullable = false)
+    private String idExterno = UUID.randomUUID().toString();
 
     @Column(length = 100, nullable = false)
     private String nome;
@@ -54,10 +57,11 @@ public class ObraEntity extends AuditableTenantOwned {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private TipoMaoDeObra tipoMaoDeObra;
+    private TipoMaoDeObraDeObra tipoMaoDeObra;
     @ManyToOne
     @JoinColumn(name = "grupo_de_obra_id")
-    private GrupoDeObraEntity grupoDeObra;
+    private GrupoDeObraEntity grupo;
 
+    @Column(nullable = false)
     private Boolean ativo;
 }
