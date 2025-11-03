@@ -3,6 +3,7 @@ package com.branches.domain;
 import com.branches.domain.enums.StatusObra;
 import com.branches.domain.enums.TipoContratoDeObra;
 import com.branches.domain.enums.TipoMaoDeObra;
+import com.branches.shared.config.envers.AuditableTenantOwned;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +15,7 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ObraEntity {
+public class ObraEntity extends AuditableTenantOwned {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

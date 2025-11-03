@@ -1,5 +1,6 @@
 package com.branches.domain;
 
+import com.branches.shared.config.envers.AuditableTenantOwned;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,7 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class EquipamentoEntity {
+public class EquipamentoEntity extends AuditableTenantOwned {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -1,6 +1,7 @@
 package com.branches.domain;
 
 import com.branches.domain.enums.AssinaturaStatus;
+import com.branches.shared.config.envers.Auditable;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,14 +13,13 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class AssinaturaEntity {
+public class AssinaturaEntity extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "tenant_id", nullable = false)
-    private TenantEntity tenant;
+    @Column(nullable = false)
+    private Long tenantId;
 
     @ManyToOne
     @JoinColumn(name = "plano_id", nullable = false)

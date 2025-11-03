@@ -2,6 +2,7 @@ package com.branches.domain;
 
 import com.branches.domain.enums.StatusRelatorio;
 import com.branches.domain.enums.TipoMaoDeObra;
+import com.branches.shared.config.envers.AuditableTenantOwned;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,7 +14,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class RelatorioEntity {
+public class RelatorioEntity extends AuditableTenantOwned {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

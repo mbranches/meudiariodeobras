@@ -1,6 +1,7 @@
 package com.branches.domain;
 
 import com.branches.domain.enums.TipoMaoDeObra;
+import com.branches.shared.config.envers.AuditableTenantOwned;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,7 +10,7 @@ import java.time.LocalTime;
 @Setter
 @Getter
 @Entity
-public class MaoDeObraEntity {
+public class MaoDeObraEntity extends AuditableTenantOwned {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
