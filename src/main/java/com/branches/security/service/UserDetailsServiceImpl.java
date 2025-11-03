@@ -1,6 +1,8 @@
-package com.branches.config.security.service;
+package com.branches.security.service;
 
-import com.branches.repository.UserRepository;
+import com.branches.security.model.UserDetailsImpl;
+import com.branches.shared.dto.UserDto;
+import com.branches.user.service.GetUserByEmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -10,11 +12,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
-    private final UserRepository userRepository;
+    private final GetUserByEmailService getUserByEmailService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User não encontrado com o email: " + username));
+        UserDto foundUser = getUserByEmailService.execute(username);
+
+        return new UserDetailsImpl(foundUser);
     }
 }

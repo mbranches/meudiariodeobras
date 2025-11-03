@@ -1,8 +1,8 @@
-package com.branches.config.security.service;
+package com.branches.security.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.branches.domain.UserEntity;
+import com.branches.user.domain.UserEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 

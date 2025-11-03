@@ -1,6 +1,6 @@
-package com.branches.repository;
+package com.branches.user.repository;
 
-import com.branches.domain.UserEntity;
+import com.branches.user.domain.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

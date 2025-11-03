@@ -1,9 +1,10 @@
-package com.branches.config.security;
+package com.branches.security.config;
 
-import com.branches.exception.InvalidJwtException;
-import com.branches.repository.UserRepository;
-import com.branches.config.security.service.JwtService;
-import com.branches.domain.UserEntity;
+import com.branches.shared.exception.InvalidJwtException;
+import com.branches.security.model.UserDetailsImpl;
+import com.branches.security.service.JwtService;
+import com.branches.shared.dto.UserDto;
+import com.branches.user.service.GetUserByIdExternoService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +21,7 @@ import java.io.IOException;
 @Component
 public class TokenAuthFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
-    private final UserRepository userRepository;
+    private final GetUserByIdExternoService getUserByIdExternoService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -29,16 +30,17 @@ public class TokenAuthFilter extends OncePerRequestFilter {
 
         String authorizationHeader = request.getHeader("Authorization");
 
-        String token = recoverToken(authorizationHeader);
+        String token = recoveryToken(authorizationHeader);
 
         if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             try {
                 String userExternalId = jwtService.validateToken(token);
 
-                UserEntity user = userRepository.findByIdExterno(userExternalId)
-                        .orElseThrow(RuntimeException::new);
+                UserDto user = getUserByIdExternoService.execute(userExternalId);
 
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                UserDetailsImpl userDetails = new UserDetailsImpl(user);
+
+                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             } catch (Exception e) {
@@ -49,7 +51,7 @@ public class TokenAuthFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private String recoverToken(String authorizationHeader) {
+    private String recoveryToken(String authorizationHeader) {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             return authorizationHeader.substring(7);
         }

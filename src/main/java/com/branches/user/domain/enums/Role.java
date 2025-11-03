@@ -1,4 +1,4 @@
-package com.branches.domain.enums;
+package com.branches.user.domain.enums;
 
 public enum Role {
     USER,
