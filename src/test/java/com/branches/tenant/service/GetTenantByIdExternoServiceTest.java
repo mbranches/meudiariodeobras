@@ -1,7 +1,7 @@
 package com.branches.tenant.service;
 
 import com.branches.tenant.domain.TenantEntity;
-import com.branches.tenant.dto.TenantDto;
+import com.branches.shared.dto.TenantDto;
 import com.branches.tenant.port.LoadTenantPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

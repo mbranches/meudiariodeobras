@@ -1,4 +1,4 @@
-package com.branches.tenant.dto;
+package com.branches.shared.dto;
 
 import com.branches.tenant.domain.TenantEntity;
 import lombok.Builder;

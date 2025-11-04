@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ObraRepository extends JpaRepository<ObraEntity, Long> {
+    Integer countByTenantIdAndAtivoIsTrue(Long tenantId);
 }

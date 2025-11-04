@@ -1,6 +1,6 @@
-package com.branches.domain;
+package com.branches.assinatura.domain;
 
-import com.branches.domain.enums.AssinaturaStatus;
+import com.branches.assinatura.domain.enums.AssinaturaStatus;
 import com.branches.shared.config.envers.Auditable;
 import jakarta.persistence.*;
 import lombok.*;
@@ -21,9 +21,8 @@ public class AssinaturaEntity extends Auditable {
     @Column(nullable = false)
     private Long tenantId;
 
-    @ManyToOne
-    @JoinColumn(name = "plano_id", nullable = false)
-    private PlanoEntity plano;
+    @Column(nullable = false)
+    private Long planoId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

@@ -1,4 +1,4 @@
-package com.branches.domain;
+package com.branches.plano.domain;
 
 import com.branches.shared.config.envers.Auditable;
 import jakarta.persistence.*;
@@ -28,7 +28,7 @@ public class PlanoEntity extends Auditable {
 
     private Integer duracaoDias;
 
-    private Integer quantidadeUsuarios;
+    private Integer limiteUsuarios;
 
-    private Integer quantidadeObras;
+    private Integer limiteObras;
 }

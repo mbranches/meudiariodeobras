@@ -8,7 +8,7 @@ import com.branches.obra.dto.request.CreateObraRequest;
 import com.branches.obra.dto.response.CreateObraResponse;
 import com.branches.obra.port.WriteObraPort;
 import com.branches.shared.exception.ForbiddenException;
-import com.branches.tenant.dto.TenantDto;
+import com.branches.shared.dto.TenantDto;
 import com.branches.tenant.service.GetTenantByIdExternoService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -66,7 +66,6 @@ class CreateObraServiceTest {
                 "CONT-2025-001",
                 "Rua Teste, 123",
                 "Observações de teste",
-                "http://capa.url",
                 TipoMaoDeObraDeObra.PERSONALIZADA,
                 StatusObra.EM_ANDAMENTO,
                 null
@@ -117,7 +116,6 @@ class CreateObraServiceTest {
         assertEquals(createObraRequest.numeroContrato(), response.numeroContrato());
         assertEquals(createObraRequest.endereco(), response.endereco());
         assertEquals(createObraRequest.observacoes(), response.observacoes());
-        assertEquals(createObraRequest.capaUrl(), response.capaUrl());
         assertEquals(createObraRequest.tipoMaoDeObra(), response.tipoMaoDeObra());
     }
 
