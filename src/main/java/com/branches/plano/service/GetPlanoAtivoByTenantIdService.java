@@ -1,7 +1,7 @@
 package com.branches.plano.service;
 
 import com.branches.plano.port.LoadPlanoPort;
-import com.branches.assinatura.service.GetAssinaturaByTenantIdService;
+import com.branches.assinatura.service.GetAssinaturaActiveByTenantIdService;
 import com.branches.plano.domain.PlanoEntity;
 import com.branches.shared.dto.AssinaturaDto;
 import com.branches.shared.dto.PlanoDto;
@@ -12,10 +12,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class GetPlanoAtivoByTenantIdService {
     private final LoadPlanoPort loadPlano;
-    private final GetAssinaturaByTenantIdService getAssinaturaByTenantIdService;
+    private final GetAssinaturaActiveByTenantIdService getAssinaturaActiveByTenantIdService;
 
     public PlanoDto execute(Long tenantId) {
-        AssinaturaDto assinatura = getAssinaturaByTenantIdService.execute(tenantId);
+        AssinaturaDto assinatura = getAssinaturaActiveByTenantIdService.execute(tenantId);
 
         PlanoEntity plano = loadPlano.getPlanoById(assinatura.planoId());
 

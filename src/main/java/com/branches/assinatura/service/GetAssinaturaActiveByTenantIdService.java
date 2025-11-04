@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class GetAssinaturaByTenantIdService {
+public class GetAssinaturaActiveByTenantIdService {
     private final LoadAssinaturaPort loadAssinaturaPort;
 
     public AssinaturaDto execute(Long tenantId) {
