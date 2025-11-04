@@ -1,13 +1,11 @@
 package com.branches.user.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Objects;
 
+@Setter
 @Getter
 @Builder
 @AllArgsConstructor

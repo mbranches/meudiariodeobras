@@ -1,12 +1,18 @@
 package com.branches.obra.service;
 import com.branches.obra.domain.ObraEntity;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import com.branches.obra.domain.StatusObra;
 import com.branches.obra.domain.TipoContratoDeObra;
 import com.branches.obra.domain.TipoMaoDeObraDeObra;
 import com.branches.obra.dto.request.CreateObraRequest;
 import com.branches.obra.dto.response.CreateObraResponse;
+import com.branches.obra.port.LoadObraPort;
 import com.branches.obra.port.WriteObraPort;
+import com.branches.plano.service.GetPlanoAtivoByTenantIdService;
+import com.branches.shared.dto.PlanoDto;
+import com.branches.shared.exception.BadRequestException;
 import com.branches.shared.exception.ForbiddenException;
 import com.branches.shared.dto.TenantDto;
 import com.branches.tenant.service.GetTenantByIdExternoService;
@@ -35,11 +41,18 @@ class CreateObraServiceTest {
     @InjectMocks
     private CreateObraService createObraService;
 
+    @Mock
+    private LoadObraPort loadObraPort;
+
+    @Mock
+    private GetPlanoAtivoByTenantIdService getPlanoAtivoByTenantIdService;
+
     private CreateObraRequest createObraRequest;
     private TenantDto tenantDto;
     private ObraEntity obraEntity;
     private String tenantExternalId;
     private List<Long> userTenantIds;
+    private PlanoDto planoDto;
 
     @BeforeEach
     void setUp() {
@@ -54,6 +67,15 @@ class CreateObraServiceTest {
                 "http://logo.url",
                 "11999999999",
                 true
+        );
+
+        planoDto = new PlanoDto(
+                1L,
+                "Plano 1",
+                "Descrição do Plano 1",
+                BigDecimal.valueOf(212),
+                50,
+                50
         );
 
         createObraRequest = new CreateObraRequest(
@@ -97,6 +119,9 @@ class CreateObraServiceTest {
 
         when(getTenantByIdExternoService.execute(tenantExternalId)).thenReturn(tenantDto);
         when(writeObraPort.save(any(ObraEntity.class))).thenReturn(obraEntity);
+        when(loadObraPort.getQuantidadeObrasAtivasByTenantId(tenantDto.id())).thenReturn(0);
+        when(getPlanoAtivoByTenantIdService.execute(tenantDto.id())).thenReturn(planoDto);
+
 
         CreateObraResponse response = createObraService.execute(
                 createObraRequest,
@@ -135,5 +160,26 @@ class CreateObraServiceTest {
         );
 
         assertNotNull(exception);
+    }
+
+    @Test
+    void deveLancarBadRequestExceptionQuandoLimiteDeObrasAtingido() {
+        userTenantIds = List.of(1L, 2L, 3L);
+
+        when(getTenantByIdExternoService.execute(tenantExternalId)).thenReturn(tenantDto);
+        when(loadObraPort.getQuantidadeObrasAtivasByTenantId(tenantDto.id())).thenReturn(50);
+        when(getPlanoAtivoByTenantIdService.execute(tenantDto.id())).thenReturn(planoDto);
+
+        BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> createObraService.execute(
+                        createObraRequest,
+                        tenantExternalId,
+                        userTenantIds
+                )
+        );
+
+        assertNotNull(exception);
+        assertEquals("Limite de obras atingido", exception.getReason());
     }
 }
