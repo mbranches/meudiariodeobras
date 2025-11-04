@@ -35,5 +35,8 @@ public class TenantEntity extends Auditable {
     private String telefone;
 
     @Column(nullable = false)
+    private Long userResponsavelId;
+
+    @Column(nullable = false)
     private Boolean ativo;
 }
