@@ -5,13 +5,13 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import com.branches.obra.domain.StatusObra;
 import com.branches.obra.domain.TipoContratoDeObra;
-import com.branches.obra.domain.TipoMaoDeObraDeObra;
 import com.branches.obra.dto.request.CreateObraRequest;
 import com.branches.obra.dto.response.CreateObraResponse;
 import com.branches.obra.port.LoadObraPort;
 import com.branches.obra.port.WriteObraPort;
 import com.branches.plano.service.GetPlanoAtivoByTenantIdService;
 import com.branches.shared.dto.PlanoDto;
+import com.branches.shared.enums.TipoMaoDeObra;
 import com.branches.shared.exception.BadRequestException;
 import com.branches.shared.exception.ForbiddenException;
 import com.branches.shared.dto.TenantDto;
@@ -88,7 +88,7 @@ class CreateObraServiceTest {
                 "CONT-2025-001",
                 "Rua Teste, 123",
                 "Observações de teste",
-                TipoMaoDeObraDeObra.PERSONALIZADA,
+                TipoMaoDeObra.PERSONALIZADA,
                 StatusObra.EM_ANDAMENTO,
                 null
         );
@@ -106,7 +106,7 @@ class CreateObraServiceTest {
                 .endereco("Rua Teste, 123")
                 .observacoes("Observações de teste")
                 .capaUrl("http://capa.url")
-                .tipoMaoDeObra(TipoMaoDeObraDeObra.PERSONALIZADA)
+                .tipoMaoDeObra(TipoMaoDeObra.PERSONALIZADA)
                 .status(StatusObra.EM_ANDAMENTO)
                 .ativo(true)
                 .build();

@@ -24,7 +24,7 @@ public class TenantFilter extends OncePerRequestFilter {
         if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof UserDetailsImpl) {
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-            TenantContext.setTenantIds(userDetails.getUser().tenantIds());
+            TenantContext.setTenantIds(userDetails.getUser().tenantsIds());
 
         } else {
             TenantContext.setTenantIds(Collections.emptyList());

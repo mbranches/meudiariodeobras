@@ -2,7 +2,7 @@ package com.branches.obra.dto.request;
 
 import com.branches.obra.domain.StatusObra;
 import com.branches.obra.domain.TipoContratoDeObra;
-import com.branches.obra.domain.TipoMaoDeObraDeObra;
+import com.branches.shared.enums.TipoMaoDeObra;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -22,7 +22,7 @@ public record CreateObraRequest(
         String numeroContrato,
         String endereco,
         String observacoes,
-        @NotNull(message = "O campo 'tipoMaoDeObra é obrigatório") TipoMaoDeObraDeObra tipoMaoDeObra,
+        @NotNull(message = "O campo 'tipoMaoDeObra é obrigatório") TipoMaoDeObra tipoMaoDeObra,
         @NotNull(message = "O campo 'status' é obrigatório")
         StatusObra status,
         Long grupoId

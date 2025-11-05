@@ -1,9 +1,7 @@
 package com.branches.user.service;
 
 import com.branches.shared.dto.UserDto;
-import com.branches.user.domain.UserEntity;
-import com.branches.user.domain.UserTenantEntity;
-import com.branches.user.domain.UserTenantKey;
+import com.branches.user.domain.*;
 import com.branches.user.domain.enums.Role;
 import com.branches.user.port.LoadUserPort;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Set;
 
+import static com.branches.user.domain.enums.PerfilUserTenant.ADMINISTRADOR;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -46,6 +45,8 @@ class GetUserByIdExternoServiceTest {
                 .fotoUrl("http://foto.url/joao.jpg")
                 .ativo(true)
                 .build();
+        userEntity.setUserTenantEntities(Set.of(new UserTenantEntity(UserTenantKey.from(1L, 1L), userEntity, 1L, ADMINISTRADOR)));
+        userEntity.setUserObraPermitidaEntities(Set.of(new UserObraPermitidaEntity(UserObraPermitidaKey.from(1L, 1L), userEntity, 1L)));
 
         UserTenantKey userTenantKey = UserTenantKey.from(userEntity.getId(), 1L);
         UserTenantEntity userTenantEntity = new UserTenantEntity();
@@ -72,6 +73,6 @@ class GetUserByIdExternoServiceTest {
         assertEquals(Role.USER, resultado.role());
         assertEquals("http://foto.url/joao.jpg", resultado.fotoUrl());
         assertTrue(resultado.ativo());
-        assertEquals(List.of(1L), resultado.tenantIds());
+        assertEquals(List.of(1L), resultado.tenantsIds());
     }
 }
