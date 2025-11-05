@@ -4,6 +4,7 @@ import com.branches.user.domain.enums.PerfilUserTenant;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -31,6 +32,12 @@ public class UserTenantEntity {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "userTenant")
     private Set<UserObraPermitidaEntity> userObraPermitidaEntities;
+
+    public List<Long> getObrasPermitidasIds() {
+        return this.userObraPermitidaEntities.stream()
+                .map(UserObraPermitidaEntity::getObraId)
+                .toList();
+    }
 
     @PrePersist
     public void prePersist() {

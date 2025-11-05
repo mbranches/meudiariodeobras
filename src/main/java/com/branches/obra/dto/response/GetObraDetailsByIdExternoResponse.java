@@ -3,7 +3,7 @@ package com.branches.obra.dto.response;
 import com.branches.obra.domain.ObraEntity;
 import com.branches.obra.domain.StatusObra;
 import com.branches.obra.domain.TipoContratoDeObra;
-import com.branches.shared.enums.TipoMaoDeObra;
+import com.branches.obra.domain.enums.TipoMaoDeObra;
 
 import java.time.LocalDate;
 

@@ -2,7 +2,7 @@ package com.branches.obra.dto.request;
 
 import com.branches.obra.domain.StatusObra;
 import com.branches.obra.domain.TipoContratoDeObra;
-import com.branches.shared.enums.TipoMaoDeObra;
+import com.branches.obra.domain.enums.TipoMaoDeObra;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 

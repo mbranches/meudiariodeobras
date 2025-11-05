@@ -1,16 +1,18 @@
 package com.branches.user.service;
 
-import com.branches.shared.dto.UserDto;
-import com.branches.user.port.LoadUserPort;
+import com.branches.exception.NotFoundException;
+import com.branches.user.domain.UserEntity;
+import com.branches.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
 public class GetUserByEmailService {
-    private final LoadUserPort loadUser;
+    private final UserRepository userRepository;
 
-    public UserDto execute(String email) {
-        return UserDto.of(loadUser.loadByEmail(email));
+    public UserEntity execute(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("User não encontrado com email: " + email));
     }
 }

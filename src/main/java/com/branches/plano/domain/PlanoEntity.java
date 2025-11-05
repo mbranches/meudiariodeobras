@@ -1,6 +1,6 @@
 package com.branches.plano.domain;
 
-import com.branches.shared.config.envers.Auditable;
+import com.branches.config.envers.Auditable;
 import jakarta.persistence.*;
 import lombok.*;
 

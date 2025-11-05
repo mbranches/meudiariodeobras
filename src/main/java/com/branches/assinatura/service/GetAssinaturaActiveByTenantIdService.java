@@ -1,16 +1,18 @@
 package com.branches.assinatura.service;
 
-import com.branches.assinatura.port.LoadAssinaturaPort;
-import com.branches.shared.dto.AssinaturaDto;
+import com.branches.assinatura.domain.AssinaturaEntity;
+import com.branches.assinatura.domain.enums.AssinaturaStatus;
+import com.branches.assinatura.repository.AssinaturaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
 public class GetAssinaturaActiveByTenantIdService {
-    private final LoadAssinaturaPort loadAssinaturaPort;
+    private final AssinaturaRepository assinaturaRepository;
 
-    public AssinaturaDto execute(Long tenantId) {
-        return AssinaturaDto.from(loadAssinaturaPort.getAssinaturaAtivaByTenantId(tenantId));
+    public AssinaturaEntity execute(Long tenantId) {
+        return assinaturaRepository.findByStatusAndTenantId(AssinaturaStatus.ATIVO, tenantId)
+                .orElseThrow(() -> new RuntimeException("Assinatura ativa não encontrada para o tenantId: " + tenantId));
     }
 }

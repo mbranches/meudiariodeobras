@@ -7,9 +7,9 @@ import com.branches.obra.dto.response.GetObraDetailsByIdExternoResponse;
 import com.branches.obra.port.LoadObraPort;
 import com.branches.shared.dto.TenantDto;
 import com.branches.shared.dto.UserDto.UserTenantDto;
-import com.branches.shared.enums.TipoMaoDeObra;
-import com.branches.shared.exception.ForbiddenException;
-import com.branches.tenant.service.GetTenantByIdExternoService;
+import com.branches.obra.domain.enums.TipoMaoDeObra;
+import com.branches.exception.ForbiddenException;
+import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.user.domain.enums.PerfilUserTenant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ class GetObraDetailsByIdExternoServiceTest {
     private LoadObraPort loadObra;
 
     @Mock
-    private GetTenantByIdExternoService getTenantByIdExternoService;
+    private GetTenantIdByIdExternoService getTenantIdByIdExternoService;
 
     @InjectMocks
     private GetObraDetailsByIdExternoService service;
@@ -85,7 +85,7 @@ class GetObraDetailsByIdExternoServiceTest {
                 new UserTenantDto(1L, PerfilUserTenant.ADMINISTRADOR, List.of())
         );
 
-        when(getTenantByIdExternoService.execute(tenantExternalId)).thenReturn(tenantDto);
+        when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantDto);
         when(loadObra.getObraByIdExternoAndTenantId(obraIdExterno, tenantDto.id())).thenReturn(obraEntity);
 
         GetObraDetailsByIdExternoResponse response = service.execute(
@@ -115,7 +115,7 @@ class GetObraDetailsByIdExternoServiceTest {
                 new UserTenantDto(1L, PerfilUserTenant.CLIENTE_OBRA, List.of(1L, 2L, 3L))
         );
 
-        when(getTenantByIdExternoService.execute(tenantExternalId)).thenReturn(tenantDto);
+        when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantDto);
         when(loadObra.getObraByIdExternoAndTenantId(obraIdExterno, tenantDto.id())).thenReturn(obraEntity);
 
         GetObraDetailsByIdExternoResponse response = service.execute(
@@ -136,7 +136,7 @@ class GetObraDetailsByIdExternoServiceTest {
                 new UserTenantDto(3L, PerfilUserTenant.ADMINISTRADOR, List.of())
         );
 
-        when(getTenantByIdExternoService.execute(tenantExternalId)).thenReturn(tenantDto);
+        when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantDto);
 
         ForbiddenException exception = assertThrows(
                 ForbiddenException.class,
@@ -156,7 +156,7 @@ class GetObraDetailsByIdExternoServiceTest {
                 new UserTenantDto(1L, PerfilUserTenant.CLIENTE_OBRA, List.of(2L, 3L, 4L))
         );
 
-        when(getTenantByIdExternoService.execute(tenantExternalId)).thenReturn(tenantDto);
+        when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantDto);
         when(loadObra.getObraByIdExternoAndTenantId(obraIdExterno, tenantDto.id())).thenReturn(obraEntity);
 
         ForbiddenException exception = assertThrows(

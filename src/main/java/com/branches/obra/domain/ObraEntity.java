@@ -1,8 +1,8 @@
 package com.branches.obra.domain;
 
 import com.branches.domain.GrupoDeObraEntity;
-import com.branches.shared.config.envers.AuditableTenantOwned;
-import com.branches.shared.enums.TipoMaoDeObra;
+import com.branches.config.envers.AuditableTenantOwned;
+import com.branches.obra.domain.enums.TipoMaoDeObra;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

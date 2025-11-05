@@ -37,7 +37,7 @@ public class UserEntity {
     @Column(nullable = false)
     private Boolean ativo;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
-    private Set<UserTenantEntity> userTenantEntities;
+    private List<UserTenantEntity> userTenantEntities;
 
     public List<Long> getTenantsIds() {
         return userTenantEntities.stream()

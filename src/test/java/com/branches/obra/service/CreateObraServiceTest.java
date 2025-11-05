@@ -11,11 +11,11 @@ import com.branches.obra.port.LoadObraPort;
 import com.branches.obra.port.WriteObraPort;
 import com.branches.plano.service.GetPlanoAtivoByTenantIdService;
 import com.branches.shared.dto.PlanoDto;
-import com.branches.shared.enums.TipoMaoDeObra;
-import com.branches.shared.exception.BadRequestException;
-import com.branches.shared.exception.ForbiddenException;
+import com.branches.obra.domain.enums.TipoMaoDeObra;
+import com.branches.exception.BadRequestException;
+import com.branches.exception.ForbiddenException;
 import com.branches.shared.dto.TenantDto;
-import com.branches.tenant.service.GetTenantByIdExternoService;
+import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,7 +36,7 @@ class CreateObraServiceTest {
     private WriteObraPort writeObraPort;
 
     @Mock
-    private GetTenantByIdExternoService getTenantByIdExternoService;
+    private GetTenantIdByIdExternoService getTenantIdByIdExternoService;
 
     @InjectMocks
     private CreateObraService createObraService;
@@ -117,7 +117,7 @@ class CreateObraServiceTest {
     void deveExecutarComSucessoQuandoTenantEstaNaLista() {
         userTenantIds = List.of(1L, 2L, 3L);
 
-        when(getTenantByIdExternoService.execute(tenantExternalId)).thenReturn(tenantDto);
+        when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantDto);
         when(writeObraPort.save(any(ObraEntity.class))).thenReturn(obraEntity);
         when(loadObraPort.getQuantidadeObrasAtivasByTenantId(tenantDto.id())).thenReturn(0);
         when(getPlanoAtivoByTenantIdService.execute(tenantDto.id())).thenReturn(planoDto);
@@ -148,7 +148,7 @@ class CreateObraServiceTest {
     void deveLancarForbiddenExceptionQuandoTenantNaoEstaNaLista() {
         userTenantIds = List.of(2L, 3L, 4L);
 
-        when(getTenantByIdExternoService.execute(tenantExternalId)).thenReturn(tenantDto);
+        when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantDto);
 
         ForbiddenException exception = assertThrows(
                 ForbiddenException.class,
@@ -166,7 +166,7 @@ class CreateObraServiceTest {
     void deveLancarBadRequestExceptionQuandoLimiteDeObrasAtingido() {
         userTenantIds = List.of(1L, 2L, 3L);
 
-        when(getTenantByIdExternoService.execute(tenantExternalId)).thenReturn(tenantDto);
+        when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantDto);
         when(loadObraPort.getQuantidadeObrasAtivasByTenantId(tenantDto.id())).thenReturn(50);
         when(getPlanoAtivoByTenantIdService.execute(tenantDto.id())).thenReturn(planoDto);
 

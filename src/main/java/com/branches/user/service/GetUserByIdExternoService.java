@@ -1,16 +1,18 @@
 package com.branches.user.service;
 
-import com.branches.shared.dto.UserDto;
-import com.branches.user.port.LoadUserPort;
+import com.branches.exception.NotFoundException;
+import com.branches.user.domain.UserEntity;
+import com.branches.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
 public class GetUserByIdExternoService {
-    private final LoadUserPort loadUser;
+    private final UserRepository userRepository;
 
-    public UserDto execute(String idExterno) {
-        return UserDto.of(loadUser.getByIdExterno(idExterno));
+    public UserEntity execute(String idExterno) {
+        return userRepository.findByIdExterno(idExterno)
+                .orElseThrow(() -> new NotFoundException("User não encontrado com idExterno: " + idExterno));
     }
 }

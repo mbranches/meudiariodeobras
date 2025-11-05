@@ -2,8 +2,8 @@ package com.branches.obra.controller;
 
 import com.branches.obra.dto.response.GetObraDetailsByIdExternoResponse;
 import com.branches.obra.service.GetObraDetailsByIdExternoService;
-import com.branches.security.model.UserDetailsImpl;
-import com.branches.shared.dto.UserDto.UserTenantDto;
+import com.branches.auth.model.UserDetailsImpl;
+import com.branches.user.domain.UserTenantEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,7 +22,7 @@ public class GetObraDetailsByIdExternoController {
     public ResponseEntity<GetObraDetailsByIdExternoResponse> execute(@PathVariable String tenantExternalId,
                                                                      @PathVariable String obraExternalId,
                                                                      @AuthenticationPrincipal UserDetailsImpl user) {
-        List<UserTenantDto> userTenants = user.getUser().tenants();
+        List<UserTenantEntity> userTenants = user.getUser().getUserTenantEntities();
 
         GetObraDetailsByIdExternoResponse response = getObraDetailsByIdExternoService.execute(obraExternalId, tenantExternalId, userTenants);
 

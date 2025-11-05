@@ -3,7 +3,7 @@ package com.branches.obra.controller;
 import com.branches.obra.dto.request.CreateObraRequest;
 import com.branches.obra.dto.response.CreateObraResponse;
 import com.branches.obra.service.CreateObraService;
-import com.branches.security.config.TenantContext;
+import com.branches.config.security.TenantContext;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -1,16 +1,14 @@
 package com.branches.obra.service;
 
+import com.branches.assinatura.domain.AssinaturaEntity;
+import com.branches.assinatura.service.GetAssinaturaActiveByTenantIdService;
 import com.branches.obra.domain.ObraEntity;
 import com.branches.obra.dto.request.CreateObraRequest;
 import com.branches.obra.dto.response.CreateObraResponse;
-import com.branches.obra.port.LoadObraPort;
-import com.branches.obra.port.WriteObraPort;
-import com.branches.plano.service.GetPlanoAtivoByTenantIdService;
-import com.branches.shared.dto.PlanoDto;
-import com.branches.shared.exception.BadRequestException;
-import com.branches.shared.exception.ForbiddenException;
-import com.branches.shared.dto.TenantDto;
-import com.branches.tenant.service.GetTenantByIdExternoService;
+import com.branches.obra.repository.ObraRepository;
+import com.branches.exception.BadRequestException;
+import com.branches.exception.ForbiddenException;
+import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,14 +17,12 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class CreateObraService {
-    private final WriteObraPort writeObra;
-    private final GetTenantByIdExternoService getTenantByIdExternoService;
-    private final GetPlanoAtivoByTenantIdService getPlanoAtivoByTenantIdService;
-    private final LoadObraPort loadObraPort;
+    private final GetTenantIdByIdExternoService getTenantIdByIdExternoService;
+    private final GetAssinaturaActiveByTenantIdService getAssinaturaActiveByTenantIdService;
+    private final ObraRepository obraRepository;
 
     public CreateObraResponse execute(CreateObraRequest request, String tenantDaObraExternalId, List<Long> requestingUserTenantIds) {
-        TenantDto tenant = getTenantByIdExternoService.execute(tenantDaObraExternalId);
-        Long tenantId = tenant.id();
+        Long tenantId = getTenantIdByIdExternoService.execute(tenantDaObraExternalId);
 
         if (!requestingUserTenantIds.contains(tenantId)) {
             throw new ForbiddenException();
@@ -51,19 +47,19 @@ public class CreateObraService {
                 .ativo(true)
                 .build();
 
-        obraToSave.setTenantId(tenant.id());
+        obraToSave.setTenantId(tenantId);
 
-        ObraEntity savedObra = writeObra.save(obraToSave);
+        ObraEntity savedObra = obraRepository.save(obraToSave);
 
         return CreateObraResponse.from(savedObra);
     }
 
     private void verifyIfPlanoAllowsCreateObra(Long tenantId) {
-        Integer quantityObrasActive = loadObraPort.getQuantidadeObrasAtivasByTenantId(tenantId);
+        Integer quantityObrasActive = obraRepository.countByTenantIdAndAtivoIsTrue(tenantId);
 
-        PlanoDto plano = getPlanoAtivoByTenantIdService.execute(tenantId);
+        AssinaturaEntity assinaturaAtiva = getAssinaturaActiveByTenantIdService.execute(tenantId);
 
-        if (plano.limiteObras() - quantityObrasActive <= 0) {
+        if (assinaturaAtiva.getPlano().getLimiteObras() - quantityObrasActive <= 0) {
             throw new BadRequestException("Limite de obras atingido");
         }
     }
