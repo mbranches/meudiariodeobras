@@ -25,7 +25,7 @@ public class GetObraDetailsByIdExternoService {
 
         List<Long> userTenantsIds = userTenants.stream().map(UserTenantDto::tenantId).toList();
 
-        if (userTenantsIds.contains(tenantDaObraId)) throw new ForbiddenException();
+        if (!userTenantsIds.contains(tenantDaObraId)) throw new ForbiddenException();
 
         ObraEntity obra = loadObra.getObraByIdExternoAndTenantId(idExterno, tenantDaObraId);
 
