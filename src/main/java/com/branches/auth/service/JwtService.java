@@ -22,7 +22,7 @@ public class JwtService {
                 .withIssuer(issuer)
                 .withIssuedAt(creationDate())
                 .withExpiresAt(expirationDate())
-                .withSubject(userDetails.getUser().idExterno())
+                .withSubject(userDetails.getUser().getIdExterno())
                 .sign(algorithm);
     }
 

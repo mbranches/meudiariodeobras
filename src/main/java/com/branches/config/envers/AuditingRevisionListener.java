@@ -19,6 +19,6 @@ public class AuditingRevisionListener implements RevisionListener {
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        auditedRevisionEntity.setUserId(userDetails.getUser().id());
+        auditedRevisionEntity.setUserId(userDetails.getUser().getId());
     }
 }

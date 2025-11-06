@@ -20,7 +20,7 @@ public class SpringSecurityAuditorAware implements AuditorAware<Long> {
         }
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        Long userId = userDetails.getUser().id();
+        Long userId = userDetails.getUser().getId();
 
         return Optional.ofNullable(userId);
     }
