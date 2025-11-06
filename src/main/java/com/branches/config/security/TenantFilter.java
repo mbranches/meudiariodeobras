@@ -25,6 +25,7 @@ public class TenantFilter extends OncePerRequestFilter {
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
             UserTenantsContext.setUserTenants(userDetails.getUser().getUserTenantEntities());
+            UserTenantsContext.setUserId(userDetails.getUser().getId());
 
         } else {
             UserTenantsContext.setUserTenants(Collections.emptyList());

@@ -38,6 +38,9 @@ public class UserTenantEntity {
     @Column(nullable = false, columnDefinition = "TEXT")
     private UserTenantAuthorities authorities;
 
+    @Column(nullable = false)
+    private Boolean ativo;
+
     public List<Long> getObrasPermitidasIds() {
         return this.userObraPermitidaEntities.stream()
                 .map(UserObraPermitidaEntity::getObraId)
