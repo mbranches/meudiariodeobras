@@ -36,7 +36,7 @@ class GetAssinaturaActiveByTenantIdServiceTest {
                 .id(2L)
                 .nome("Plano Premium")
                 .descricao("Acesso completo a todos os recursos")
-                .preco(BigDecimal.valueOf(99.90))
+                .valor(BigDecimal.valueOf(99.90))
                 .build();
 
         assinatura = AssinaturaEntity.builder()
