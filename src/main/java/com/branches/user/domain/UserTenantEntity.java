@@ -33,6 +33,9 @@ public class UserTenantEntity {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "userTenant")
     private Set<UserObraPermitidaEntity> userObraPermitidaEntities;
 
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "userTenant")
+    private UserTenantAuthoritiesEntity authorities;
+
     public List<Long> getObrasPermitidasIds() {
         return this.userObraPermitidaEntities.stream()
                 .map(UserObraPermitidaEntity::getObraId)
