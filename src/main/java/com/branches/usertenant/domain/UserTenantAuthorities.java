@@ -1,5 +1,8 @@
-package com.branches.user.domain;
+package com.branches.usertenant.domain;
 
+import com.branches.user.domain.PermissionsCadastro;
+import com.branches.user.domain.PermissionsDefault;
+import com.branches.user.domain.PermissionsRelatorio;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;

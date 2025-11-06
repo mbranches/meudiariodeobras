@@ -1,4 +1,4 @@
-package com.branches.user.domain;
+package com.branches.usertenant.domain;
 
 import jakarta.persistence.*;
 import lombok.*;

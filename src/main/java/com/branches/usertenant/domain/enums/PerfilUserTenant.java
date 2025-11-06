@@ -1,4 +1,4 @@
-package com.branches.user.domain.enums;
+package com.branches.usertenant.domain.enums;
 
 public enum PerfilUserTenant {
     ADMINISTRADOR,

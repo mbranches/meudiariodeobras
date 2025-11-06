@@ -1,4 +1,4 @@
-package com.branches.user.domain;
+package com.branches.usertenant.domain;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;

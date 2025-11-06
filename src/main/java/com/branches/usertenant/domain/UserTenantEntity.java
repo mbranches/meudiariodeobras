@@ -1,6 +1,7 @@
-package com.branches.user.domain;
+package com.branches.usertenant.domain;
 
-import com.branches.user.domain.enums.PerfilUserTenant;
+import com.branches.user.domain.UserEntity;
+import com.branches.usertenant.domain.enums.PerfilUserTenant;
 import jakarta.persistence.*;
 import lombok.*;
 

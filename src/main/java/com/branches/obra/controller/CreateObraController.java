@@ -4,7 +4,7 @@ import com.branches.config.security.UserTenantsContext;
 import com.branches.obra.dto.request.CreateObraRequest;
 import com.branches.obra.dto.response.CreateObraResponse;
 import com.branches.obra.service.CreateObraService;
-import com.branches.user.domain.UserTenantEntity;
+import com.branches.usertenant.domain.UserTenantEntity;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

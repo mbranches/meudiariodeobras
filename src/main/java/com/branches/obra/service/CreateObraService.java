@@ -9,7 +9,7 @@ import com.branches.obra.repository.ObraRepository;
 import com.branches.exception.BadRequestException;
 import com.branches.exception.ForbiddenException;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
-import com.branches.user.domain.UserTenantEntity;
+import com.branches.usertenant.domain.UserTenantEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

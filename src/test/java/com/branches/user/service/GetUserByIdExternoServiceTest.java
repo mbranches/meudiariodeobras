@@ -4,6 +4,9 @@ import com.branches.exception.NotFoundException;
 import com.branches.user.domain.*;
 import com.branches.user.domain.enums.Role;
 import com.branches.user.repository.UserRepository;
+import com.branches.usertenant.domain.UserObraPermitidaEntity;
+import com.branches.usertenant.domain.UserObraPermitidaKey;
+import com.branches.usertenant.domain.UserTenantEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.branches.user.domain.enums.PerfilUserTenant.ADMINISTRADOR;
+import static com.branches.usertenant.domain.enums.PerfilUserTenant.ADMINISTRADOR;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 

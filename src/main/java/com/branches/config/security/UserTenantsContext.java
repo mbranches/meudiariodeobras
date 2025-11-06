@@ -1,6 +1,6 @@
 package com.branches.config.security;
 
-import com.branches.user.domain.UserTenantEntity;
+import com.branches.usertenant.domain.UserTenantEntity;
 
 import java.util.List;
 

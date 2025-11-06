@@ -1,4 +1,4 @@
-package com.branches.user.domain;
+package com.branches.usertenant.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

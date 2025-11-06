@@ -3,7 +3,7 @@ package com.branches.obra.controller;
 import com.branches.config.security.UserTenantsContext;
 import com.branches.obra.dto.response.GetObraDetailsByIdExternoResponse;
 import com.branches.obra.service.GetObraDetailsByIdExternoService;
-import com.branches.user.domain.UserTenantEntity;
+import com.branches.usertenant.domain.UserTenantEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

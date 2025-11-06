@@ -6,8 +6,8 @@ import com.branches.obra.dto.response.GetObraDetailsByIdExternoResponse;
 import com.branches.obra.repository.ObraRepository;
 import com.branches.exception.ForbiddenException;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
-import com.branches.user.domain.UserTenantEntity;
-import com.branches.user.domain.enums.PerfilUserTenant;
+import com.branches.usertenant.domain.UserTenantEntity;
+import com.branches.usertenant.domain.enums.PerfilUserTenant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,6 +1,7 @@
 package com.branches.user.domain;
 
 import com.branches.user.domain.enums.Role;
+import com.branches.usertenant.domain.UserTenantEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
