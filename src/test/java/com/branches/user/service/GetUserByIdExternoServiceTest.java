@@ -48,10 +48,10 @@ class GetUserByIdExternoServiceTest {
                 .build();
 
         UserTenantEntity userTenant = new UserTenantEntity();
-        userTenant.setarId();
         userTenant.setUser(userEntity);
         userTenant.setTenantId(1L);
         userTenant.setPerfil(ADMINISTRADOR);
+        userTenant.setarId();
         userTenant.setUserObraPermitidaEntities(Set.of(new UserObraPermitidaEntity(UserObraPermitidaKey.from(userTenant, 1L), userTenant, 1L)));
 
         userEntity.setUserTenantEntities(List.of(userTenant));

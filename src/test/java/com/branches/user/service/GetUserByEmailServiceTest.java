@@ -47,9 +47,9 @@ class GetUserByEmailServiceTest {
                 .build();
 
         UserTenantEntity userTenantEntity = new UserTenantEntity();
-        userTenantEntity.setarId();
         userTenantEntity.setUser(userEntity);
         userTenantEntity.setTenantId(1L);
+        userTenantEntity.setarId();
         userTenantEntity.setUserObraPermitidaEntities(Set.of(new UserObraPermitidaEntity(UserObraPermitidaKey.from(userTenantEntity, 1L), userTenantEntity, 1L)));
 
         userEntity.setUserTenantEntities(List.of(userTenantEntity));
