@@ -16,6 +16,7 @@ import com.branches.exception.ForbiddenException;
 import com.branches.obra.repository.ObraRepository;
 import com.branches.plano.domain.PlanoEntity;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
+import com.branches.user.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -48,9 +50,11 @@ class CreateObraServiceTest {
     private ObraEntity obraToSave;
     private String tenantExternalId;
     private Long tenantId;
-    private List<Long> userTenantIds;
+    private List<UserTenantEntity> userTenants;
     private PlanoEntity plano;
     private AssinaturaEntity assinatura;
+    private UserTenantAuthoritiesEntity authorityCreateObra;
+    private UserTenantAuthoritiesEntity authorityNoCreateObra;
 
     @BeforeEach
     void setUp() {
@@ -125,11 +129,43 @@ class CreateObraServiceTest {
                 .ativo(true)
                 .build();
         obraToSave.setTenantId(1L);
+
+        authorityCreateObra = UserTenantAuthoritiesEntity.builder()
+                .obras(
+                        PermissionsDefault.builder()
+                                .canCreateAndEdit(true)
+                                .build()
+                )
+                .build();
+
+        authorityNoCreateObra = UserTenantAuthoritiesEntity.builder()
+                .obras(
+                        PermissionsDefault.builder()
+                                .canCreateAndEdit(false)
+                                .build()
+                )
+                .build();
     }
 
     @Test
     void deveExecutarComSucessoQuandoTenantEstaNaLista() {
-        userTenantIds = List.of(1L, 2L, 3L);
+        UserTenantEntity userTenant = UserTenantEntity.builder()
+                .user(UserEntity.builder().id(1L).build())
+                .tenantId(1L)
+                .build();
+        userTenant.setUserObraPermitidaEntities(
+                Set.of(
+                        UserObraPermitidaEntity.builder()
+                                .userTenant(userTenant)
+                                .obraId(savedObra.getId())
+                                .build()
+                )
+        );
+        userTenant.setAuthorities(authorityCreateObra);
+
+        userTenants = List.of(
+                userTenant
+        );
 
         when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantId);
         when(obraRepository.save(obraToSave)).thenReturn(savedObra);
@@ -140,7 +176,7 @@ class CreateObraServiceTest {
         CreateObraResponse response = createObraService.execute(
                 createObraRequest,
                 tenantExternalId,
-                userTenantIds
+                userTenants
         );
 
         assertNotNull(response);
@@ -160,7 +196,23 @@ class CreateObraServiceTest {
 
     @Test
     void deveLancarForbiddenExceptionQuandoTenantNaoEstaNaLista() {
-        userTenantIds = List.of(2L, 3L, 4L);
+        UserTenantEntity userTenant = UserTenantEntity.builder()
+                .user(UserEntity.builder().id(1L).build())
+                .tenantId(2L)
+                .build();
+        userTenant.setUserObraPermitidaEntities(
+                Set.of(
+                        UserObraPermitidaEntity.builder()
+                                .userTenant(userTenant)
+                                .obraId(savedObra.getId())
+                                .build()
+                )
+        );
+        userTenant.setAuthorities(authorityCreateObra);
+
+        userTenants = List.of(
+                userTenant
+        );
 
         when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantId);
 
@@ -169,7 +221,7 @@ class CreateObraServiceTest {
                 () -> createObraService.execute(
                         createObraRequest,
                         tenantExternalId,
-                        userTenantIds
+                        userTenants
                 )
         );
 
@@ -178,7 +230,23 @@ class CreateObraServiceTest {
 
     @Test
     void deveLancarBadRequestExceptionQuandoLimiteDeObrasAtingido() {
-        userTenantIds = List.of(1L, 2L, 3L);
+        UserTenantEntity userTenant = UserTenantEntity.builder()
+                .user(UserEntity.builder().id(1L).build())
+                .tenantId(1L)
+                .build();
+        userTenant.setUserObraPermitidaEntities(
+                Set.of(
+                        UserObraPermitidaEntity.builder()
+                                .userTenant(userTenant)
+                                .obraId(savedObra.getId())
+                                .build()
+                )
+        );
+        userTenant.setAuthorities(authorityCreateObra);
+
+        userTenants = List.of(
+                userTenant
+        );
 
         when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantId);
         when(obraRepository.countByTenantIdAndAtivoIsTrue(tenantId)).thenReturn(50);
@@ -189,11 +257,45 @@ class CreateObraServiceTest {
                 () -> createObraService.execute(
                         createObraRequest,
                         tenantExternalId,
-                        userTenantIds
+                        userTenants
                 )
         );
 
         assertNotNull(exception);
         assertEquals("Limite de obras atingido", exception.getReason());
+    }
+
+    @Test
+    void deveLancarForbiddenExceptionQuandoUsuarioNaoTemPermissaoPraCriarObra() {
+        UserTenantEntity userTenant = UserTenantEntity.builder()
+                .user(UserEntity.builder().id(1L).build())
+                .tenantId(1L)
+                .build();
+        userTenant.setUserObraPermitidaEntities(
+                Set.of(
+                        UserObraPermitidaEntity.builder()
+                                .userTenant(userTenant)
+                                .obraId(savedObra.getId())
+                                .build()
+                )
+        );
+        userTenant.setAuthorities(authorityNoCreateObra);
+
+        userTenants = List.of(
+                userTenant
+        );
+
+        when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantId);
+
+        ForbiddenException exception = assertThrows(
+                ForbiddenException.class,
+                () -> createObraService.execute(
+                        createObraRequest,
+                        tenantExternalId,
+                        userTenants
+                )
+        );
+
+        assertNotNull(exception);
     }
 }

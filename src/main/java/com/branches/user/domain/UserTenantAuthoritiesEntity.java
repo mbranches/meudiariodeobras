@@ -1,12 +1,14 @@
 package com.branches.user.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+@Builder
 @Setter
 @Getter
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserTenantAuthoritiesEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

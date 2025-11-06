@@ -9,6 +9,7 @@ import com.branches.obra.repository.ObraRepository;
 import com.branches.exception.BadRequestException;
 import com.branches.exception.ForbiddenException;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
+import com.branches.user.domain.UserTenantEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,16 +22,14 @@ public class CreateObraService {
     private final GetAssinaturaActiveByTenantIdService getAssinaturaActiveByTenantIdService;
     private final ObraRepository obraRepository;
 
-    public CreateObraResponse execute(CreateObraRequest request, String tenantDaObraExternalId, List<Long> requestingUserTenantIds) {
+    public CreateObraResponse execute(CreateObraRequest request, String tenantDaObraExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantDaObraExternalId);
 
-        if (!requestingUserTenantIds.contains(tenantId)) {
-            throw new ForbiddenException();
-        }
+        UserTenantEntity currentUserTenant = getCurrentUserTenant(userTenants, tenantId);
+
+        verifyIfUserHasPermissionToCreateObra(currentUserTenant);
 
         verifyIfPlanoAllowsCreateObra(tenantId);
-
-        //TODO: verificar se o user tem permissao para criar obra
 
         ObraEntity obraToSave = ObraEntity.builder()
                 .nome(request.nome())
@@ -52,6 +51,21 @@ public class CreateObraService {
         ObraEntity savedObra = obraRepository.save(obraToSave);
 
         return CreateObraResponse.from(savedObra);
+    }
+
+    private void verifyIfUserHasPermissionToCreateObra(UserTenantEntity currentUserTenant) {
+        Boolean userCanCreateOrEdit = currentUserTenant.getAuthorities().getObras().getCanCreateAndEdit();
+
+        if (!userCanCreateOrEdit) {
+            throw new ForbiddenException();
+        }
+    }
+
+    private UserTenantEntity getCurrentUserTenant(List<UserTenantEntity> userTenants, Long tenantDaObraId) {
+        return userTenants.stream()
+                .filter(ut -> ut.getTenantId().equals(tenantDaObraId))
+                .findFirst()
+                .orElseThrow(ForbiddenException::new);
     }
 
     private void verifyIfPlanoAllowsCreateObra(Long tenantId) {
