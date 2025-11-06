@@ -48,7 +48,7 @@ class GetUserByIdExternoServiceTest {
                 .build();
 
         UserTenantEntity userTenant = new UserTenantEntity();
-        userTenant.setId(UserTenantKey.from(userEntity.getId(), 1L));
+        userTenant.setarId();
         userTenant.setUser(userEntity);
         userTenant.setTenantId(1L);
         userTenant.setPerfil(ADMINISTRADOR);

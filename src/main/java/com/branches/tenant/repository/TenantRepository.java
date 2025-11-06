@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface TenantRepository extends JpaRepository<TenantEntity, Long> {
     @Query("""
-            SELECT t
+            SELECT t.id
             FROM TenantEntity t
             WHERE t.idExterno = :idExterno
                 AND t.ativo IS TRUE

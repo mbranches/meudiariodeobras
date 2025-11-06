@@ -33,8 +33,9 @@ public class UserTenantEntity {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "userTenant")
     private Set<UserObraPermitidaEntity> userObraPermitidaEntities;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "userTenant")
-    private UserTenantAuthoritiesEntity authorities;
+    @Convert(converter = UserTenantAuthoritiesConverter.class)
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private UserTenantAuthorities authorities;
 
     public List<Long> getObrasPermitidasIds() {
         return this.userObraPermitidaEntities.stream()
@@ -42,21 +43,18 @@ public class UserTenantEntity {
                 .toList();
     }
 
-    @PrePersist
-    public void prePersist() {
-        if (this.id != null) return;
-
-        this.id = UserTenantKey.from(this.user.getId(), this.tenantId);
+    public void setarId() {
+        id = UserTenantKey.from(this.user.getId(), this.tenantId);
     }
 
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof UserTenantEntity that)) return false;
-        return Objects.equals(id, that.id) && Objects.equals(user, that.user) && Objects.equals(tenantId, that.tenantId);
+        return Objects.equals(user, that.user) && Objects.equals(tenantId, that.tenantId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, user, tenantId);
+        return Objects.hash(user, tenantId);
     }
 }
