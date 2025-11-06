@@ -2,6 +2,7 @@ package com.branches.obra.service;
 
 import com.branches.assinatura.domain.AssinaturaEntity;
 import com.branches.assinatura.service.GetAssinaturaActiveByTenantIdService;
+import com.branches.domain.GrupoDeObraEntity;
 import com.branches.obra.domain.ObraEntity;
 import com.branches.obra.dto.request.CreateObraRequest;
 import com.branches.obra.dto.response.CreateObraResponse;
@@ -21,6 +22,7 @@ public class CreateObraService {
     private final GetTenantIdByIdExternoService getTenantIdByIdExternoService;
     private final GetAssinaturaActiveByTenantIdService getAssinaturaActiveByTenantIdService;
     private final ObraRepository obraRepository;
+    private final GetGrupoDeObraByIdAndTenantIdService getGrupoDeObraByIdAndTenantIdService;
 
     public CreateObraResponse execute(CreateObraRequest request, String tenantDaObraExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantDaObraExternalId);
@@ -47,6 +49,12 @@ public class CreateObraService {
                 .build();
 
         obraToSave.setTenantId(tenantId);
+
+        if (request.grupoId() != null) {
+            GrupoDeObraEntity grupo = getGrupoDeObraByIdAndTenantIdService.execute(request.grupoId(), tenantId);
+
+            obraToSave.setGrupo(grupo);
+        }
 
         ObraEntity savedObra = obraRepository.save(obraToSave);
 

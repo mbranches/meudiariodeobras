@@ -4,15 +4,13 @@ import com.branches.domain.GrupoDeObraEntity;
 import com.branches.config.envers.AuditableTenantOwned;
 import com.branches.obra.domain.enums.TipoMaoDeObra;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.UUID;
 
+@Setter
 @Getter
 @Entity
 @Builder
