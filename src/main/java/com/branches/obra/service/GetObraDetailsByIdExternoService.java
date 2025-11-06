@@ -20,7 +20,7 @@ public class GetObraDetailsByIdExternoService {
     private final GetTenantIdByIdExternoService getTenantIdByIdExternoService;
 
     public GetObraDetailsByIdExternoResponse execute(String idExterno, String tenantExternalId, List<UserTenantEntity> userTenants) {
-        Long tenantDaObraId = getTenantIdByIdExternoService.execute(idExterno);
+        Long tenantDaObraId = getTenantIdByIdExternoService.execute(tenantExternalId);
 
         UserTenantEntity currentUserTenant = getCurrentUserTenant(userTenants, tenantDaObraId);
 

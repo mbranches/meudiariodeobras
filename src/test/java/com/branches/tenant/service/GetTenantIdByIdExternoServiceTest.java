@@ -1,14 +1,16 @@
 package com.branches.tenant.service;
 
+import com.branches.exception.NotFoundException;
 import com.branches.tenant.domain.TenantEntity;
-import com.branches.shared.dto.TenantDto;
-import com.branches.tenant.port.LoadTenantPort;
+import com.branches.tenant.repository.TenantRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -18,24 +20,13 @@ class GetTenantIdByIdExternoServiceTest {
     @InjectMocks
     private GetTenantIdByIdExternoService service;
     @Mock
-    private LoadTenantPort loadTenant;
+    private TenantRepository tenantRepository;
 
-    private TenantDto tenantDto;
     private TenantEntity tenant;
     String idExterno = "external-id-123";
 
     @BeforeEach
     void setUp() {
-        tenantDto = TenantDto.builder()
-                .id(1L)
-                .idExterno(idExterno)
-                .razaoSocial("Tenant Teste LTDA")
-                .nomeFantasia("Tenant Teste")
-                .cnpj("12.345.678/0001-90")
-                .telefone("(11) 98765-4321")
-                .logoUrl("http://example.com/logo.png")
-                .ativo(true)
-                .build();
         tenant = TenantEntity.builder()
                 .id(1L)
                 .idExterno(idExterno)
@@ -51,18 +42,24 @@ class GetTenantIdByIdExternoServiceTest {
 
     @Test
     void deveRetornarComSucessoTenantQuandoIdExternoExistir() {
-        when(loadTenant.getByIdExterno(idExterno)).thenReturn(tenant);
+        when(tenantRepository.findTenantIdByIdExternoAndAtivoIsTrue(idExterno)).thenReturn(Optional.of(tenant.getId()));
 
-        TenantDto resultado = service.execute(idExterno);
+        Long resultado = service.execute(idExterno);
 
         assertNotNull(resultado);
-        assertEquals(tenantDto.id(), resultado.id());
-        assertEquals(tenantDto.idExterno(), resultado.idExterno());
-        assertEquals(tenantDto.razaoSocial(), resultado.razaoSocial());
-        assertEquals(tenantDto.nomeFantasia(), resultado.nomeFantasia());
-        assertEquals(tenantDto.cnpj(), resultado.cnpj());
-        assertEquals(tenantDto.telefone(), resultado.telefone());
-        assertEquals(tenantDto.logoUrl(), resultado.logoUrl());
-        assertEquals(tenantDto.ativo(), resultado.ativo());
+        assertEquals(tenant.getId(), resultado);
+    }
+
+    @Test
+    void deveLancarNotFoundExceptionQuandoIdExternoNaoExistir() {
+        when(tenantRepository.findTenantIdByIdExternoAndAtivoIsTrue(idExterno)).thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
+            service.execute(idExterno);
+        });
+
+        String expectedMessage = "Tenant não encontrado com o idExterno: " + idExterno;
+
+        assertEquals(expectedMessage, exception.getReason());
     }
 }

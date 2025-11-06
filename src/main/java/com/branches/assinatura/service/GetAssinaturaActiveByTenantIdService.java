@@ -3,6 +3,7 @@ package com.branches.assinatura.service;
 import com.branches.assinatura.domain.AssinaturaEntity;
 import com.branches.assinatura.domain.enums.AssinaturaStatus;
 import com.branches.assinatura.repository.AssinaturaRepository;
+import com.branches.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,6 @@ public class GetAssinaturaActiveByTenantIdService {
 
     public AssinaturaEntity execute(Long tenantId) {
         return assinaturaRepository.findByStatusAndTenantId(AssinaturaStatus.ATIVO, tenantId)
-                .orElseThrow(() -> new RuntimeException("Assinatura ativa não encontrada para o tenantId: " + tenantId));
+                .orElseThrow(() -> new NotFoundException("Assinatura ativa não encontrada para o tenantId: " + tenantId));
     }
 }

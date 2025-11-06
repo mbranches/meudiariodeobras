@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.UUID;
 
 @Getter
@@ -67,4 +68,15 @@ public class ObraEntity extends AuditableTenantOwned {
 
     @Column(nullable = false)
     private Boolean ativo;
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof ObraEntity that)) return false;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }

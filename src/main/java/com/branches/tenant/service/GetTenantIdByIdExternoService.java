@@ -12,6 +12,6 @@ public class GetTenantIdByIdExternoService {
 
     public Long execute(String idExterno) {
         return tenantRepository.findTenantIdByIdExternoAndAtivoIsTrue(idExterno)
-                .orElseThrow(() -> new NotFoundException("Tenant não encontrado com idExterno: " + idExterno));
+                .orElseThrow(() -> new NotFoundException("Tenant não encontrado com o idExterno: " + idExterno));
     }
 }
