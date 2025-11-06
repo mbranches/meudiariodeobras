@@ -80,9 +80,7 @@ class GetUserByIdExternoServiceTest {
     void deveLancarNotFoundExceptionQuandoUsuarioNaoEncontrado() {
         when(userRepository.findByIdExterno(idExterno)).thenReturn(Optional.empty());
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
-            getUserByIdExternoService.execute(idExterno);
-        });
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> getUserByIdExternoService.execute(idExterno));
 
         String expectedMessage = "User não encontrado com idExterno: " + idExterno;
 

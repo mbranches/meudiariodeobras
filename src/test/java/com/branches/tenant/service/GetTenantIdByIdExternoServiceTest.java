@@ -54,9 +54,7 @@ class GetTenantIdByIdExternoServiceTest {
     void deveLancarNotFoundExceptionQuandoIdExternoNaoExistir() {
         when(tenantRepository.findTenantIdByIdExternoAndAtivoIsTrue(idExterno)).thenReturn(Optional.empty());
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
-            service.execute(idExterno);
-        });
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> service.execute(idExterno));
 
         String expectedMessage = "Tenant não encontrado com o idExterno: " + idExterno;
 

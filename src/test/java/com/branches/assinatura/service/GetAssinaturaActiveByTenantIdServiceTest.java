@@ -68,9 +68,7 @@ class GetAssinaturaActiveByTenantIdServiceTest {
         when(assinaturaRepository.findByStatusAndTenantId(AssinaturaStatus.ATIVO, tenantId))
             .thenReturn(Optional.empty());
 
-         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
-             service.execute(tenantId);
-         });
+         NotFoundException exception = assertThrows(NotFoundException.class, () -> service.execute(tenantId));
 
          String expectedMessage = "Assinatura ativa não encontrada para o tenantId: " + tenantId;
 

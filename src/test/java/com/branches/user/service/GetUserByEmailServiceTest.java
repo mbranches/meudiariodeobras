@@ -79,9 +79,7 @@ class GetUserByEmailServiceTest {
     void deveLancarNotFoundExceptionQuandoUsuarioNaoEncontrado() {
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
-            getUserByEmailService.execute(email);
-        });
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> getUserByEmailService.execute(email));
 
         String expectedMessage = "User não encontrado com email: " + email;
 
