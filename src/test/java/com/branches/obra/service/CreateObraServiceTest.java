@@ -2,6 +2,7 @@ package com.branches.obra.service;
 import com.branches.assinatura.domain.AssinaturaEntity;
 import com.branches.assinatura.domain.enums.AssinaturaStatus;
 import com.branches.assinatura.service.GetAssinaturaActiveByTenantIdService;
+import com.branches.domain.GrupoDeObraEntity;
 import com.branches.obra.domain.ObraEntity;
 
 import java.math.BigDecimal;
@@ -47,6 +48,8 @@ class CreateObraServiceTest {
 
     @Mock
     private GetAssinaturaActiveByTenantIdService getAssinaturaActiveByTenantIdService;
+
+    @Mock GetGrupoDeObraByIdAndTenantIdService getGrupoDeObraByIdAndTenantIdService;
 
     private CreateObraRequest createObraRequest;
     private ObraEntity savedObra;
@@ -195,6 +198,82 @@ class CreateObraServiceTest {
         assertEquals(createObraRequest.endereco(), response.endereco());
         assertEquals(createObraRequest.observacoes(), response.observacoes());
         assertEquals(createObraRequest.tipoMaoDeObra(), response.tipoMaoDeObra());
+    }
+
+    @Test
+    void deveExecutarComSucessoQuandoGrupoIdNaoForNulo() {
+        Long grupoId = 1L;
+        GrupoDeObraEntity grupo = GrupoDeObraEntity.builder()
+                .id(grupoId)
+                .descricao("Grupo Teste")
+                .build();
+
+        CreateObraRequest requestComGrupo = new CreateObraRequest(
+                "Obra Teste",
+                "João Silva",
+                "Contratante Teste",
+                TipoContratoDeObra.CONTRATADA,
+                LocalDate.of(2025, 1, 1),
+                LocalDate.of(2025, 12, 31),
+                "CONT-2025-001",
+                "Rua Teste, 123",
+                "Observações de teste",
+                TipoMaoDeObra.PERSONALIZADA,
+                StatusObra.EM_ANDAMENTO,
+                grupoId
+        );
+
+        ObraEntity savedObraComGrupo = ObraEntity.builder()
+                .id(1L)
+                .idExterno("obra-id-ext-123")
+                .nome("Obra Teste")
+                .responsavel("João Silva")
+                .contratante("Contratante Teste")
+                .tipoContrato(TipoContratoDeObra.CONTRATADA)
+                .dataInicio(LocalDate.of(2025, 1, 1))
+                .dataPrevistaFim(LocalDate.of(2025, 12, 31))
+                .numeroContrato("CONT-2025-001")
+                .endereco("Rua Teste, 123")
+                .observacoes("Observações de teste")
+                .capaUrl("http://capa.url")
+                .tipoMaoDeObra(TipoMaoDeObra.PERSONALIZADA)
+                .status(StatusObra.EM_ANDAMENTO)
+                .ativo(true)
+                .grupo(grupo)
+                .build();
+        savedObraComGrupo.setTenantId(1L);
+
+        UserTenantEntity userTenant = UserTenantEntity.builder()
+                .user(UserEntity.builder().id(1L).build())
+                .tenantId(1L)
+                .build();
+        userTenant.setUserObraPermitidaEntities(
+                Set.of(
+                        UserObraPermitidaEntity.builder()
+                                .userTenant(userTenant)
+                                .obraId(savedObraComGrupo.getId())
+                                .build()
+                )
+        );
+        userTenant.setAuthorities(authorityCreateObra);
+
+        userTenants = List.of(userTenant);
+
+        when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantId);
+        when(obraRepository.countByTenantIdAndAtivoIsTrue(tenantId)).thenReturn(0);
+        when(getAssinaturaActiveByTenantIdService.execute(tenantId)).thenReturn(assinatura);
+        when(getGrupoDeObraByIdAndTenantIdService.execute(grupoId, tenantId)).thenReturn(grupo);
+        when(obraRepository.save(any(ObraEntity.class))).thenReturn(savedObraComGrupo);
+
+        CreateObraResponse response = createObraService.execute(
+                requestComGrupo,
+                tenantExternalId,
+                userTenants
+        );
+
+        assertNotNull(response);
+        assertEquals("obra-id-ext-123", response.id());
+        assertEquals(requestComGrupo.nome(), response.nome());
     }
 
     @Test
