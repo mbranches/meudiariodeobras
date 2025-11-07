@@ -4,13 +4,13 @@ import com.branches.obra.domain.ObraEntity;
 import com.branches.obra.domain.StatusObra;
 import com.branches.obra.domain.TipoContratoDeObra;
 import com.branches.obra.dto.response.GetObraDetailsByIdExternoResponse;
-import com.branches.obra.repository.ObraRepository;
 import com.branches.obra.domain.enums.TipoMaoDeObra;
 import com.branches.exception.ForbiddenException;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.user.domain.*;
 import com.branches.usertenant.domain.*;
 import com.branches.usertenant.domain.enums.PerfilUserTenant;
+import com.branches.usertenant.service.GetCurrentUserTenantService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +20,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,13 +29,16 @@ import static org.mockito.Mockito.when;
 class GetObraDetailsByIdExternoServiceTest {
 
     @Mock
-    private ObraRepository repository;
-
-    @Mock
     private GetTenantIdByIdExternoService getTenantIdByIdExternoService;
 
     @InjectMocks
     private GetObraDetailsByIdExternoService service;
+
+    @Mock
+    private GetCurrentUserTenantService getCurrentUserTenantService;
+
+    @Mock
+    private GetObraByIdExternoAndTenantIdService getObraByIdExternoAndTenantIdService;
 
     private String obraIdExterno;
     private String tenantExternalId;
@@ -87,7 +89,8 @@ class GetObraDetailsByIdExternoServiceTest {
         );
 
         when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantId);
-        when(repository.findByIdExternoAndTenantId(obraIdExterno, tenantId)).thenReturn(Optional.of(obraEntity));
+        when(getCurrentUserTenantService.execute(userTenants, tenantId)).thenReturn(userTenant);
+        when(getObraByIdExternoAndTenantIdService.execute(obraIdExterno, tenantId)).thenReturn(obraEntity);
 
         GetObraDetailsByIdExternoResponse response = service.execute(
                 obraIdExterno,
@@ -126,7 +129,8 @@ class GetObraDetailsByIdExternoServiceTest {
         );
 
         when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantId);
-        when(repository.findByIdExternoAndTenantId(obraIdExterno, tenantId)).thenReturn(Optional.of(obraEntity));
+        when(getCurrentUserTenantService.execute(userTenants, tenantId)).thenReturn(userTenant);
+        when(getObraByIdExternoAndTenantIdService.execute(obraIdExterno, tenantId)).thenReturn(obraEntity);
 
         GetObraDetailsByIdExternoResponse response = service.execute(
                 obraIdExterno,
@@ -137,35 +141,6 @@ class GetObraDetailsByIdExternoServiceTest {
         assertNotNull(response);
         assertEquals(obraIdExterno, response.idExterno());
         assertEquals("Obra Teste", response.nome());
-    }
-
-    @Test
-    void deveLancarForbiddenExceptionQuandoTenantNaoEstaNaListaDoUsuario() {
-        UserTenantEntity userTenant = UserTenantEntity.builder()
-                .id(UserTenantKey.from(1L, tenantId))
-                .tenantId(3L)
-                .user(UserEntity.builder().id(1L).build())
-                .perfil(PerfilUserTenant.CLIENTE_OBRA)
-                .build();
-
-        userTenant.setUserObraPermitidaEntities(Set.of(new UserObraPermitidaEntity(UserObraPermitidaKey.from(userTenant, obraEntity.getId()), userTenant, obraEntity.getId())));
-
-        userTenants = List.of(
-                userTenant
-        );
-
-        when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantId);
-
-        ForbiddenException exception = assertThrows(
-                ForbiddenException.class,
-                () -> service.execute(
-                        obraIdExterno,
-                        tenantExternalId,
-                        userTenants
-                )
-        );
-
-        assertNotNull(exception);
     }
 
     @Test
@@ -184,7 +159,8 @@ class GetObraDetailsByIdExternoServiceTest {
         );
 
         when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantId);
-        when(repository.findByIdExternoAndTenantId(obraIdExterno, tenantId)).thenReturn(Optional.of(obraEntity));
+        when(getCurrentUserTenantService.execute(userTenants, tenantId)).thenReturn(userTenant);
+        when(getObraByIdExternoAndTenantIdService.execute(obraIdExterno, tenantId)).thenReturn(obraEntity);
 
         ForbiddenException exception = assertThrows(
                 ForbiddenException.class,

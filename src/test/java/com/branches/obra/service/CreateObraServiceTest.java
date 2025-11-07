@@ -21,6 +21,7 @@ import com.branches.user.domain.*;
 import com.branches.usertenant.domain.UserObraPermitidaEntity;
 import com.branches.usertenant.domain.UserTenantAuthorities;
 import com.branches.usertenant.domain.UserTenantEntity;
+import com.branches.usertenant.service.GetCurrentUserTenantService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,7 +50,11 @@ class CreateObraServiceTest {
     @Mock
     private GetAssinaturaActiveByTenantIdService getAssinaturaActiveByTenantIdService;
 
-    @Mock GetGrupoDeObraByIdAndTenantIdService getGrupoDeObraByIdAndTenantIdService;
+    @Mock
+    private GetGrupoDeObraByIdAndTenantIdService getGrupoDeObraByIdAndTenantIdService;
+
+    @Mock
+    private GetCurrentUserTenantService getCurrentUserTenantService;
 
     private CreateObraRequest createObraRequest;
     private ObraEntity savedObra;
@@ -174,6 +179,7 @@ class CreateObraServiceTest {
         );
 
         when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantId);
+        when(getCurrentUserTenantService.execute(userTenants, tenantId)).thenReturn(userTenant);
         when(obraRepository.save(obraToSave)).thenReturn(savedObra);
         when(obraRepository.countByTenantIdAndAtivoIsTrue(tenantId)).thenReturn(0);
         when(getAssinaturaActiveByTenantIdService.execute(tenantId)).thenReturn(assinatura);
@@ -260,6 +266,7 @@ class CreateObraServiceTest {
         userTenants = List.of(userTenant);
 
         when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantId);
+        when(getCurrentUserTenantService.execute(userTenants, tenantId)).thenReturn(userTenant);
         when(obraRepository.countByTenantIdAndAtivoIsTrue(tenantId)).thenReturn(0);
         when(getAssinaturaActiveByTenantIdService.execute(tenantId)).thenReturn(assinatura);
         when(getGrupoDeObraByIdAndTenantIdService.execute(grupoId, tenantId)).thenReturn(grupo);
@@ -274,40 +281,6 @@ class CreateObraServiceTest {
         assertNotNull(response);
         assertEquals("obra-id-ext-123", response.id());
         assertEquals(requestComGrupo.nome(), response.nome());
-    }
-
-    @Test
-    void deveLancarForbiddenExceptionQuandoTenantNaoEstaNaLista() {
-        UserTenantEntity userTenant = UserTenantEntity.builder()
-                .user(UserEntity.builder().id(1L).build())
-                .tenantId(2L)
-                .build();
-        userTenant.setUserObraPermitidaEntities(
-                Set.of(
-                        UserObraPermitidaEntity.builder()
-                                .userTenant(userTenant)
-                                .obraId(savedObra.getId())
-                                .build()
-                )
-        );
-        userTenant.setAuthorities(authorityCreateObra);
-
-        userTenants = List.of(
-                userTenant
-        );
-
-        when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantId);
-
-        ForbiddenException exception = assertThrows(
-                ForbiddenException.class,
-                () -> createObraService.execute(
-                        createObraRequest,
-                        tenantExternalId,
-                        userTenants
-                )
-        );
-
-        assertNotNull(exception);
     }
 
     @Test
@@ -331,6 +304,7 @@ class CreateObraServiceTest {
         );
 
         when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantId);
+        when(getCurrentUserTenantService.execute(userTenants, tenantId)).thenReturn(userTenant);
         when(obraRepository.countByTenantIdAndAtivoIsTrue(tenantId)).thenReturn(50);
         when(getAssinaturaActiveByTenantIdService.execute(tenantId)).thenReturn(assinatura);
 
@@ -368,6 +342,7 @@ class CreateObraServiceTest {
         );
 
         when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantId);
+        when(getCurrentUserTenantService.execute(userTenants, tenantId)).thenReturn(userTenant);
 
         ForbiddenException exception = assertThrows(
                 ForbiddenException.class,

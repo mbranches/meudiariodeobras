@@ -1,6 +1,5 @@
 package com.branches.obra.service;
 
-import com.branches.exception.ForbiddenException;
 import com.branches.obra.domain.ObraEntity;
 import com.branches.obra.domain.StatusObra;
 import com.branches.obra.domain.TipoContratoDeObra;
@@ -13,6 +12,7 @@ import com.branches.usertenant.domain.UserObraPermitidaEntity;
 import com.branches.usertenant.domain.UserTenantAuthorities;
 import com.branches.usertenant.domain.enums.PerfilUserTenant;
 import com.branches.obra.domain.enums.TipoMaoDeObra;
+import com.branches.usertenant.service.GetCurrentUserTenantService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,6 +39,9 @@ class ListAllObrasServiceTest {
 
     @InjectMocks
     private ListAllObrasService listAllObrasService;
+
+    @Mock
+    private GetCurrentUserTenantService getCurrentUserTenantService;
 
     private String tenantExternalId;
     private Long tenantId;
@@ -118,6 +121,7 @@ class ListAllObrasServiceTest {
 
         when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantId);
         when(obraRepository.findAllByTenantId(tenantId)).thenReturn(obras);
+        when(getCurrentUserTenantService.execute(userTenants, tenantId)).thenReturn(userTenantAdministrador);
 
         List<ObraByListAllResponse> result = listAllObrasService.execute(tenantExternalId, userTenants);
 
@@ -143,6 +147,7 @@ class ListAllObrasServiceTest {
 
         when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantId);
         when(obraRepository.findAllByTenantIdAndIdIn(tenantId, obrasPermitidasIds)).thenReturn(obrasPermitidas);
+        when(getCurrentUserTenantService.execute(userTenants, tenantId)).thenReturn(userTenantPersonalizado);
 
         List<ObraByListAllResponse> result = listAllObrasService.execute(tenantExternalId, userTenants);
 
@@ -153,20 +158,6 @@ class ListAllObrasServiceTest {
         assertEquals("Obra 1", result.getFirst().nome());
         assertEquals(StatusObra.CONCLUIDA, result.getFirst().status());
         assertEquals("https://example.com/obra1.jpg", result.getFirst().capaUrl());
-    }
-
-    @Test
-    void deveLancarForbiddenExceptionQuandoUsuarioNaoPertenceAoTenant() {
-        Long tenantIdDiferente = 999L;
-        userTenants = List.of(userTenantAdministrador);
-
-        when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantIdDiferente);
-
-        ForbiddenException exception = assertThrows(ForbiddenException.class, () ->
-                listAllObrasService.execute(tenantExternalId, userTenants)
-        );
-
-        assertNotNull(exception);
     }
 }
 

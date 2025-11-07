@@ -2,7 +2,6 @@ package com.branches.obra.service;
 
 import com.branches.domain.GrupoDeObraEntity;
 import com.branches.exception.ForbiddenException;
-import com.branches.exception.NotFoundException;
 import com.branches.obra.domain.ObraEntity;
 import com.branches.obra.domain.StatusObra;
 import com.branches.obra.domain.TipoContratoDeObra;
@@ -15,6 +14,7 @@ import com.branches.user.domain.UserEntity;
 import com.branches.usertenant.domain.UserObraPermitidaEntity;
 import com.branches.usertenant.domain.UserTenantAuthorities;
 import com.branches.usertenant.domain.UserTenantEntity;
+import com.branches.usertenant.service.GetCurrentUserTenantService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +24,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -44,6 +43,12 @@ class UpdateObraServiceTest {
 
     @InjectMocks
     private UpdateObraService updateObraService;
+
+    @Mock
+    private GetCurrentUserTenantService getCurrentUserTenantService;
+
+    @Mock
+    private GetObraByIdExternoAndTenantIdService getObraByIdExternoAndTenantIdService;
 
     private UpdateObraRequest updateObraRequest;
     private ObraEntity obraEntity;
@@ -140,11 +145,12 @@ class UpdateObraServiceTest {
         userTenants = List.of(userTenant);
 
         when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantId);
-        when(obraRepository.findByIdExternoAndTenantId(obraExternalId, tenantId))
-                .thenReturn(Optional.of(obraEntity));
+        when(getObraByIdExternoAndTenantIdService.execute(obraExternalId, tenantId))
+                .thenReturn(obraEntity);
         when(getGrupoDeObraByIdAndTenantIdService.execute(grupoId, tenantId))
                 .thenReturn(grupoDeObra);
         when(obraRepository.save(any(ObraEntity.class))).thenReturn(obraEntity);
+        when(getCurrentUserTenantService.execute(userTenants, tenantId)).thenReturn(userTenant);
 
         assertDoesNotThrow(() -> updateObraService.execute(
                 updateObraRequest,
@@ -154,7 +160,6 @@ class UpdateObraServiceTest {
         ));
 
         verify(getTenantIdByIdExternoService, times(1)).execute(tenantExternalId);
-        verify(obraRepository, times(1)).findByIdExternoAndTenantId(obraExternalId, tenantId);
         verify(getGrupoDeObraByIdAndTenantIdService, times(1)).execute(grupoId, tenantId);
         verify(obraRepository, times(1)).save(obraEntity);
 
@@ -170,83 +175,6 @@ class UpdateObraServiceTest {
         assertEquals(TipoMaoDeObra.PERSONALIZADA, obraEntity.getTipoMaoDeObra());
         assertEquals(StatusObra.CONCLUIDA, obraEntity.getStatus());
         assertEquals(grupoDeObra, obraEntity.getGrupo());
-    }
-
-    @Test
-    void deveLancarForbiddenExceptionQuandoUsuarioNaoPertenceAoTenant() {
-        UserTenantEntity userTenant = UserTenantEntity.builder()
-                .user(UserEntity.builder().id(1L).build())
-                .tenantId(2L) // Tenant diferente
-                .build();
-        userTenant.setUserObraPermitidaEntities(
-                Set.of(
-                        UserObraPermitidaEntity.builder()
-                                .userTenant(userTenant)
-                                .obraId(obraId)
-                                .build()
-                )
-        );
-        userTenant.setAuthorities(authorityCanEdit);
-
-        userTenants = List.of(userTenant);
-
-        when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantId);
-
-        ForbiddenException exception = assertThrows(
-                ForbiddenException.class,
-                () -> updateObraService.execute(
-                        updateObraRequest,
-                        obraExternalId,
-                        tenantExternalId,
-                        userTenants
-                )
-        );
-
-        assertNotNull(exception);
-        verify(getTenantIdByIdExternoService, times(1)).execute(tenantExternalId);
-        verify(obraRepository, never()).findByIdExternoAndTenantId(anyString(), anyLong());
-        verify(obraRepository, never()).save(any(ObraEntity.class));
-    }
-
-    @Test
-    void deveLancarNotFoundExceptionQuandoObraNaoEncontrada() {
-        UserTenantEntity userTenant = UserTenantEntity.builder()
-                .user(UserEntity.builder().id(1L).build())
-                .tenantId(tenantId)
-                .build();
-        userTenant.setUserObraPermitidaEntities(
-                Set.of(
-                        UserObraPermitidaEntity.builder()
-                                .userTenant(userTenant)
-                                .obraId(obraId)
-                                .build()
-                )
-        );
-        userTenant.setAuthorities(authorityCanEdit);
-
-        userTenants = List.of(userTenant);
-
-        when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantId);
-        when(obraRepository.findByIdExternoAndTenantId(obraExternalId, tenantId))
-                .thenReturn(Optional.empty());
-
-        NotFoundException exception = assertThrows(
-                NotFoundException.class,
-                () -> updateObraService.execute(
-                        updateObraRequest,
-                        obraExternalId,
-                        tenantExternalId,
-                        userTenants
-                )
-        );
-
-        assertNotNull(exception);
-        assertEquals("Obra não encontrada com idExterno: " + obraExternalId + " e tenantId: " + tenantId,
-                exception.getReason());
-
-        verify(getTenantIdByIdExternoService, times(1)).execute(tenantExternalId);
-        verify(obraRepository, times(1)).findByIdExternoAndTenantId(obraExternalId, tenantId);
-        verify(obraRepository, never()).save(any(ObraEntity.class));
     }
 
     @Test
@@ -268,8 +196,9 @@ class UpdateObraServiceTest {
         userTenants = List.of(userTenant);
 
         when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantId);
-        when(obraRepository.findByIdExternoAndTenantId(obraExternalId, tenantId))
-                .thenReturn(Optional.of(obraEntity));
+        when(getObraByIdExternoAndTenantIdService.execute(obraExternalId, tenantId))
+                .thenReturn(obraEntity);
+        when(getCurrentUserTenantService.execute(userTenants, tenantId)).thenReturn(userTenant);
 
         ForbiddenException exception = assertThrows(
                 ForbiddenException.class,
@@ -283,7 +212,6 @@ class UpdateObraServiceTest {
 
         assertNotNull(exception);
         verify(getTenantIdByIdExternoService, times(1)).execute(tenantExternalId);
-        verify(obraRepository, times(1)).findByIdExternoAndTenantId(obraExternalId, tenantId);
         verify(obraRepository, never()).save(any(ObraEntity.class));
     }
 
@@ -308,8 +236,9 @@ class UpdateObraServiceTest {
         userTenants = List.of(userTenant);
 
         when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantId);
-        when(obraRepository.findByIdExternoAndTenantId(obraExternalId, tenantId))
-                .thenReturn(Optional.of(obraEntity));
+        when(getObraByIdExternoAndTenantIdService.execute(obraExternalId, tenantId))
+                .thenReturn(obraEntity);
+        when(getCurrentUserTenantService.execute(userTenants, tenantId)).thenReturn(userTenant);
 
         ForbiddenException exception = assertThrows(
                 ForbiddenException.class,
@@ -323,7 +252,6 @@ class UpdateObraServiceTest {
 
         assertNotNull(exception);
         verify(getTenantIdByIdExternoService, times(1)).execute(tenantExternalId);
-        verify(obraRepository, times(1)).findByIdExternoAndTenantId(obraExternalId, tenantId);
         verify(obraRepository, never()).save(any(ObraEntity.class));
     }
 }
