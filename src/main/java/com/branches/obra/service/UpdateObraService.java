@@ -2,7 +2,6 @@ package com.branches.obra.service;
 
 import com.branches.domain.GrupoDeObraEntity;
 import com.branches.exception.ForbiddenException;
-import com.branches.exception.NotFoundException;
 import com.branches.obra.domain.ObraEntity;
 import com.branches.obra.dto.request.UpdateObraRequest;
 import com.branches.obra.repository.ObraRepository;
@@ -19,14 +18,14 @@ public class UpdateObraService {
     private final GetTenantIdByIdExternoService getTenantIdByIdExternoService;
     private final ObraRepository obraRepository;
     private final GetGrupoDeObraByIdAndTenantIdService getGrupoDeObraByIdAndTenantIdService;
+    private final GetObraByIdExternoAndTenantIdService getObraByIdExternoAndTenantIdService;
 
     public void execute(UpdateObraRequest request, String obraExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
 
         UserTenantEntity userTenant = getCurrentUserTenant(userTenants, tenantId);
 
-        ObraEntity obra = obraRepository.findByIdExternoAndTenantId(obraExternalId, tenantId)
-                .orElseThrow(() -> new NotFoundException("Obra não encontrada com idExterno: " + obraExternalId + " e tenantId: " + tenantId));
+        ObraEntity obra = getObraByIdExternoAndTenantIdService.execute(obraExternalId, tenantId);
 
         checkIfUserCanUpdateObra(obra.getId(), userTenant);
 
