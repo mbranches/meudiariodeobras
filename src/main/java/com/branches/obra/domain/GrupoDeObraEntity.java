@@ -3,10 +3,11 @@ package com.branches.obra.domain;
 import com.branches.config.envers.AuditableTenantOwned;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Setter
 @Getter
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -16,4 +17,6 @@ public class GrupoDeObraEntity extends AuditableTenantOwned {
     private Long id;
     @Column(nullable = false, length = 100)
     private String descricao;
+    @Column(nullable = false)
+    private Boolean ativo;
 }
