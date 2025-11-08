@@ -12,7 +12,7 @@ public class GetGrupoDeObraByIdAndTenantIdService {
     private final GrupoDeObraRepository grupoDeObraRepository;
 
     public GrupoDeObraEntity execute(Long id, Long tenantId) {
-        return grupoDeObraRepository.findByIdAndTenantId(id, tenantId)
+        return grupoDeObraRepository.findByIdAndTenantIdAndAtivoIsTrue(id, tenantId)
                 .orElseThrow(() -> new NotFoundException("Grupo de Obra não encontrado com id: " + id + " e tenantId: " + tenantId));
     }
 }

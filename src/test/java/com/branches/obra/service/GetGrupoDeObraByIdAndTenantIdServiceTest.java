@@ -42,7 +42,7 @@ class GetGrupoDeObraByIdAndTenantIdServiceTest {
 
     @Test
     void deveRetornarGrupoDeObraQuandoEncontrado() {
-        when(grupoDeObraRepository.findByIdAndTenantId(grupoId, tenantId))
+        when(grupoDeObraRepository.findByIdAndTenantIdAndAtivoIsTrue(grupoId, tenantId))
                 .thenReturn(Optional.of(grupoDeObra));
 
         GrupoDeObraEntity result = getGrupoDeObraByIdAndTenantIdService.execute(grupoId, tenantId);
@@ -55,7 +55,7 @@ class GetGrupoDeObraByIdAndTenantIdServiceTest {
 
     @Test
     void deveLancarNotFoundExceptionQuandoGrupoNaoEncontrado() {
-        when(grupoDeObraRepository.findByIdAndTenantId(grupoId, tenantId))
+        when(grupoDeObraRepository.findByIdAndTenantIdAndAtivoIsTrue(grupoId, tenantId))
                 .thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(
