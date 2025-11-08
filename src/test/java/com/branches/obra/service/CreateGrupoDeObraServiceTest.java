@@ -1,7 +1,7 @@
 package com.branches.obra.service;
 
 import com.branches.exception.ForbiddenException;
-import com.branches.obra.controller.CreateGrupoDeObraRequest;
+import com.branches.obra.dto.request.CreateGrupoDeObraRequest;
 import com.branches.obra.domain.GrupoDeObraEntity;
 import com.branches.obra.dto.response.CreateGrupoDeObraResponse;
 import com.branches.obra.repository.GrupoDeObraRepository;

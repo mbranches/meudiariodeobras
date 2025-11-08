@@ -1,6 +1,7 @@
 package com.branches.obra.controller;
 
 import com.branches.config.security.UserTenantsContext;
+import com.branches.obra.dto.request.CreateGrupoDeObraRequest;
 import com.branches.obra.dto.response.CreateGrupoDeObraResponse;
 import com.branches.obra.service.CreateGrupoDeObraService;
 import com.branches.usertenant.domain.UserTenantEntity;

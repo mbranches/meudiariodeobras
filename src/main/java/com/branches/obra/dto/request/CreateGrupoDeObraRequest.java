@@ -1,4 +1,4 @@
-package com.branches.obra.controller;
+package com.branches.obra.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 
