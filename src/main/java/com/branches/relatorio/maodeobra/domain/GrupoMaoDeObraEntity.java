@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.Objects;
+
 @SuperBuilder
 @Setter
 @Getter
@@ -22,5 +24,16 @@ public class GrupoMaoDeObraEntity extends AuditableTenantOwned {
 
     public boolean isAtivo() {
         return Boolean.TRUE.equals(ativo);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof GrupoMaoDeObraEntity that)) return false;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }
