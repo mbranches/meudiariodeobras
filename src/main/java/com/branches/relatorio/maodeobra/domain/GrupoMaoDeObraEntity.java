@@ -3,8 +3,9 @@ package com.branches.relatorio.maodeobra.domain;
 import com.branches.config.envers.AuditableTenantOwned;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-@Builder
+@SuperBuilder
 @Setter
 @Getter
 @Entity
@@ -16,4 +17,10 @@ public class GrupoMaoDeObraEntity extends AuditableTenantOwned {
     private Long id;
     @Column(length = 100, nullable = false)
     private String descricao;
+    @Column(nullable = false)
+    private Boolean ativo;
+
+    public boolean isAtivo() {
+        return Boolean.TRUE.equals(ativo);
+    }
 }
