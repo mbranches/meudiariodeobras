@@ -1,8 +1,6 @@
-package com.branches.relatorio.ocorrencia.domain;
+package com.branches.relatorio.rdo.domain;
 
-import com.branches.relatorio.rdo.domain.AtividadeDeRelatorioEntity;
-import com.branches.relatorio.rdo.domain.CampoPersonalizadoEntity;
-import com.branches.relatorio.rdo.domain.RelatorioEntity;
+import com.branches.relatorio.tipodeocorrencia.domain.TipoDeOcorrenciaEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,8 +21,8 @@ public class OcorrenciaDeRelatorioEntity {
     @JoinColumn(name = "relatorio_id", nullable = false)
     private RelatorioEntity relatorio;
     @ManyToOne
-    @JoinColumn(name = "ocorrencia_id", nullable = false)
-    private OcorrenciaEntity ocorrencia;
+    @JoinColumn(name = "tipo_de_ocorrencia_id", nullable = false)
+    private TipoDeOcorrenciaEntity tipoDeOcorrencia;
     @Column(nullable = false)
     private String descricao;
     private LocalTime horaInicio;
