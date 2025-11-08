@@ -8,8 +8,8 @@ import lombok.*;
 @Setter
 @Getter
 public class PermissionsCadastro {
-    private Boolean canCreateAndEditGrupoDeObras;
-    private Boolean canCreateAndEditEquipamentos;
-    private Boolean canCreateAndEditMaoDeObra;
-    private Boolean canCreateAndEditTiposDeOcorrencia;
+    private Boolean grupoDeObras;
+    private Boolean equipamentos;
+    private Boolean maoDeObra;
+    private Boolean tiposDeOcorrencia;
 }

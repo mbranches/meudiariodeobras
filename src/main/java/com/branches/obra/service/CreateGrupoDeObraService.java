@@ -39,7 +39,7 @@ public class CreateGrupoDeObraService {
     }
 
     private void checkIfUserCanCreateGrupoDeObra(UserTenantEntity currentUserTenant) {
-        if (!currentUserTenant.getAuthorities().getCadastros().getCanCreateAndEditGrupoDeObras()) {
+        if (!currentUserTenant.getAuthorities().getCadastros().getGrupoDeObras()) {
             throw new ForbiddenException();
         }
     }

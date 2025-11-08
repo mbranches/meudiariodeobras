@@ -25,7 +25,7 @@ public class UpdateGrupoDeObraService {
 
         UserTenantEntity currentUserTenant = getCurrentUserTenantService.execute(userTenants, tenantId);
 
-        checkIfUserCanUpdateGrupoDeObra(currentUserTenant);
+        checkIfUserHasAccessToGrupoDeObra(currentUserTenant);
 
         GrupoDeObraEntity grupoDeObraEntity = getGrupoDeObraByIdAndTenantIdService.execute(id, tenantId);
 
@@ -34,8 +34,8 @@ public class UpdateGrupoDeObraService {
         grupoDeObraRepository.save(grupoDeObraEntity);
     }
 
-    private void checkIfUserCanUpdateGrupoDeObra(UserTenantEntity currentUserTenant) {
-        if (!currentUserTenant.getAuthorities().getCadastros().getCanCreateAndEditGrupoDeObras()) {
+    private void checkIfUserHasAccessToGrupoDeObra(UserTenantEntity currentUserTenant) {
+        if (!currentUserTenant.getAuthorities().getCadastros().getGrupoDeObras()) {
             throw new ForbiddenException();
         }
     }
