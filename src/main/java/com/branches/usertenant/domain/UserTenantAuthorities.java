@@ -17,4 +17,5 @@ public class UserTenantAuthorities {
     private PermissionsRelatorio relatorios;
     private PermissionsDefault obras;
     private PermissionsCadastro cadastros;
+    private PermissionsItensDeRelatorio itensDeRelatorio;
 }
