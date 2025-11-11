@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.LocalTime;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record CreateMaoDeObraResponse(
+public record MaoDeObraResponse(
     Long id,
     String funcao,
     GrupoMaoDeObraResponse grupo,
@@ -16,8 +16,8 @@ public record CreateMaoDeObraResponse(
     LocalTime horasIntervalo,
     LocalTime horasTrabalhadas
 ) {
-    public static CreateMaoDeObraResponse from(MaoDeObraEntity saved) {
-        return new CreateMaoDeObraResponse(
+    public static MaoDeObraResponse from(MaoDeObraEntity saved) {
+        return new MaoDeObraResponse(
             saved.getId(),
             saved.getFuncao(),
             GrupoMaoDeObraResponse.from(saved.getGrupo()),
