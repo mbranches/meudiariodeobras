@@ -1,6 +1,5 @@
 package com.branches.relatorio.maodeobra.service;
 
-import com.branches.exception.ForbiddenException;
 import com.branches.relatorio.maodeobra.dto.request.CreateGrupoMaoDeObraRequest;
 import com.branches.relatorio.maodeobra.domain.GrupoMaoDeObraEntity;
 import com.branches.relatorio.maodeobra.dto.response.CreateGrupoMaoDeObraResponse;
@@ -19,13 +18,14 @@ public class CreateGrupoMaoDeObraService {
     private final GetTenantIdByIdExternoService getTenantIdByIdExternoService;
     private final GetCurrentUserTenantService getCurrentUserTenantService;
     private final GrupoMaoDeObraRepository grupoMaoDeObraRepository;
+    private final CheckIfUserHasAccessToMaoDeObraService checkIfUserHasAccessToMaoDeObraService;
 
     public CreateGrupoMaoDeObraResponse execute(String tenantExternalId, CreateGrupoMaoDeObraRequest request, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
 
         UserTenantEntity currentUserTenant = getCurrentUserTenantService.execute(userTenants, tenantId);
 
-        checkIfUserHasAccessToGrupoMaoDeObra(currentUserTenant);
+        checkIfUserHasAccessToMaoDeObraService.execute(currentUserTenant);
 
         GrupoMaoDeObraEntity grupoMaoDeObraEntity = GrupoMaoDeObraEntity.builder()
                 .tenantId(tenantId)
@@ -36,12 +36,6 @@ public class CreateGrupoMaoDeObraService {
         GrupoMaoDeObraEntity saved = grupoMaoDeObraRepository.save(grupoMaoDeObraEntity);
 
         return CreateGrupoMaoDeObraResponse.from(saved);
-    }
-
-    private void checkIfUserHasAccessToGrupoMaoDeObra(UserTenantEntity currentUserTenant) {
-        if (!currentUserTenant.getAuthorities().getCadastros().getMaoDeObra()) {
-            throw new ForbiddenException();
-        }
     }
 }
 

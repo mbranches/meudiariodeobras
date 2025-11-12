@@ -1,6 +1,5 @@
 package com.branches.relatorio.maodeobra.service;
 
-import com.branches.exception.ForbiddenException;
 import com.branches.relatorio.maodeobra.domain.GrupoMaoDeObraEntity;
 import com.branches.relatorio.maodeobra.dto.request.UpdateGrupoMaoDeObraRequest;
 import com.branches.relatorio.maodeobra.repository.GrupoMaoDeObraRepository;
@@ -19,25 +18,20 @@ public class UpdateGrupoMaoDeObraService {
     private final GetCurrentUserTenantService getCurrentUserTenantService;
     private final GetGrupoMaoDeObraByIdAndTenantIdService getGrupoMaoDeObraByIdAndTenantIdService;
     private final GrupoMaoDeObraRepository grupoMaoDeObraRepository;
+    private final CheckIfUserHasAccessToMaoDeObraService checkIfUserHasAccessToMaoDeObraService;
 
     public void execute(Long id, String tenantExternalId, UpdateGrupoMaoDeObraRequest request, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
 
         UserTenantEntity currentUserTenant = getCurrentUserTenantService.execute(userTenants, tenantId);
 
-        checkIfUserHasAccessToGrupoMaoDeObra(currentUserTenant);
+        checkIfUserHasAccessToMaoDeObraService.execute(currentUserTenant);
 
         GrupoMaoDeObraEntity grupoMaoDeObraEntity = getGrupoMaoDeObraByIdAndTenantIdService.execute(id, tenantId);
 
         grupoMaoDeObraEntity.setDescricao(request.descricao());
 
         grupoMaoDeObraRepository.save(grupoMaoDeObraEntity);
-    }
-
-    private void checkIfUserHasAccessToGrupoMaoDeObra(UserTenantEntity currentUserTenant) {
-        if (!currentUserTenant.getAuthorities().getCadastros().getMaoDeObra()) {
-            throw new ForbiddenException();
-        }
     }
 }
 

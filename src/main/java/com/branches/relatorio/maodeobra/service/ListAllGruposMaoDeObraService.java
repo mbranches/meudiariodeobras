@@ -1,6 +1,5 @@
 package com.branches.relatorio.maodeobra.service;
 
-import com.branches.exception.ForbiddenException;
 import com.branches.relatorio.maodeobra.domain.GrupoMaoDeObraEntity;
 import com.branches.relatorio.maodeobra.dto.response.GrupoMaoDeObraResponse;
 import com.branches.relatorio.maodeobra.repository.GrupoMaoDeObraRepository;
@@ -18,24 +17,19 @@ public class ListAllGruposMaoDeObraService {
     private final GetTenantIdByIdExternoService getTenantIdByIdExternoService;
     private final GetCurrentUserTenantService getCurrentUserTenantService;
     private final GrupoMaoDeObraRepository grupoMaoDeObraRepository;
+    private final CheckIfUserHasAccessToMaoDeObraService checkIfUserHasAccessToMaoDeObraService;
 
     public List<GrupoMaoDeObraResponse> execute(String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
 
         UserTenantEntity currentUserTenant = getCurrentUserTenantService.execute(userTenants, tenantId);
 
-        checkIfUserHasAccessToGrupoMaoDeObra(currentUserTenant);
+        checkIfUserHasAccessToMaoDeObraService.execute(currentUserTenant);
 
         List<GrupoMaoDeObraEntity> grupoMaoDeObraEntityList = grupoMaoDeObraRepository.findAllByTenantIdAndAtivoIsTrue(tenantId);
 
         return grupoMaoDeObraEntityList.stream()
                 .map(GrupoMaoDeObraResponse::from)
                 .toList();
-    }
-
-    private void checkIfUserHasAccessToGrupoMaoDeObra(UserTenantEntity currentUserTenant) {
-        if (!currentUserTenant.getAuthorities().getCadastros().getMaoDeObra()) {
-            throw new ForbiddenException();
-        }
     }
 }

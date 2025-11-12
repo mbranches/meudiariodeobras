@@ -1,6 +1,5 @@
 package com.branches.relatorio.maodeobra.service;
 
-import com.branches.exception.ForbiddenException;
 import com.branches.relatorio.maodeobra.domain.MaoDeObraEntity;
 import com.branches.relatorio.maodeobra.repository.MaoDeObraRepository;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
@@ -18,23 +17,18 @@ public class DeleteMaoDeObraService {
     private final GetCurrentUserTenantService getCurrentUserTenantService;
     private final GetMaoDeObraByIdAndTenantIdService getMaoDeObraByIdAndTenantIdService;
     private final MaoDeObraRepository maoDeObraRepository;
+    private final CheckIfUserHasAccessToMaoDeObraService checkIfUserHasAccessToMaoDeObraService;
 
     public void execute(Long id, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
 
         UserTenantEntity currentUserTenant = getCurrentUserTenantService.execute(userTenants, tenantId);
 
-        checkIfUserHasAccessToMaoDeObra(currentUserTenant);
+        checkIfUserHasAccessToMaoDeObraService.execute(currentUserTenant);
 
         MaoDeObraEntity maoDeObraEntity = getMaoDeObraByIdAndTenantIdService.execute(id, tenantId);
         maoDeObraEntity.desativar();
 
         maoDeObraRepository.save(maoDeObraEntity);
-    }
-
-    private void checkIfUserHasAccessToMaoDeObra(UserTenantEntity currentUserTenant) {
-        if (!currentUserTenant.getAuthorities().getCadastros().getMaoDeObra()) {
-            throw new ForbiddenException();
-        }
     }
 }

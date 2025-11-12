@@ -1,7 +1,6 @@
 package com.branches.relatorio.maodeobra.service;
 
 import com.branches.exception.BadRequestException;
-import com.branches.exception.ForbiddenException;
 import com.branches.obra.domain.enums.TipoMaoDeObra;
 import com.branches.relatorio.maodeobra.domain.GrupoMaoDeObraEntity;
 import com.branches.relatorio.maodeobra.domain.MaoDeObraEntity;
@@ -25,13 +24,14 @@ public class CreateMaoDeObraService {
     private final GetGrupoMaoDeObraByIdAndTenantIdService getGrupoMaoDeObraByIdAndTenantIdService;
     private final MaoDeObraRepository maoDeObraRepository;
     private final GetHorasTrabalhadaOfMaoDeObraService getHorasTrabalhadaOfMaoDeObraService;
+    private final CheckIfUserHasAccessToMaoDeObraService checkIfUserHasAccessToMaoDeObraService;
 
     public CreateMaoDeObraResponse execute(CreateMaoDeObraRequest request, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
 
         UserTenantEntity currentUserTenant = getCurrentUserTenantService.execute(userTenants, tenantId);
 
-        checkIfUserCanAccessToMaoDeObra(currentUserTenant);
+        checkIfUserHasAccessToMaoDeObraService.execute(currentUserTenant);
 
         TipoMaoDeObra tipo = request.tipo();
 
@@ -76,11 +76,5 @@ public class CreateMaoDeObraService {
                 .tipo(request.tipo())
                 .funcao(request.funcao())
                 .build();
-    }
-
-    private void checkIfUserCanAccessToMaoDeObra(UserTenantEntity currentUserTenant) {
-        if (!currentUserTenant.getAuthorities().getCadastros().getMaoDeObra()) {
-            throw new ForbiddenException();
-        }
     }
 }
