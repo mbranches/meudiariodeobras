@@ -1,6 +1,5 @@
 package com.branches.relatorio.maodeobra.service;
 
-import com.branches.exception.ForbiddenException;
 import com.branches.relatorio.maodeobra.domain.GrupoMaoDeObraEntity;
 import com.branches.relatorio.maodeobra.repository.GrupoMaoDeObraRepository;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
@@ -18,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,12 +37,14 @@ class DeleteGrupoMaoDeObraServiceTest {
     @InjectMocks
     private DeleteGrupoMaoDeObraService deleteGrupoMaoDeObraService;
 
+    @Mock
+    private CheckIfUserHasAccessToMaoDeObraService checkIfUserHasAccessToMaoDeObraService;
+
     private String tenantExternalId;
     private Long tenantId;
     private Long grupoId;
     private List<UserTenantEntity> userTenants;
     private UserTenantEntity userTenantWithAccess;
-    private UserTenantEntity userTenantWithoutAccess;
     private GrupoMaoDeObraEntity grupoMaoDeObraEntity;
 
     @BeforeEach
@@ -59,22 +59,10 @@ class DeleteGrupoMaoDeObraServiceTest {
                         .build())
                 .build();
 
-        UserTenantAuthorities authoritiesWithoutAccess = UserTenantAuthorities.builder()
-                .cadastros(PermissionsCadastro.builder()
-                        .maoDeObra(false)
-                        .build())
-                .build();
-
         userTenantWithAccess = UserTenantEntity.builder()
                 .user(UserEntity.builder().id(1L).build())
                 .tenantId(tenantId)
                 .authorities(authoritiesWithAccess)
-                .build();
-
-        userTenantWithoutAccess = UserTenantEntity.builder()
-                .user(UserEntity.builder().id(1L).build())
-                .tenantId(tenantId)
-                .authorities(authoritiesWithoutAccess)
                 .build();
 
         userTenants = List.of(userTenantWithAccess);
@@ -93,6 +81,7 @@ class DeleteGrupoMaoDeObraServiceTest {
         when(getCurrentUserTenantService.execute(userTenants, tenantId)).thenReturn(userTenantWithAccess);
         when(getGrupoMaoDeObraByIdAndTenantIdService.execute(grupoId, tenantId)).thenReturn(grupoMaoDeObraEntity);
         when(grupoMaoDeObraRepository.save(any(GrupoMaoDeObraEntity.class))).thenReturn(grupoMaoDeObraEntity);
+        doNothing().when(checkIfUserHasAccessToMaoDeObraService).execute(userTenantWithAccess);
 
         deleteGrupoMaoDeObraService.execute(grupoId, tenantExternalId, userTenants);
 
@@ -100,20 +89,6 @@ class DeleteGrupoMaoDeObraServiceTest {
                 !grupo.isAtivo() &&
                 grupo.getId().equals(grupoId)
         ));
-    }
-
-    @Test
-    void deveLancarForbiddenExceptionQuandoUsuarioNaoTemPermissao() {
-        when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantId);
-        when(getCurrentUserTenantService.execute(userTenants, tenantId)).thenReturn(userTenantWithoutAccess);
-
-        ForbiddenException exception = assertThrows(
-                ForbiddenException.class,
-                () -> deleteGrupoMaoDeObraService.execute(grupoId, tenantExternalId, userTenants)
-        );
-
-        assertNotNull(exception);
-        verify(grupoMaoDeObraRepository, never()).save(any());
     }
 }
 

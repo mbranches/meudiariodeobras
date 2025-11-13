@@ -1,6 +1,5 @@
 package com.branches.relatorio.maodeobra.service;
 
-import com.branches.exception.ForbiddenException;
 import com.branches.relatorio.maodeobra.domain.GrupoMaoDeObraEntity;
 import com.branches.relatorio.maodeobra.dto.response.GrupoMaoDeObraResponse;
 import com.branches.relatorio.maodeobra.repository.GrupoMaoDeObraRepository;
@@ -37,11 +36,13 @@ class ListAllGruposMaoDeObraServiceTest {
     @InjectMocks
     private ListAllGruposMaoDeObraService listAllGruposMaoDeObraService;
 
+    @Mock
+    private CheckIfUserHasAccessToMaoDeObraService checkIfUserHasAccessToMaoDeObraService;
+
     private String tenantExternalId;
     private Long tenantId;
     private List<UserTenantEntity> userTenants;
     private UserTenantEntity userTenantWithAccess;
-    private UserTenantEntity userTenantWithoutAccess;
     private List<GrupoMaoDeObraEntity> grupoMaoDeObraEntityList;
 
     @BeforeEach
@@ -55,22 +56,10 @@ class ListAllGruposMaoDeObraServiceTest {
                         .build())
                 .build();
 
-        UserTenantAuthorities authoritiesWithoutAccess = UserTenantAuthorities.builder()
-                .cadastros(PermissionsCadastro.builder()
-                        .maoDeObra(false)
-                        .build())
-                .build();
-
         userTenantWithAccess = UserTenantEntity.builder()
                 .user(UserEntity.builder().id(1L).build())
                 .tenantId(tenantId)
                 .authorities(authoritiesWithAccess)
-                .build();
-
-        userTenantWithoutAccess = UserTenantEntity.builder()
-                .user(UserEntity.builder().id(1L).build())
-                .tenantId(tenantId)
-                .authorities(authoritiesWithoutAccess)
                 .build();
 
         userTenants = List.of(userTenantWithAccess);
@@ -97,6 +86,7 @@ class ListAllGruposMaoDeObraServiceTest {
         when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantId);
         when(getCurrentUserTenantService.execute(userTenants, tenantId)).thenReturn(userTenantWithAccess);
         when(grupoMaoDeObraRepository.findAllByTenantIdAndAtivoIsTrue(tenantId)).thenReturn(grupoMaoDeObraEntityList);
+        doNothing().when(checkIfUserHasAccessToMaoDeObraService).execute(userTenantWithAccess);
 
         List<GrupoMaoDeObraResponse> response = listAllGruposMaoDeObraService.execute(tenantExternalId, userTenants);
 
@@ -106,19 +96,6 @@ class ListAllGruposMaoDeObraServiceTest {
         assertEquals("Grupo Mão de Obra 1", response.get(0).descricao());
         assertEquals(2L, response.get(1).id());
         assertEquals("Grupo Mão de Obra 2", response.get(1).descricao());
-    }
-
-    @Test
-    void deveLancarForbiddenExceptionQuandoUsuarioNaoTemPermissao() {
-        when(getTenantIdByIdExternoService.execute(tenantExternalId)).thenReturn(tenantId);
-        when(getCurrentUserTenantService.execute(userTenants, tenantId)).thenReturn(userTenantWithoutAccess);
-
-        ForbiddenException exception = assertThrows(
-                ForbiddenException.class,
-                () -> listAllGruposMaoDeObraService.execute(tenantExternalId, userTenants)
-        );
-
-        assertNotNull(exception);
     }
 }
 
