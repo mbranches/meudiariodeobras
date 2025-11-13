@@ -29,4 +29,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
         AND ut.ativo = true
 """)
     Optional<UserInfoProjection> findUserInfoByIdAndTenantId(Long userId, Long tenantId);
+
+    boolean existsByEmail(String email);
 }
