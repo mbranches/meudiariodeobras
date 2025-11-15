@@ -22,13 +22,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class GetUserByEmailServiceTest {
+class FindUserByEmailServiceTest {
 
     @Mock
     private UserRepository userRepository;
 
     @InjectMocks
-    private GetUserByEmailService getUserByEmailService;
+    private FindUserByEmailService findUserByEmailService;
 
     private UserEntity userEntity;
     private String email;
@@ -62,7 +62,7 @@ class GetUserByEmailServiceTest {
     void deveRetornarUserDtoQuandoUsuarioEncontrado() {
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(userEntity));
 
-        UserEntity resultado = getUserByEmailService.execute(email);
+        UserEntity resultado = findUserByEmailService.execute(email);
 
         assertNotNull(resultado);
         assertEquals(1L, resultado.getId());
@@ -81,7 +81,7 @@ class GetUserByEmailServiceTest {
     void deveLancarNotFoundExceptionQuandoUsuarioNaoEncontrado() {
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () -> getUserByEmailService.execute(email));
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> findUserByEmailService.execute(email));
 
         String expectedMessage = "User não encontrado com email: " + email;
 
