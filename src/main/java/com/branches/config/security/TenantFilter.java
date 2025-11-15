@@ -1,6 +1,7 @@
 package com.branches.config.security;
 
 import com.branches.auth.model.UserDetailsImpl;
+import com.branches.usertenant.domain.UserTenantEntity;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Component
@@ -21,10 +23,15 @@ public class TenantFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof UserDetailsImpl) {
-            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        if (authentication != null
+                && authentication.isAuthenticated()
+                && authentication.getPrincipal() instanceof UserDetailsImpl userDetails) {
 
-            UserTenantsContext.setUserTenants(userDetails.getUser().getUserTenantEntities());
+            List<UserTenantEntity> userTenantEntities = userDetails.getUser().getUserTenantEntities();
+
+            List<UserTenantEntity> activeUserTenants = userTenantEntities.stream().filter(UserTenantEntity::getAtivo).toList();
+
+            UserTenantsContext.setUserTenants(activeUserTenants);
             UserTenantsContext.setUserId(userDetails.getUser().getId());
 
         } else {
