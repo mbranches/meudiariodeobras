@@ -60,7 +60,7 @@ class GetMaoDeObraByIdAndTenantIdServiceTest {
 
     @Test
     void deveRetornarMaoDeObraQuandoEncontrada() {
-        when(maoDeObraRepository.findByIdAndTenantIdIsTrue(maoDeObraId, tenantId))
+        when(maoDeObraRepository.findByIdAndTenantIdAndAtivoIsTrue(maoDeObraId, tenantId))
                 .thenReturn(Optional.of(maoDeObraEntity));
 
         MaoDeObraEntity result = getMaoDeObraByIdAndTenantIdService.execute(maoDeObraId, tenantId);
@@ -72,12 +72,12 @@ class GetMaoDeObraByIdAndTenantIdServiceTest {
         assertEquals(TipoMaoDeObra.PERSONALIZADA, result.getTipo());
         assertEquals(tenantId, result.getTenantId());
 
-        verify(maoDeObraRepository, times(1)).findByIdAndTenantIdIsTrue(maoDeObraId, tenantId);
+        verify(maoDeObraRepository, times(1)).findByIdAndTenantIdAndAtivoIsTrue(maoDeObraId, tenantId);
     }
 
     @Test
     void deveLancarNotFoundExceptionQuandoMaoDeObraNaoEncontrada() {
-        when(maoDeObraRepository.findByIdAndTenantIdIsTrue(maoDeObraId, tenantId))
+        when(maoDeObraRepository.findByIdAndTenantIdAndAtivoIsTrue(maoDeObraId, tenantId))
                 .thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(
@@ -89,7 +89,7 @@ class GetMaoDeObraByIdAndTenantIdServiceTest {
         assertEquals("Mão de obra com id " + maoDeObraId + " não encontrada para o tenant " + tenantId,
                      exception.getReason());
 
-        verify(maoDeObraRepository, times(1)).findByIdAndTenantIdIsTrue(maoDeObraId, tenantId);
+        verify(maoDeObraRepository, times(1)).findByIdAndTenantIdAndAtivoIsTrue(maoDeObraId, tenantId);
     }
 
 }

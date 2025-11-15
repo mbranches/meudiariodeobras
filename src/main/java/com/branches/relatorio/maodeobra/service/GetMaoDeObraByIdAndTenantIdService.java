@@ -12,7 +12,7 @@ public class GetMaoDeObraByIdAndTenantIdService {
     private final MaoDeObraRepository maoDeObraRepository;
 
     public MaoDeObraEntity execute(Long id, Long tenantId) {
-        return maoDeObraRepository.findByIdAndTenantIdIsTrue(id, tenantId)
+        return maoDeObraRepository.findByIdAndTenantIdAndAtivoIsTrue(id, tenantId)
             .orElseThrow(() -> new NotFoundException("Mão de obra com id " + id + " não encontrada para o tenant " + tenantId));
     }
 }

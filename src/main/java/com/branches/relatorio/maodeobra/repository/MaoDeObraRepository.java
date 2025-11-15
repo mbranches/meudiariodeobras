@@ -12,5 +12,5 @@ import java.util.Optional;
 public interface MaoDeObraRepository extends JpaRepository<MaoDeObraEntity, Long> {
     List<MaoDeObraEntity> findAllByTenantIdAndTipoAndAtivoIsTrue(Long tenantId, TipoMaoDeObra tipo);
 
-    Optional<MaoDeObraEntity> findByIdAndTenantIdIsTrue(Long id, Long tenantId);
+    Optional<MaoDeObraEntity> findByIdAndTenantIdAndAtivoIsTrue(Long id, Long tenantId);
 }
