@@ -36,7 +36,7 @@ public class UserTenantEntity {
 
     @Convert(converter = UserTenantAuthoritiesConverter.class)
     @Column(nullable = false, columnDefinition = "TEXT")
-    private UserTenantAuthorities authorities;
+    private Authorities authorities;
 
     @Column(nullable = false)
     private Boolean ativo;

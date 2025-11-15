@@ -13,7 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UserTenantAuthorities {
+public class Authorities {
     private PermissionsRelatorio relatorios;
     private PermissionsDefault obras;
     private PermissionsCadastro cadastros;

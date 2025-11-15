@@ -10,7 +10,7 @@ import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.user.domain.PermissionsDefault;
 import com.branches.user.domain.UserEntity;
 import com.branches.usertenant.domain.UserObraPermitidaEntity;
-import com.branches.usertenant.domain.UserTenantAuthorities;
+import com.branches.usertenant.domain.Authorities;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,8 +51,8 @@ class DeleteObraServiceTest {
     private Long tenantId;
     private Long obraId;
     private List<UserTenantEntity> userTenants;
-    private UserTenantAuthorities authorityCanDelete;
-    private UserTenantAuthorities authorityCannotDelete;
+    private Authorities authorityCanDelete;
+    private Authorities authorityCannotDelete;
 
     @BeforeEach
     void setUp() {
@@ -79,7 +79,7 @@ class DeleteObraServiceTest {
                 .build();
         obraEntity.setTenantId(tenantId);
 
-        authorityCanDelete = UserTenantAuthorities.builder()
+        authorityCanDelete = Authorities.builder()
                 .obras(
                         PermissionsDefault.builder()
                                 .canDelete(true)
@@ -87,7 +87,7 @@ class DeleteObraServiceTest {
                 )
                 .build();
 
-        authorityCannotDelete = UserTenantAuthorities.builder()
+        authorityCannotDelete = Authorities.builder()
                 .obras(
                         PermissionsDefault.builder()
                                 .canDelete(false)

@@ -9,7 +9,7 @@ import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.domain.UserTenantKey;
 import com.branches.usertenant.domain.UserObraPermitidaEntity;
-import com.branches.usertenant.domain.UserTenantAuthorities;
+import com.branches.usertenant.domain.Authorities;
 import com.branches.usertenant.domain.enums.PerfilUserTenant;
 import com.branches.obra.domain.enums.TipoMaoDeObra;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
@@ -61,7 +61,7 @@ class ListAllObrasServiceTest {
                 .id(UserTenantKey.from(100L, tenantId))
                 .tenantId(tenantId)
                 .perfil(PerfilUserTenant.ADMINISTRADOR)
-                .authorities(new UserTenantAuthorities())
+                .authorities(new Authorities())
                 .ativo(true)
                 .userObraPermitidaEntities(new HashSet<>())
                 .build();
@@ -77,7 +77,7 @@ class ListAllObrasServiceTest {
                 .id(UserTenantKey.from(101L, tenantId))
                 .tenantId(tenantId)
                 .perfil(PerfilUserTenant.PERSONALIZADO)
-                .authorities(new UserTenantAuthorities())
+                .authorities(new Authorities())
                 .ativo(true)
                 .userObraPermitidaEntities(obrasPermitidas)
                 .build();

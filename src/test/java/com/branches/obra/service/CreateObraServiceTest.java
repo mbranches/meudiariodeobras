@@ -19,7 +19,7 @@ import com.branches.plano.domain.PlanoEntity;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.user.domain.*;
 import com.branches.usertenant.domain.UserObraPermitidaEntity;
-import com.branches.usertenant.domain.UserTenantAuthorities;
+import com.branches.usertenant.domain.Authorities;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,8 +64,8 @@ class CreateObraServiceTest {
     private List<UserTenantEntity> userTenants;
     private PlanoEntity plano;
     private AssinaturaEntity assinatura;
-    private UserTenantAuthorities authorityCreateObra;
-    private UserTenantAuthorities authorityNoCreateObra;
+    private Authorities authorityCreateObra;
+    private Authorities authorityNoCreateObra;
 
     @BeforeEach
     void setUp() {
@@ -141,7 +141,7 @@ class CreateObraServiceTest {
                 .build();
         obraToSave.setTenantId(1L);
 
-        authorityCreateObra = UserTenantAuthorities.builder()
+        authorityCreateObra = Authorities.builder()
                 .obras(
                         PermissionsDefault.builder()
                                 .canCreateAndEdit(true)
@@ -149,7 +149,7 @@ class CreateObraServiceTest {
                 )
                 .build();
 
-        authorityNoCreateObra = UserTenantAuthorities.builder()
+        authorityNoCreateObra = Authorities.builder()
                 .obras(
                         PermissionsDefault.builder()
                                 .canCreateAndEdit(false)

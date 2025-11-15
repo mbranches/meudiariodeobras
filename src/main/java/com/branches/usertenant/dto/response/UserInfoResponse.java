@@ -2,7 +2,7 @@ package com.branches.usertenant.dto.response;
 
 import com.branches.tenant.domain.TenantEntity;
 import com.branches.user.repository.projection.UserInfoProjection;
-import com.branches.usertenant.domain.UserTenantAuthorities;
+import com.branches.usertenant.domain.Authorities;
 import com.branches.usertenant.domain.enums.PerfilUserTenant;
 
 import java.util.List;
@@ -13,7 +13,7 @@ public record UserInfoResponse(
         String email,
         String cargo,
         String fotoUrl,
-        UserTenantAuthorities authorities,
+        Authorities authorities,
         PerfilUserTenant perfil,
         List<TenantByUserInfoResponse> tenantsVinculados
 ) {

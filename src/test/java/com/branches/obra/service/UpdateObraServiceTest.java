@@ -12,7 +12,7 @@ import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.user.domain.PermissionsDefault;
 import com.branches.user.domain.UserEntity;
 import com.branches.usertenant.domain.UserObraPermitidaEntity;
-import com.branches.usertenant.domain.UserTenantAuthorities;
+import com.branches.usertenant.domain.Authorities;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,8 +59,8 @@ class UpdateObraServiceTest {
     private Long obraId;
     private Long grupoId;
     private List<UserTenantEntity> userTenants;
-    private UserTenantAuthorities authorityCanEdit;
-    private UserTenantAuthorities authorityCannotEdit;
+    private Authorities authorityCanEdit;
+    private Authorities authorityCannotEdit;
 
     @BeforeEach
     void setUp() {
@@ -109,7 +109,7 @@ class UpdateObraServiceTest {
                 .build();
         obraEntity.setTenantId(tenantId);
 
-        authorityCanEdit = UserTenantAuthorities.builder()
+        authorityCanEdit = Authorities.builder()
                 .obras(
                         PermissionsDefault.builder()
                                 .canCreateAndEdit(true)
@@ -117,7 +117,7 @@ class UpdateObraServiceTest {
                 )
                 .build();
 
-        authorityCannotEdit = UserTenantAuthorities.builder()
+        authorityCannotEdit = Authorities.builder()
                 .obras(
                         PermissionsDefault.builder()
                                 .canCreateAndEdit(false)

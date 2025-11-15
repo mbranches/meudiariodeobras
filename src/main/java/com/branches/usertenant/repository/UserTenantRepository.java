@@ -1,0 +1,11 @@
+package com.branches.usertenant.repository;
+
+import com.branches.usertenant.domain.UserTenantEntity;
+import com.branches.usertenant.domain.UserTenantKey;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface UserTenantRepository extends JpaRepository<UserTenantEntity, UserTenantKey> {
+    long countByTenantIdAndAtivoIsTrue(Long tenantId);
+}

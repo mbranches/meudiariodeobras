@@ -8,7 +8,7 @@ import com.branches.tenant.repository.projection.TenantInfoProjection;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.user.repository.UserRepository;
 import com.branches.user.repository.projection.UserInfoProjection;
-import com.branches.usertenant.domain.UserTenantAuthorities;
+import com.branches.usertenant.domain.Authorities;
 import com.branches.usertenant.domain.enums.PerfilUserTenant;
 import com.branches.usertenant.dto.response.UserTenantInfoResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -82,7 +82,7 @@ class GetUserTenantInfoServiceTest {
         when(userInfoProjection.getEmail()).thenReturn("joao.silva@email.com");
         when(userInfoProjection.getCargo()).thenReturn("Engenheiro");
         when(userInfoProjection.getFotoUrl()).thenReturn("https://example.com/foto.jpg");
-        when(userInfoProjection.getAuthorities()).thenReturn(new UserTenantAuthorities());
+        when(userInfoProjection.getAuthorities()).thenReturn(new Authorities());
         when(userInfoProjection.getPerfil()).thenReturn(PerfilUserTenant.ADMINISTRADOR);
 
         when(tenantInfoProjection.getIdExterno()).thenReturn(tenantExternalId);

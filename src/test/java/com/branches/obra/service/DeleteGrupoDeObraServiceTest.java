@@ -6,7 +6,7 @@ import com.branches.obra.repository.GrupoDeObraRepository;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.user.domain.PermissionsCadastro;
 import com.branches.user.domain.UserEntity;
-import com.branches.usertenant.domain.UserTenantAuthorities;
+import com.branches.usertenant.domain.Authorities;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,13 +53,13 @@ class DeleteGrupoDeObraServiceTest {
         tenantId = 1L;
         grupoId = 1L;
 
-        UserTenantAuthorities authoritiesWithAccess = UserTenantAuthorities.builder()
+        Authorities authoritiesWithAccess = Authorities.builder()
                 .cadastros(PermissionsCadastro.builder()
                         .grupoDeObras(true)
                         .build())
                 .build();
 
-        UserTenantAuthorities authoritiesWithoutAccess = UserTenantAuthorities.builder()
+        Authorities authoritiesWithoutAccess = Authorities.builder()
                 .cadastros(PermissionsCadastro.builder()
                         .grupoDeObras(false)
                         .build())

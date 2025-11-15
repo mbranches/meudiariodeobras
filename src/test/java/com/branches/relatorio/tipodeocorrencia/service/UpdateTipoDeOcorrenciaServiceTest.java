@@ -7,7 +7,7 @@ import com.branches.relatorio.tipodeocorrencia.repository.TipoDeOcorrenciaReposi
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.user.domain.PermissionsCadastro;
 import com.branches.user.domain.UserEntity;
-import com.branches.usertenant.domain.UserTenantAuthorities;
+import com.branches.usertenant.domain.Authorities;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,13 +56,13 @@ class UpdateTipoDeOcorrenciaServiceTest {
         tipoDeOcorrenciaId = 1L;
         request = new UpdateTipoDeOcorrenciaRequest("Tipo de Ocorrência Atualizado");
 
-        UserTenantAuthorities authoritiesWithAccess = UserTenantAuthorities.builder()
+        Authorities authoritiesWithAccess = Authorities.builder()
                 .cadastros(PermissionsCadastro.builder()
                         .tiposDeOcorrencia(true)
                         .build())
                 .build();
 
-        UserTenantAuthorities authoritiesWithoutAccess = UserTenantAuthorities.builder()
+        Authorities authoritiesWithoutAccess = Authorities.builder()
                 .cadastros(PermissionsCadastro.builder()
                         .tiposDeOcorrencia(false)
                         .build())

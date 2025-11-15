@@ -7,7 +7,7 @@ import com.branches.relatorio.maodeobra.repository.MaoDeObraRepository;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.user.domain.PermissionsCadastro;
 import com.branches.user.domain.UserEntity;
-import com.branches.usertenant.domain.UserTenantAuthorities;
+import com.branches.usertenant.domain.Authorities;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,7 +59,7 @@ class DeleteMaoDeObraServiceTest {
         tenantId = 1L;
         maoDeObraId = 1L;
 
-        UserTenantAuthorities authoritiesWithAccess = UserTenantAuthorities.builder()
+        Authorities authoritiesWithAccess = Authorities.builder()
                 .cadastros(PermissionsCadastro.builder()
                         .maoDeObra(true)
                         .build())
