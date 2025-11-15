@@ -1,6 +1,8 @@
 package com.branches.usertenant.service;
 
 import com.branches.exception.ForbiddenException;
+import com.branches.tenant.domain.TenantEntity;
+import com.branches.tenant.service.GetTenantByIdService;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.user.domain.UserEntity;
 import com.branches.user.service.GetUserByIdExternoService;
@@ -21,6 +23,7 @@ public class RemoveUserOfTenantService {
     private final GetUserByIdExternoService getUserByIdExternoService;
     private final GetUserTenantByIdService getUserTenantByIdService;
     private final UserTenantRepository userTenantRepository;
+    private final GetTenantByIdService getTenantByIdService;
 
     public void execute(String tenantExternalId, String userExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -32,6 +35,12 @@ public class RemoveUserOfTenantService {
         UserEntity userToRemove = getUserByIdExternoService.execute(userExternalId);
 
         UserTenantEntity userTenantToDelete = getUserTenantByIdService.execute(UserTenantKey.from(userToRemove.getId(), tenantId));
+
+        TenantEntity tenant = getTenantByIdService.execute(tenantId);
+
+        if (tenant.getUserResponsavelId().equals(userToRemove.getId())) {
+            throw new ForbiddenException();
+        }
 
         userTenantRepository.delete(userTenantToDelete);
     }
