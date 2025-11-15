@@ -5,12 +5,14 @@ import com.branches.obra.domain.enums.TipoMaoDeObra;
 import com.branches.config.envers.AuditableTenantOwned;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Setter
 @Getter
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -18,16 +20,19 @@ public class RelatorioEntity extends AuditableTenantOwned {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Builder.Default
+    @Column(nullable = false, unique = true)
+    private String idExterno = UUID.randomUUID().toString();
     @Column(nullable = false)
     private LocalDate data;
     @Column(nullable = false)
-    private Integer numero;
+    private Long numero;
     @Column(nullable = false)
-    private Integer prazoContratualObra;
+    private Long prazoContratualObra;
     @Column(nullable = false)
-    private Integer prazoDecorridoObra;
+    private Long prazoDecorridoObra;
     @Column(nullable = false)
-    private Integer prazoPraVencerObra;
+    private Long prazoPraVencerObra;
     private String pdfUrl;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

@@ -39,11 +39,9 @@ public class AtividadeDeRelatorioEntity {
             inverseJoinColumns = @JoinColumn(name = "campo_personalizado_id")
     )
     private List<CampoPersonalizadoEntity> camposPersonalizados;
-    @ManyToMany
-    @JoinTable(
-            name = "atividade_relatorio_mao_de_obra",
-            joinColumns = @JoinColumn(name = "atividade_relatorio_id"),
-            inverseJoinColumns = @JoinColumn(name = "mao_de_obra_id")
-    )
-    private List<MaoDeObraEntity> maosDeObra;
+    @OneToMany(mappedBy = "atividadeDeRelatorio", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MaoDeObraDeAtividadeDeRelatorioEntity> maosDeObra;
+    @ManyToOne
+    @JoinColumn(name = "relatorio_id", nullable = false)
+    private RelatorioEntity relatorio;
 }
