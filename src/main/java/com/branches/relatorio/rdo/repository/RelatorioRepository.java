@@ -11,4 +11,6 @@ public interface RelatorioRepository extends JpaRepository<RelatorioEntity, Long
     Optional<RelatorioEntity> findFirstByTenantIdAndObraIdOrderByEnversCreatedDateDesc(Long tenantId, Long obraId);
 
     long countByTenantIdAndObraId(Long tenantId, Long obraId);
+
+    Optional<RelatorioEntity> findByIdExternoAndTenantId(String relatorioExternalId, Long tenantId);
 }

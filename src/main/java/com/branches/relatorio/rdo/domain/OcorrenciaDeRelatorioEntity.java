@@ -17,17 +17,30 @@ public class OcorrenciaDeRelatorioEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @ManyToOne
     @JoinColumn(name = "relatorio_id", nullable = false)
     private RelatorioEntity relatorio;
-    @ManyToOne
-    @JoinColumn(name = "tipo_de_ocorrencia_id", nullable = false)
-    private TipoDeOcorrenciaEntity tipoDeOcorrencia;
+
+    @ManyToMany
+    @JoinTable(
+            name = "ocorrencia_relatorio_tipos_de_ocorrencia",
+            joinColumns = @JoinColumn(name = "ocorrencia_relatorio_id"),
+            inverseJoinColumns = @JoinColumn(name = "tipo_de_ocorrencia_id")
+    )
+    private List<TipoDeOcorrenciaEntity> tiposDeOcorrencia;
+
     @Column(nullable = false)
     private String descricao;
+
     private LocalTime horaInicio;
     private LocalTime horaFim;
     private LocalTime totalHoras;
+
+    @ManyToOne
+    @JoinColumn(name = "atividade_vinculada_id")
+    private AtividadeDeRelatorioEntity atividadeVinculada;
+
     @ManyToMany
     @JoinTable(
             name = "ocorrencia_relatorio_campos_personalizados",

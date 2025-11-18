@@ -1,7 +1,6 @@
 package com.branches.relatorio.rdo.domain;
 
 import com.branches.relatorio.rdo.domain.enums.StatusAtividade;
-import com.branches.relatorio.maodeobra.domain.MaoDeObraEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,7 +31,7 @@ public class AtividadeDeRelatorioEntity {
     private LocalTime horaInicio;
     private LocalTime horaFim;
     private LocalTime totalHoras;
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "atividade_relatorio_campos_personalizados",
             joinColumns = @JoinColumn(name = "atividade_relatorio_id"),

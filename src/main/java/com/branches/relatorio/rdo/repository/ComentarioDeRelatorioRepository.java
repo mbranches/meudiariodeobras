@@ -1,6 +1,6 @@
 package com.branches.relatorio.rdo.repository;
 
-import com.branches.relatorio.rdo.domain.OcorrenciaDeRelatorioEntity;
+import com.branches.relatorio.rdo.domain.ComentarioDeRelatorioEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,12 +8,12 @@ import java.util.Collection;
 import java.util.List;
 
 @Repository
-public interface OcorrenciaDeRelatorioRepository extends JpaRepository<OcorrenciaDeRelatorioEntity, Long> {
-    List<OcorrenciaDeRelatorioEntity> findAllByRelatorioId(Long relatorioId);
+public interface ComentarioDeRelatorioRepository extends JpaRepository<ComentarioDeRelatorioEntity, Long> {
+    List<ComentarioDeRelatorioEntity> findAllByRelatorioId(Long relatorioId);
 
     void removeAllByRelatorioId(Long relatorioId);
 
-    List<OcorrenciaDeRelatorioEntity> findAllByIdInAndRelatorioId(Collection<Long> ids, Long relatorioId);
+    List<ComentarioDeRelatorioEntity> findAllByIdInAndRelatorioId(Collection<Long> ids, Long relatorioId);
 
     void removeAllByIdNotInAndRelatorioId(Collection<Long> ids, Long relatorioId);
 }

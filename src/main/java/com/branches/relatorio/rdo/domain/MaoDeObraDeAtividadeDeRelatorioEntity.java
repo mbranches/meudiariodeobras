@@ -4,8 +4,6 @@ import com.branches.relatorio.maodeobra.domain.MaoDeObraEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalTime;
-
 @Setter
 @Getter
 @Builder
@@ -23,11 +21,6 @@ public class MaoDeObraDeAtividadeDeRelatorioEntity {
 
     @Column(length = 100, nullable = false)
     private String funcao;
-
-    private LocalTime horaInicio;
-    private LocalTime horaFim;
-    private LocalTime horasIntervalo;
-    private LocalTime horasTrabalhadas;
 
     @ManyToOne
     @JoinColumn(name = "atividade_de_relatorio_id", nullable = false)

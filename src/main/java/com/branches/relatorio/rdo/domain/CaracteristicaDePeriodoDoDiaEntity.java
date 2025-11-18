@@ -1,5 +1,6 @@
 package com.branches.relatorio.rdo.domain;
 
+import com.branches.config.envers.AuditableTenantOwned;
 import com.branches.relatorio.rdo.domain.enums.Clima;
 import com.branches.relatorio.rdo.domain.enums.CondicaoDoTempo;
 import jakarta.persistence.*;
@@ -12,7 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class CaracteristicaDePeriodoDoDiaEntity {
+public class CaracteristicaDePeriodoDoDiaEntity extends AuditableTenantOwned {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

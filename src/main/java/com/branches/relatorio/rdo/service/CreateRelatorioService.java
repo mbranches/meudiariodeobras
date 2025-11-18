@@ -30,7 +30,7 @@ public class CreateRelatorioService {
     private final GetObraByIdExternoAndTenantIdService getObraByIdExternoAndTenantIdService;
     private final RelatorioRepository relatorioRepository;
     private final AtividadeDeRelatorioRepository atividadeDeRelatorioRepository;
-    private final ComentarioDeRelatorioEntityRepository comentarioDeRelatorioRepository;
+    private final ComentarioDeRelatorioRepository comentarioDeRelatorioRepository;
     private final MaoDeObraDeRelatorioRepository maoDeObraDeRelatorioRepository;
     private final EquipamentoDeRelatorioRepository equipamentoDeRelatorioRepository;
     private final OcorrenciaDeRelatorioRepository ocorrenciaDeRelatorioRepository;

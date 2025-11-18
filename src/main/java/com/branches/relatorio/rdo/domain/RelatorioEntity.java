@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -50,8 +51,8 @@ public class RelatorioEntity extends AuditableTenantOwned {
     @Column(nullable = false)
     private TipoMaoDeObra tipoMaoDeObra;
 
-    @Column(length = 10)
-    private String indiciePluviometrico;
+    @Column(precision = 10, scale = 2)
+    private BigDecimal indiciePluviometrico;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "caracteristicas_manha_id")
