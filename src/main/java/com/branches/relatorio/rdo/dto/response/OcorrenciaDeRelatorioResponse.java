@@ -12,16 +12,12 @@ public record OcorrenciaDeRelatorioResponse(
         List<TipoDeOcorrenciaResponse> tiposOcorrencia,
         LocalTime horaInicio,
         LocalTime horaFim,
-        AtividadeByOcorrenciaDeRelatorioResponse atividadeVinculada,
         List<CampoPersonalizadoResponse> camposPersonalizados
 ) {
     public static OcorrenciaDeRelatorioResponse from(OcorrenciaDeRelatorioEntity ocorrenciaDeRelatorioEntity) {
         var tiposOcorrencia = ocorrenciaDeRelatorioEntity.getTiposDeOcorrencia() != null ?
                 ocorrenciaDeRelatorioEntity.getTiposDeOcorrencia().stream().map(TipoDeOcorrenciaResponse::from).toList()
         : null;
-
-        var atividadeVinculada = ocorrenciaDeRelatorioEntity.getAtividadeVinculada() != null ?
-                AtividadeByOcorrenciaDeRelatorioResponse.from(ocorrenciaDeRelatorioEntity.getAtividadeVinculada()) : null;
 
         var camposPersonalizados = ocorrenciaDeRelatorioEntity.getCamposPersonalizados() != null ?
                 ocorrenciaDeRelatorioEntity.getCamposPersonalizados().stream()
@@ -34,7 +30,6 @@ public record OcorrenciaDeRelatorioResponse(
                 tiposOcorrencia,
                 ocorrenciaDeRelatorioEntity.getHoraInicio(),
                 ocorrenciaDeRelatorioEntity.getHoraFim(),
-                atividadeVinculada,
                 camposPersonalizados
         );
     }

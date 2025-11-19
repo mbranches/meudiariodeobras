@@ -37,10 +37,6 @@ public class OcorrenciaDeRelatorioEntity {
     private LocalTime horaFim;
     private LocalTime totalHoras;
 
-    @ManyToOne
-    @JoinColumn(name = "atividade_vinculada_id")
-    private AtividadeDeRelatorioEntity atividadeVinculada;
-
     @ManyToMany
     @JoinTable(
             name = "ocorrencia_relatorio_campos_personalizados",

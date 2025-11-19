@@ -1,7 +1,6 @@
 package com.branches.relatorio.rdo.service;
 
 import com.branches.utils.GetHorasTotais;
-import com.branches.relatorio.rdo.domain.AtividadeDeRelatorioEntity;
 import com.branches.relatorio.rdo.domain.OcorrenciaDeRelatorioEntity;
 import com.branches.relatorio.rdo.domain.RelatorioEntity;
 import com.branches.relatorio.rdo.dto.request.OcorrenciaDeRelatorioRequest;
@@ -39,10 +38,9 @@ public class UpdateOcorrenciasDeRelatorioService {
         }
 
         Map<Long, TipoDeOcorrenciaEntity> tiposDeOcorrenciaMap = getTiposDeOcorrenciaMap(tenantId, requestList);
-        Map<Long, AtividadeDeRelatorioEntity> atividadesMap = getAtividadesMap(relatorio, requestList);
 
-        List<OcorrenciaDeRelatorioEntity> updatedOcorrencias = updateExistingOcorrencias(requestList, relatorio, tenantId, tiposDeOcorrenciaMap, atividadesMap);
-        List<OcorrenciaDeRelatorioEntity> newOcorrencias = createNewOcorrencias(requestList, relatorio, tenantId, tiposDeOcorrenciaMap, atividadesMap);
+        List<OcorrenciaDeRelatorioEntity> updatedOcorrencias = updateExistingOcorrencias(requestList, relatorio, tenantId, tiposDeOcorrenciaMap);
+        List<OcorrenciaDeRelatorioEntity> newOcorrencias = createNewOcorrencias(requestList, relatorio, tenantId, tiposDeOcorrenciaMap);
 
         List<OcorrenciaDeRelatorioEntity> ocorrenciasToSave = new ArrayList<>(updatedOcorrencias);
         ocorrenciasToSave.addAll(newOcorrencias);
@@ -62,19 +60,19 @@ public class UpdateOcorrenciasDeRelatorioService {
         ocorrenciaDeRelatorioRepository.removeAllByIdNotInAndRelatorioId(ids, relatorioId);
     }
 
-    private List<OcorrenciaDeRelatorioEntity> createNewOcorrencias(List<OcorrenciaDeRelatorioRequest> requestList, RelatorioEntity relatorio, Long tenantId, Map<Long, TipoDeOcorrenciaEntity> tiposDeOcorrenciaMap, Map<Long, AtividadeDeRelatorioEntity> atividadesMap) {
+    private List<OcorrenciaDeRelatorioEntity> createNewOcorrencias(List<OcorrenciaDeRelatorioRequest> requestList, RelatorioEntity relatorio, Long tenantId, Map<Long, TipoDeOcorrenciaEntity> tiposDeOcorrenciaMap) {
         return requestList.stream()
                 .filter(request -> request.id() == null)
                 .map(request -> {
                     OcorrenciaDeRelatorioEntity ocorrencia = new OcorrenciaDeRelatorioEntity();
                     ocorrencia.setRelatorio(relatorio);
-                    setNewFields(ocorrencia, request, tiposDeOcorrenciaMap, atividadesMap, tenantId);
+                    setNewFields(ocorrencia, request, tiposDeOcorrenciaMap, tenantId);
                     return ocorrencia;
                 })
                 .toList();
     }
 
-    private List<OcorrenciaDeRelatorioEntity> updateExistingOcorrencias(List<OcorrenciaDeRelatorioRequest> requestList, RelatorioEntity relatorio, Long tenantId, Map<Long, TipoDeOcorrenciaEntity> tiposDeOcorrenciaMap, Map<Long, AtividadeDeRelatorioEntity> atividadesMap) {
+    private List<OcorrenciaDeRelatorioEntity> updateExistingOcorrencias(List<OcorrenciaDeRelatorioRequest> requestList, RelatorioEntity relatorio, Long tenantId, Map<Long, TipoDeOcorrenciaEntity> tiposDeOcorrenciaMap) {
         List<Long> ids = requestList.stream()
                 .map(OcorrenciaDeRelatorioRequest::id)
                 .filter(Objects::nonNull)
@@ -89,7 +87,7 @@ public class UpdateOcorrenciasDeRelatorioService {
         existingOcorrencias.forEach(ocorrencia -> {
             OcorrenciaDeRelatorioRequest request = requestMap.get(ocorrencia.getId());
 
-            setNewFields(ocorrencia, request, tiposDeOcorrenciaMap, atividadesMap, tenantId);
+            setNewFields(ocorrencia, request, tiposDeOcorrenciaMap, tenantId);
         });
 
         return existingOcorrencias;
@@ -97,7 +95,6 @@ public class UpdateOcorrenciasDeRelatorioService {
 
     private void setNewFields(OcorrenciaDeRelatorioEntity ocorrencia, OcorrenciaDeRelatorioRequest request,
                               Map<Long, TipoDeOcorrenciaEntity> tiposDeOcorrenciaMap,
-                              Map<Long, AtividadeDeRelatorioEntity> atividadesMap,
                               Long tenantId) {
 
         ocorrencia.setDescricao(request.descricao());
@@ -115,11 +112,6 @@ public class UpdateOcorrenciasDeRelatorioService {
         ocorrencia.setHoraInicio(request.horaInicio());
         ocorrencia.setHoraFim(request.horaFim());
         ocorrencia.setTotalHoras(getHorasTotais.execute(request.horaInicio(), request.horaFim(), null));
-        ocorrencia.setAtividadeVinculada(
-                request.atividadeVinculadaId() != null
-                        ? atividadesMap.get(request.atividadeVinculadaId())
-                        : null
-        );
         ocorrencia.getCamposPersonalizados().clear();
         ocorrencia.getCamposPersonalizados().addAll(
                 request.camposPersonalizados() != null
@@ -128,18 +120,6 @@ public class UpdateOcorrenciasDeRelatorioService {
                         .toList()
                         : List.of()
         );
-    }
-
-    private Map<Long, AtividadeDeRelatorioEntity> getAtividadesMap(RelatorioEntity relatorio, List<OcorrenciaDeRelatorioRequest> requestList) {
-        List<Long> atividadeIds = requestList.stream()
-                .filter(request -> request.id() != null)
-                .map(OcorrenciaDeRelatorioRequest::atividadeVinculadaId)
-                .distinct()
-                .toList();
-
-        List<AtividadeDeRelatorioEntity> atividades = getAtividadeListByRelatorioIdAndIdInService.execute(relatorio.getId(), atividadeIds);
-        return atividades.stream()
-                .collect(Collectors.toMap(AtividadeDeRelatorioEntity::getId, Function.identity()));
     }
 
     private Map<Long, TipoDeOcorrenciaEntity> getTiposDeOcorrenciaMap(Long tenantId, List<OcorrenciaDeRelatorioRequest> requestList) {
