@@ -1,0 +1,11 @@
+package com.branches.obra.repository.projections;
+
+import com.branches.obra.domain.StatusObra;
+
+public interface ObraProjection {
+    String getIdExterno();
+    String getNome();
+    String getCapaUrl();
+    StatusObra getStatus();
+    Long getQuantityOfRelatorios();
+}

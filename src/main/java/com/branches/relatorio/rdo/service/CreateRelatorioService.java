@@ -46,6 +46,7 @@ public class CreateRelatorioService {
 
         long quantityOfRelatoriosOfObra = relatorioRepository.countByTenantIdAndObraIdAndAtivoIsTrue(tenantId, obra.getId());
 
+        long diferencaEntreDataRelatorioEDataPrevistaFim = ChronoUnit.DAYS.between(request.data(), obra.getDataPrevistaFim());
         RelatorioEntity relatorio = RelatorioEntity.builder()
                 .obraId(obra.getId())
                 .numero(quantityOfRelatoriosOfObra + 1)
@@ -53,7 +54,7 @@ public class CreateRelatorioService {
                 .tipoMaoDeObra(obra.getTipoMaoDeObra())
                 .prazoContratualObra(ChronoUnit.DAYS.between(obra.getDataInicio(), obra.getDataPrevistaFim()))
                 .prazoDecorridoObra(ChronoUnit.DAYS.between(obra.getDataInicio(), request.data()))
-                .prazoPraVencerObra(ChronoUnit.DAYS.between(request.data(), obra.getDataPrevistaFim()))
+                .prazoPraVencerObra(diferencaEntreDataRelatorioEDataPrevistaFim < 0 ? 0L : diferencaEntreDataRelatorioEDataPrevistaFim)
                 .caracteristicasManha(buildCaracteristicaDefault())
                 .caracteristicasTarde(buildCaracteristicaDefault())
                 .caracteristicasNoite(buildCaracteristicaDefault())

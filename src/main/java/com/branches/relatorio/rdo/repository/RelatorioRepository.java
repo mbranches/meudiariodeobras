@@ -2,10 +2,12 @@ package com.branches.relatorio.rdo.repository;
 
 import com.branches.relatorio.rdo.domain.RelatorioEntity;
 import com.branches.relatorio.rdo.repository.projections.RelatorioDetailsProjection;
+import com.branches.relatorio.rdo.repository.projections.RelatorioProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -62,4 +64,24 @@ public interface RelatorioRepository extends JpaRepository<RelatorioEntity, Long
       AND t.ativo IS TRUE
 """)
     RelatorioDetailsProjection findDetailsByIdExternoAndTenantId(String relatorioExternalId, Long tenantId, Boolean canViewCondicaoDoClima);
+
+    @Query("""
+    SELECT r.idExterno AS idExterno,
+        r.data AS data,
+        r.numero AS numero,
+        r.status AS status,
+        r.pdfUrl AS pdfUrl,
+        o.idExterno AS obraIdExterno,
+        o.nome AS obraNome,
+        o.endereco AS obraEndereco,
+        o.contratante AS obraContratante,
+        o.responsavel AS obraResponsavel
+    FROM RelatorioEntity r
+        JOIN ObraEntity o ON o.id = r.obraId AND o.tenantId = r.tenantId
+    WHERE r.obraId = :id
+      AND r.ativo IS TRUE
+    ORDER BY r.data DESC
+    LIMIT 5
+""")
+    List<RelatorioProjection> findTop5ByObraIdProjection(Long id);
 }

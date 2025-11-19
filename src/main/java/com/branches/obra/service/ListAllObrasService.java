@@ -1,8 +1,8 @@
 package com.branches.obra.service;
 
-import com.branches.obra.domain.ObraEntity;
 import com.branches.obra.dto.response.ObraByListAllResponse;
 import com.branches.obra.repository.ObraRepository;
+import com.branches.obra.repository.projections.ObraProjection;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.domain.enums.PerfilUserTenant;
@@ -21,7 +21,7 @@ public class ListAllObrasService {
     private final GetTenantIdByIdExternoService getTenantIdByIdExternoService;
     private final GetCurrentUserTenantService getCurrentUserTenantService;
 
-    public List<ObraByListAllResponse> execute(String tenantExternalId, List<UserTenantEntity> userTenants) {
+    public List<ObraByListAllResponse>  execute(String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
 
         UserTenantEntity currentUserTenant = getCurrentUserTenantService.execute(userTenants, tenantId);
@@ -29,8 +29,8 @@ public class ListAllObrasService {
         PerfilUserTenant userPerfil = currentUserTenant.getPerfil();
         List<Long> userAllowedObrasIds = currentUserTenant.getObrasPermitidasIds();
 
-        List<ObraEntity> obras = userPerfil.equals(ADMINISTRADOR) ? obraRepository.findAllByTenantId(tenantId)
-                : obraRepository.findAllByTenantIdAndIdIn(tenantId, userAllowedObrasIds);
+        List<ObraProjection> obras = userPerfil.equals(ADMINISTRADOR) ? obraRepository.findAllByTenantIdProjection(tenantId)
+                : obraRepository.findAllByTenantIdAndIdInProjection(tenantId, userAllowedObrasIds);
 
         return obras.stream()
                 .map(ObraByListAllResponse::from)

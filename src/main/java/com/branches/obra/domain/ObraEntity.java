@@ -40,6 +40,7 @@ public class ObraEntity extends AuditableTenantOwned {
     private LocalDate dataInicio;
     @Column(nullable = false)
     private LocalDate dataPrevistaFim;
+    private LocalDate dataFimReal;
 
     @Column(length = 100)
     private String numeroContrato;
