@@ -3,6 +3,7 @@ package com.branches.obra.service;
 import com.branches.obra.domain.GrupoDeObraEntity;
 import com.branches.exception.ForbiddenException;
 import com.branches.obra.domain.ObraEntity;
+import com.branches.obra.domain.StatusObra;
 import com.branches.obra.dto.request.UpdateObraRequest;
 import com.branches.obra.repository.ObraRepository;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
@@ -11,6 +12,7 @@ import com.branches.usertenant.service.GetCurrentUserTenantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -41,7 +43,19 @@ public class UpdateObraService {
         obra.setEndereco(request.endereco());
         obra.setObservacoes(request.observacoes());
         obra.setTipoMaoDeObra(request.tipoMaoDeObra());
-        obra.setStatus(request.status());
+
+        StatusObra lastStatus = obra.getStatus();
+        StatusObra newStatus = request.status();
+
+        obra.setStatus(newStatus);
+
+        if (lastStatus != StatusObra.CONCLUIDA && newStatus == StatusObra.CONCLUIDA) {
+              obra.setDataFimReal(LocalDate.now());
+        }
+
+        if (newStatus != StatusObra.CONCLUIDA) {
+              obra.setDataFimReal(null);
+        }
 
         GrupoDeObraEntity grupo = getGrupoDeObraByIdAndTenantIdService.execute(request.grupoId(), tenantId);
 

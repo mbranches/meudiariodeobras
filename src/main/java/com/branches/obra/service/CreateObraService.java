@@ -4,6 +4,7 @@ import com.branches.assinatura.domain.AssinaturaEntity;
 import com.branches.assinatura.service.GetAssinaturaActiveByTenantIdService;
 import com.branches.obra.domain.GrupoDeObraEntity;
 import com.branches.obra.domain.ObraEntity;
+import com.branches.obra.domain.StatusObra;
 import com.branches.obra.dto.request.CreateObraRequest;
 import com.branches.obra.dto.response.CreateObraResponse;
 import com.branches.obra.repository.ObraRepository;
@@ -15,6 +16,7 @@ import com.branches.usertenant.service.GetCurrentUserTenantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -55,6 +57,10 @@ public class CreateObraService {
             GrupoDeObraEntity grupo = getGrupoDeObraByIdAndTenantIdService.execute(request.grupoId(), tenantId);
 
             obraToSave.setGrupo(grupo);
+        }
+
+        if (request.status() == StatusObra.CONCLUIDA) {
+            obraToSave.setDataFimReal(LocalDate.now());
         }
 
         ObraEntity savedObra = obraRepository.save(obraToSave);
