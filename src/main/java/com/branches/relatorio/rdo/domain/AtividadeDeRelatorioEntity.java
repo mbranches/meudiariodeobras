@@ -39,7 +39,7 @@ public class AtividadeDeRelatorioEntity {
     )
     private List<CampoPersonalizadoEntity> camposPersonalizados;
     @OneToMany(mappedBy = "atividadeDeRelatorio", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MaoDeObraDeAtividadeDeRelatorioEntity> maosDeObra;
+    private List<MaoDeObraDeAtividadeDeRelatorioEntity> maoDeObra;
     @ManyToOne
     @JoinColumn(name = "relatorio_id", nullable = false)
     private RelatorioEntity relatorio;

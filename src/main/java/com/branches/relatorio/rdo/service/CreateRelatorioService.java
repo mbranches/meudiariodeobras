@@ -206,8 +206,8 @@ public class CreateRelatorioService {
                     BeanUtils.copyProperties(atividade, newAtividade, "id", "relatorio", "camposPersonalizados", "maosDeObra");
 
                     newAtividade.setRelatorio(relatorio);
-                    newAtividade.setMaosDeObra(
-                            atividade.getMaosDeObra().stream()
+                    newAtividade.setMaoDeObra(
+                            atividade.getMaoDeObra().stream()
                                     .map(maoDeObra -> {
                                                 var newMaoDeObra = new MaoDeObraDeAtividadeDeRelatorioEntity();
 

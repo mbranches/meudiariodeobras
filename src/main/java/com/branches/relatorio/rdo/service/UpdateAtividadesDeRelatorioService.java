@@ -61,7 +61,7 @@ public class UpdateAtividadesDeRelatorioService {
                     AtividadeDeRelatorioEntity entity = new AtividadeDeRelatorioEntity();
 
                     entity.setRelatorio(relatorio);
-                    entity.setMaosDeObra(new ArrayList<>());
+                    entity.setMaoDeObra(new ArrayList<>());
                     setNewFieldsToAtividade(entity, request, relatorio, tenantId, maoDeObraEntityMap);
 
                     return entity;
@@ -155,8 +155,8 @@ public class UpdateAtividadesDeRelatorioService {
         entity.setTotalHoras(getHorasTotais.execute(request.horaInicio(), request.horaFim(), null));
         entity.getCamposPersonalizados().clear();
         entity.setCamposPersonalizados(request.camposPersonalizados().stream().map(c -> c.toEntity(tenantId)).toList());
-        entity.getMaosDeObra().clear();
-        entity.setMaosDeObra(updateMaoDeObraDeAtividade(request.maoDeObra(), entity, relatorio, maoDeObraEntityMap));
+        entity.getMaoDeObra().clear();
+        entity.setMaoDeObra(updateMaoDeObraDeAtividade(request.maoDeObra(), entity, relatorio, maoDeObraEntityMap));
     }
 
     private Map<Long, MaoDeObraEntity> getMaoDeObraEntityMap(List<MaoDeObraDeAtividadeRequest> requestList, Long tenantId, RelatorioEntity relatorio) {
