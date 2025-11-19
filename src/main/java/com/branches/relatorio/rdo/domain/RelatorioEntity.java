@@ -69,4 +69,8 @@ public class RelatorioEntity extends AuditableTenantOwned {
     private Boolean ativo = true;
 
     //todo: adicionar videos e anexos
+
+    public void setInativo() {
+        this.ativo = false;
+    }
 }
