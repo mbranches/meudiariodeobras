@@ -9,6 +9,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.UUID;
 
 @Setter
@@ -28,6 +29,11 @@ public class RelatorioEntity extends AuditableTenantOwned {
     @Column(nullable = false)
     private LocalDate dataInicio;
     private LocalDate dataFim;
+
+    private LocalTime horaInicioTrabalhos;
+    private LocalTime horaFimTrabalhos;
+    private LocalTime horasIntervalo;
+    private LocalTime horasTrabalhadas;
 
     @Column(nullable = false)
     private Long numero;

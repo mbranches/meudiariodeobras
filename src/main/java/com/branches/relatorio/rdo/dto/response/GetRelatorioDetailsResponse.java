@@ -8,6 +8,7 @@ import lombok.Builder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
@@ -21,6 +22,10 @@ public record GetRelatorioDetailsResponse(
         String tituloRelatorio,
         LocalDate dataInicio,
         LocalDate dataFim,
+        LocalTime horaInicioTrabalhos,
+        LocalTime horaFimTrabalhos,
+        LocalTime horasIntervalo,
+        LocalTime horasTrabalhadas,
         String diaDaSemana,
         Long numeroRelatorio,
         Long prazoContratual,
@@ -42,7 +47,7 @@ public record GetRelatorioDetailsResponse(
         ModifyerByRelatorioResponse ultimaModificacao
 
 ) {
-    public static GetRelatorioDetailsResponse from(RelatorioDetailsProjection relatorioDetails, List<OcorrenciaDeRelatorioEntity> ocorrencias, List<AtividadeDeRelatorioEntity> atividades, List<EquipamentoDeRelatorioEntity> equipamentos, List<MaoDeObraDeRelatorioEntity> maoDeObra, List<ComentarioDeRelatorioEntity> comentarios, List<MaterialDeRelatorioEntity> materiais, Boolean canViewCondicaoDoClima) {
+    public static GetRelatorioDetailsResponse from(RelatorioDetailsProjection relatorioDetails, List<OcorrenciaDeRelatorioEntity> ocorrencias, List<AtividadeDeRelatorioEntity> atividades, List<EquipamentoDeRelatorioEntity> equipamentos, List<MaoDeObraDeRelatorioEntity> maoDeObra, List<ComentarioDeRelatorioEntity> comentarios, List<MaterialDeRelatorioEntity> materiais, Boolean canViewCondicaoDoClima, Boolean canViewHorarioDeTrabalho) {
         ObraByRelatorioResponse obra = new ObraByRelatorioResponse(relatorioDetails.getObraIdExterno(), relatorioDetails.getObraNome(), relatorioDetails.getObraEndereco(), relatorioDetails.getObraContratante(), relatorioDetails.getObraResponsavel(), relatorioDetails.getObraNumeroContrato());
 
         String dayOfWeekResponse = relatorioDetails.getDataFim().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.of("pt", "BR"));
@@ -53,6 +58,15 @@ public record GetRelatorioDetailsResponse(
                 CaracteristicaDePeriodoDoDiaResponse.from(relatorioDetails.getCaracteristicasTarde()) : null;
         var caracteristicaNoite = canViewCondicaoDoClima ?
                 CaracteristicaDePeriodoDoDiaResponse.from(relatorioDetails.getCaracteristicasNoite()) : null;
+
+        var horarioInicioTrabalhos = canViewHorarioDeTrabalho ?
+                relatorioDetails.getHoraInicioTrabalhos() : null;
+        var horarioFimTrabalhos = canViewHorarioDeTrabalho ?
+                relatorioDetails.getHoraFimTrabalhos() : null;
+        var horasIntervalo = canViewHorarioDeTrabalho ?
+                relatorioDetails.getHorasIntervalo() : null;
+        var horasTrabalhadas = canViewHorarioDeTrabalho ?
+                relatorioDetails.getHorasTrabalhadas() : null;
 
         var equipamentosResponse = equipamentos != null ?
                 equipamentos.stream().map(EquipamentoDeRelatorioResponse::from).toList() : null;
@@ -74,6 +88,10 @@ public record GetRelatorioDetailsResponse(
                 relatorioDetails.getTituloModeloDeRelatorio(),
                 relatorioDetails.getDataInicio(),
                 relatorioDetails.getDataFim(),
+                horarioInicioTrabalhos,
+                horarioFimTrabalhos,
+                horasIntervalo,
+                horasTrabalhadas,
                 dayOfWeekResponse,
                 relatorioDetails.getNumero(),
                 relatorioDetails.getPrazoContratual(),

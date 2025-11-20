@@ -93,6 +93,10 @@ public class CreateRelatorioService {
 
         if (lastRelatorio == null) return;
 
+        if (request.copiarHorarioDosTrabalhos()) {
+            copyHorarioDeTrabalhoFromLastRelatorio(lastRelatorio, relatorio);
+        }
+
         if (request.copiarAtividades() && modeloDeRelatorio.getShowAtividades()) {
             copyAtividadesFromLastRelatorio(lastRelatorio, relatorio);
         }
@@ -116,6 +120,15 @@ public class CreateRelatorioService {
         if (request.copiarOcorrencias() && modeloDeRelatorio.getShowOcorrencias()) {
             copyOcorrenciasFromLastRelatorio(lastRelatorio, relatorio);
         }
+    }
+
+    private void copyHorarioDeTrabalhoFromLastRelatorio(RelatorioEntity lastRelatorio, RelatorioEntity relatorio) {
+        relatorio.setHoraInicioTrabalhos(lastRelatorio.getHoraInicioTrabalhos());
+        relatorio.setHoraFimTrabalhos(lastRelatorio.getHoraFimTrabalhos());
+        relatorio.setHorasIntervalo(lastRelatorio.getHorasIntervalo());
+        relatorio.setHorasTrabalhadas(lastRelatorio.getHorasTrabalhadas());
+
+        relatorioRepository.save(relatorio);
     }
 
     private void copyOcorrenciasFromLastRelatorio(RelatorioEntity lastRelatorio, RelatorioEntity relatorio) {

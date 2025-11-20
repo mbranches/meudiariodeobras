@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 public record UpdateRelatorioRequest(
@@ -19,6 +20,11 @@ public record UpdateRelatorioRequest(
         @NotNull(message = "O campo 'dataInicio' é obrigatório")
         LocalDate dataInicio,
         LocalDate dataFim,
+
+        LocalTime horaInicioTrabalhos,
+        LocalTime horaFimTrabalhos,
+        LocalTime horasIntervalo,
+        LocalTime horasTrabalhadas,
 
         @NotNull(message = "O campo 'prazoContratual' é obrigatório")
         Long prazoContratual,

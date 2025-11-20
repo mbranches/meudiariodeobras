@@ -42,6 +42,7 @@ public class GetRelatorioDetailsService {
         checkIfUserCanViewRelatorio(currentUserTenant, relatorioDetails.getStatus());
 
         PermissionsItensDeRelatorio permissionsOfItensRelatorio = currentUserTenant.getAuthorities().getItensDeRelatorio();
+        boolean canViewHorarioDeTrabalho = relatorioDetails.getShowHorarioDeTrabalho() && permissionsOfItensRelatorio.getHorarioDeTrabalho();
         boolean canViewCondicaoDoClima = relatorioDetails.getShowCondicaoClimatica() && permissionsOfItensRelatorio.getCondicaoDoClima();
         boolean canViewOcorrencias = relatorioDetails.getShowOcorrencias() && permissionsOfItensRelatorio.getOcorrencias();
         boolean canVAtividades = relatorioDetails.getShowAtividades() && permissionsOfItensRelatorio.getAtividades();
@@ -68,7 +69,8 @@ public class GetRelatorioDetailsService {
                 maoDeObra,
                 comentarios,
                 materiais,
-                canViewCondicaoDoClima
+                canViewCondicaoDoClima,
+                canViewHorarioDeTrabalho
         );
     }
 

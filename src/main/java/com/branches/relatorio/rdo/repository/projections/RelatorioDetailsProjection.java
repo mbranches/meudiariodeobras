@@ -6,6 +6,7 @@ import com.branches.relatorio.rdo.domain.enums.StatusRelatorio;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public interface RelatorioDetailsProjection {
     Long getId();
@@ -33,6 +34,11 @@ public interface RelatorioDetailsProjection {
 
     LocalDate getDataInicio();
     LocalDate getDataFim();
+
+    LocalTime getHoraInicioTrabalhos();
+    LocalTime getHoraFimTrabalhos();
+    LocalTime getHorasIntervalo();
+    LocalTime getHorasTrabalhadas();
 
     Long getNumero();
 

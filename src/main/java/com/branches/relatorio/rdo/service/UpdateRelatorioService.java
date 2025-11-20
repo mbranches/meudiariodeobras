@@ -12,6 +12,7 @@ import com.branches.relatorio.rdo.repository.*;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
+import com.branches.utils.CalculateHorasTotais;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,7 @@ public class UpdateRelatorioService {
     private final UpdateComentariosDeRelatorioService updateComentariosDeRelatorioService;
     private final ObraRepository obraRepository;
     private final UpdateMateriaisDeRelatorioService updateMateriaisDeRelatorioService;
+    private final CalculateHorasTotais calculateHorasTotais;
 
     @Transactional
     public void execute(UpdateRelatorioRequest request, String tenantExternalId, String relatorioExternalId, List<UserTenantEntity> userTenants) {
@@ -65,6 +67,15 @@ public class UpdateRelatorioService {
         }
 
         relatorioRepository.save(relatorio);
+
+        if (modeloDeRelatorio.getShowHorarioDeTrabalho()) {
+            relatorio.setHoraInicioTrabalhos(request.horaInicioTrabalhos());
+            relatorio.setHoraFimTrabalhos(request.horaFimTrabalhos());
+            relatorio.setHorasIntervalo(request.horasIntervalo());
+            relatorio.setHorasTrabalhadas(calculateHorasTotais.execute(request.horaInicioTrabalhos(), request.horaFimTrabalhos(), request.horasIntervalo()));
+
+            relatorioRepository.save(relatorio);
+        }
 
         if (modeloDeRelatorio.getShowMaoDeObra()) {
             updateMaoDeObraDeRelatorioService.execute(request.maoDeObra(), relatorio, tenantId);
