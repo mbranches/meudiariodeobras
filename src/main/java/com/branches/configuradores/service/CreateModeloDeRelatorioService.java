@@ -34,6 +34,14 @@ public class CreateModeloDeRelatorioService {
                 .titulo(request.titulo())
                 .recorrenciaRelatorio(request.recorrenciaRelatorio())
                 .tenantId(tenantId)
+                .showCondicaoClimatica(request.showCondicaoClimatica())
+                .showMaoDeObra(request.showMaoDeObra())
+                .showEquipamentos(request.showEquipamentos())
+                .showAtividades(request.showAtividades())
+                .showOcorrencias(request.showOcorrencias())
+                .showComentarios(request.showComentarios())
+                .showMateriais(request.showMateriais())
+                .showHorarioDeTrabalho(request.showHorarioDeTrabalho())
                 .isDefault(false)
                 .build();
 

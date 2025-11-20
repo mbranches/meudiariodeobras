@@ -10,23 +10,43 @@ import java.time.LocalDateTime;
 public interface RelatorioDetailsProjection {
     Long getId();
     String getIdExterno();
+
     String getTenantLogoUrl();
+
     String getObraIdExterno();
     String getObraNome();
     String getObraEndereco();
     String getObraContratante();
     String getObraResponsavel();
     String getObraNumeroContrato();
-    LocalDate getData();
+
+    String getTituloModeloDeRelatorio();
+
+    Boolean getShowAtividades();
+    Boolean getShowCondicaoClimatica();
+    Boolean getShowComentarios();
+    Boolean getShowEquipamentos();
+    Boolean getShowMaoDeObra();
+    Boolean getShowOcorrencias();
+    Boolean getShowMateriais();
+    Boolean getShowHorarioDeTrabalho();
+
+    LocalDate getDataInicio();
+    LocalDate getDataFim();
+
     Long getNumero();
+
     Long getPrazoContratual();
     Long getPrazoDecorrido();
     Long getPrazoPraVencer();
+
     CaracteristicaDePeriodoDoDiaEntity getCaracteristicasManha();
     CaracteristicaDePeriodoDoDiaEntity getCaracteristicasTarde();
     CaracteristicaDePeriodoDoDiaEntity getCaracteristicasNoite();
     BigDecimal getIndicePluviometrico();
+
     StatusRelatorio getStatus();
+
     String getCriadoPor();
     LocalDateTime getCriadoEm();
     String getUltimaModificacaoPor();

@@ -1,5 +1,6 @@
 package com.branches.relatorio.rdo.service;
 
+import com.branches.configuradores.domain.ModeloDeRelatorioEntity;
 import com.branches.exception.ForbiddenException;
 import com.branches.obra.domain.ObraEntity;
 import com.branches.obra.service.GetObraByIdExternoAndTenantIdService;
@@ -37,7 +38,6 @@ public class CreateRelatorioService {
 
     public CreateRelatorioResponse execute(CreateRelatorioRequest request, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
-
         UserTenantEntity currentUserTenant = getCurrentUserTenantService.execute(userTenants, tenantId);
 
         checkIfUserCanCreateRelatorio(currentUserTenant);
@@ -46,26 +46,28 @@ public class CreateRelatorioService {
 
         long quantityOfRelatoriosOfObra = relatorioRepository.countByTenantIdAndObraIdAndAtivoIsTrue(tenantId, obra.getId());
 
-        long diferencaEntreDataRelatorioEDataPrevistaFim = ChronoUnit.DAYS.between(request.data(), obra.getDataPrevistaFim());
-        RelatorioEntity relatorio = RelatorioEntity.builder()
-                .obraId(obra.getId())
-                .numero(quantityOfRelatoriosOfObra + 1)
-                .data(request.data())
-                .tipoMaoDeObra(obra.getTipoMaoDeObra())
-                .prazoContratualObra(ChronoUnit.DAYS.between(obra.getDataInicio(), obra.getDataPrevistaFim()))
-                .prazoDecorridoObra(ChronoUnit.DAYS.between(obra.getDataInicio(), request.data()))
-                .prazoPraVencerObra(diferencaEntreDataRelatorioEDataPrevistaFim < 0 ? 0L : diferencaEntreDataRelatorioEDataPrevistaFim)
-                .caracteristicasManha(buildCaracteristicaDefault(tenantId))
-                .caracteristicasTarde(buildCaracteristicaDefault(tenantId))
-                .caracteristicasNoite(buildCaracteristicaDefault(tenantId))
-                .status(StatusRelatorio.ANDAMENTO)
-                .tenantId(tenantId)
-                .build();
+        long diferencaEntreDataRelatorioEDataPrevistaFim = ChronoUnit.DAYS.between(request.dataInicio(), obra.getDataPrevistaFim());
+        ModeloDeRelatorioEntity modeloDeRelatorio = obra.getModeloDeRelatorio();
+
+        RelatorioEntity relatorio = new RelatorioEntity();
+        relatorio.setObraId(obra.getId());
+        relatorio.setNumero(quantityOfRelatoriosOfObra + 1);
+        relatorio.setDataInicio(request.dataInicio());
+        relatorio.setDataFim(request.dataFim());
+        relatorio.setTipoMaoDeObra(obra.getTipoMaoDeObra());
+        relatorio.setPrazoContratualObra(ChronoUnit.DAYS.between(obra.getDataInicio(), obra.getDataPrevistaFim()));
+        relatorio.setPrazoDecorridoObra(ChronoUnit.DAYS.between(obra.getDataInicio(), request.dataInicio()));
+        relatorio.setPrazoPraVencerObra(diferencaEntreDataRelatorioEDataPrevistaFim < 0 ? 0L : diferencaEntreDataRelatorioEDataPrevistaFim);
+        relatorio.setCaracteristicasManha(buildCaracteristicaDefault(tenantId));
+        relatorio.setCaracteristicasTarde(buildCaracteristicaDefault(tenantId));
+        relatorio.setCaracteristicasNoite(buildCaracteristicaDefault(tenantId));
+        relatorio.setStatus(StatusRelatorio.ANDAMENTO);
+        relatorio.setTenantId(tenantId);
 
         RelatorioEntity savedRelatorio = relatorioRepository.save(relatorio);
 
         if(request.copiarInformacoesDoUltimoRelatorio() && quantityOfRelatoriosOfObra > 0) {
-            copyInfoFromLastRelatorio(tenantId, obra.getId(), savedRelatorio, request);
+            copyInfoFromLastRelatorio(tenantId, obra.getId(), savedRelatorio, request, modeloDeRelatorio);
         }
 
         //todo: gerar o html
@@ -85,17 +87,17 @@ public class CreateRelatorioService {
                 .build();
     }
 
-    private void copyInfoFromLastRelatorio(Long tenantId, Long obraId, RelatorioEntity relatorio, CreateRelatorioRequest request) {
+    private void copyInfoFromLastRelatorio(Long tenantId, Long obraId, RelatorioEntity relatorio, CreateRelatorioRequest request, ModeloDeRelatorioEntity modeloDeRelatorio) {
         RelatorioEntity lastRelatorio = relatorioRepository.findFirstByTenantIdAndObraIdAndAtivoIsTrueOrderByEnversCreatedDateDesc(tenantId, obraId)
                 .orElse(null);
 
         if (lastRelatorio == null) return;
 
-        if (request.copiarAtividades()) {
+        if (request.copiarAtividades() && modeloDeRelatorio.getShowAtividades()) {
             copyAtividadesFromLastRelatorio(lastRelatorio, relatorio);
         }
 
-        if (request.copiarComentarios()) {
+        if (request.copiarComentarios() && modeloDeRelatorio.getShowComentarios()) {
             copyComentariosFromLastRelatorio(lastRelatorio, relatorio);
         }
 
@@ -103,15 +105,15 @@ public class CreateRelatorioService {
             copyCondicoesClimaticasFromLastRelatorio(lastRelatorio, relatorio);
         }
 
-        if (request.copiarMaoDeObra()) {
+        if (request.copiarMaoDeObra() && modeloDeRelatorio.getShowMaoDeObra()) {
             copyMaoDeObraFromLastRelatorio(lastRelatorio, relatorio);
         }
 
-        if (request.copiarEquipamentos()) {
+        if (request.copiarEquipamentos() && modeloDeRelatorio.getShowEquipamentos()) {
             copyEquipamentosFromLastRelatorio(lastRelatorio, relatorio);
         }
 
-        if (request.copiarOcorrencias()) {
+        if (request.copiarOcorrencias() && modeloDeRelatorio.getShowOcorrencias()) {
             copyOcorrenciasFromLastRelatorio(lastRelatorio, relatorio);
         }
     }

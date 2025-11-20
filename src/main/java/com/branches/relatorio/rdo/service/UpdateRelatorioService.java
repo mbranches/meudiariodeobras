@@ -1,7 +1,10 @@
 package com.branches.relatorio.rdo.service;
 
+import com.branches.configuradores.domain.ModeloDeRelatorioEntity;
 import com.branches.exception.ForbiddenException;
 import com.branches.exception.NotFoundException;
+import com.branches.obra.domain.ObraEntity;
+import com.branches.obra.repository.ObraRepository;
 import com.branches.relatorio.rdo.domain.*;
 import com.branches.relatorio.rdo.domain.enums.StatusRelatorio;
 import com.branches.relatorio.rdo.dto.request.*;
@@ -28,6 +31,7 @@ public class UpdateRelatorioService {
     private final UpdateAtividadesDeRelatorioService updateAtividadesDeRelatorioService;
     private final UpdateOcorrenciasDeRelatorioService updateOcorrenciasDeRelatorioService;
     private final UpdateComentariosDeRelatorioService updateComentariosDeRelatorioService;
+    private final ObraRepository obraRepository;
 
     @Transactional
     public void execute(UpdateRelatorioRequest request, String tenantExternalId, String relatorioExternalId, List<UserTenantEntity> userTenants) {
@@ -38,24 +42,48 @@ public class UpdateRelatorioService {
         checkIfUserCanUpdateRelatorio(currentUserTenant);
 
         RelatorioEntity relatorio = getRelatorioByIdExternoAndTenantIdService.execute(relatorioExternalId, tenantId);
+
+        ObraEntity obra = obraRepository.findById(relatorio.getObraId())
+                        .orElseThrow(() -> new NotFoundException("Não foi possível encontra a obra do relatório com id: " + relatorioExternalId));
+
+        ModeloDeRelatorioEntity modeloDeRelatorio = obra.getModeloDeRelatorio();
+
         relatorio.setNumero(request.numeroRelatorio());
-        relatorio.setData(request.data());
+        relatorio.setDataInicio(request.dataInicio());
+        relatorio.setDataFim(request.dataFim());
         relatorio.setPrazoContratualObra(request.prazoContratual());
         relatorio.setPrazoDecorridoObra(request.prazoDecorrido());
         relatorio.setPrazoPraVencerObra(request.prazoPraVencer());
-        relatorio.setIndiciePluviometrico(request.indicePluviometrico());
         updateStatus(currentUserTenant, relatorio, request.status());
-        relatorio.setCaracteristicasManha(getUpdatedCaracteristicaEntity(request.caracteristicasManha(), tenantId));
-        relatorio.setCaracteristicasTarde(getUpdatedCaracteristicaEntity(request.caracteristicasTarde(), tenantId));
-        relatorio.setCaracteristicasNoite(getUpdatedCaracteristicaEntity(request.caracteristicasNoite(), tenantId));
+
+        if (modeloDeRelatorio.getShowCondicaoClimatica()) {
+            relatorio.setIndiciePluviometrico(request.indicePluviometrico());
+            relatorio.setCaracteristicasManha(getUpdatedCaracteristicaEntity(request.caracteristicasManha(), tenantId));
+            relatorio.setCaracteristicasTarde(getUpdatedCaracteristicaEntity(request.caracteristicasTarde(), tenantId));
+            relatorio.setCaracteristicasNoite(getUpdatedCaracteristicaEntity(request.caracteristicasNoite(), tenantId));
+        }
 
         relatorioRepository.save(relatorio);
 
-        updateMaoDeObraDeRelatorioService.execute(request.maoDeObra(), relatorio, tenantId);
-        updateEquipamentosDeRelatorioService.execute(request.equipamentos(), relatorio, tenantId);
-        updateAtividadesDeRelatorioService.execute(request.atividades(), relatorio, tenantId);
-        updateOcorrenciasDeRelatorioService.execute(request.ocorrencias(), relatorio, tenantId);
-        updateComentariosDeRelatorioService.execute(request.comentarios(), relatorio, tenantId);
+        if (modeloDeRelatorio.getShowMaoDeObra()) {
+            updateMaoDeObraDeRelatorioService.execute(request.maoDeObra(), relatorio, tenantId);
+        }
+
+        if (modeloDeRelatorio.getShowEquipamentos()) {
+            updateEquipamentosDeRelatorioService.execute(request.equipamentos(), relatorio, tenantId);
+        }
+
+        if (modeloDeRelatorio.getShowAtividades()) {
+            updateAtividadesDeRelatorioService.execute(request.atividades(), relatorio, tenantId);
+        }
+
+        if (modeloDeRelatorio.getShowOcorrencias()) {
+            updateOcorrenciasDeRelatorioService.execute(request.ocorrencias(), relatorio, tenantId);
+        }
+
+        if (modeloDeRelatorio.getShowComentarios()) {
+            updateComentariosDeRelatorioService.execute(request.comentarios(), relatorio, tenantId);
+        }
 
         //todo: gerar html do relatorio
         //todo: substituir relatorio pdf antigo

@@ -16,9 +16,30 @@ public class ModeloDeRelatorioEntity extends AuditableTenantOwned {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private String titulo;
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private RecorrenciaRelatorio recorrenciaRelatorio;
+
+    @Column(nullable = false)
+    private Boolean showCondicaoClimatica;
+    @Column(nullable = false)
+    private Boolean showMaoDeObra;
+    @Column(nullable = false)
+    private Boolean showEquipamentos;
+    @Column(nullable = false)
+    private Boolean showAtividades;
+    @Column(nullable = false)
+    private Boolean showOcorrencias;
+    @Column(nullable = false)
+    private Boolean showComentarios;
+    @Column(nullable = false)
+    private Boolean showMateriais;
+    @Column(nullable = false)
+    private Boolean showHorarioDeTrabalho;
+
     @Column(nullable = false)
     private Boolean isDefault;
 }

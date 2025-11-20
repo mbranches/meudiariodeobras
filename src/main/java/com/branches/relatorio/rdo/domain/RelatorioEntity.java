@@ -26,7 +26,8 @@ public class RelatorioEntity extends AuditableTenantOwned {
     private String idExterno = UUID.randomUUID().toString();
 
     @Column(nullable = false)
-    private LocalDate data;
+    private LocalDate dataInicio;
+    private LocalDate dataFim;
 
     @Column(nullable = false)
     private Long numero;

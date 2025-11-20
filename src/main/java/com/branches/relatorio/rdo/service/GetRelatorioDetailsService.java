@@ -8,6 +8,7 @@ import com.branches.relatorio.rdo.dto.response.GetRelatorioDetailsResponse;
 import com.branches.relatorio.rdo.repository.*;
 import com.branches.relatorio.rdo.repository.projections.RelatorioDetailsProjection;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
+import com.branches.usertenant.domain.PermissionsItensDeRelatorio;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
 import lombok.RequiredArgsConstructor;
@@ -39,12 +40,13 @@ public class GetRelatorioDetailsService {
 
         checkIfUserCanViewRelatorio(currentUserTenant, relatorioDetails.getStatus());
 
-        Boolean canViewCondicaoDoClima = currentUserTenant.getAuthorities().getItensDeRelatorio().getCondicaoDoClima();
-        Boolean canViewOcorrencias = currentUserTenant.getAuthorities().getItensDeRelatorio().getOcorrencias();
-        Boolean canVAtividades = currentUserTenant.getAuthorities().getItensDeRelatorio().getAtividades();
-        Boolean canViewEquipamentos = currentUserTenant.getAuthorities().getItensDeRelatorio().getEquipamentos();
-        Boolean canViewMaoDeObra = currentUserTenant.getAuthorities().getItensDeRelatorio().getMaoDeObra();
-        Boolean canViewComentarios = currentUserTenant.getAuthorities().getItensDeRelatorio().getComentarios();
+        PermissionsItensDeRelatorio permissionsOfItensRelatorio = currentUserTenant.getAuthorities().getItensDeRelatorio();
+        boolean canViewCondicaoDoClima = relatorioDetails.getShowCondicaoClimatica() && permissionsOfItensRelatorio.getCondicaoDoClima();
+        boolean canViewOcorrencias = relatorioDetails.getShowOcorrencias() && permissionsOfItensRelatorio.getOcorrencias();
+        boolean canVAtividades = relatorioDetails.getShowAtividades() && permissionsOfItensRelatorio.getAtividades();
+        boolean canViewEquipamentos = relatorioDetails.getShowEquipamentos() && permissionsOfItensRelatorio.getEquipamentos();
+        boolean canViewMaoDeObra = relatorioDetails.getShowMaoDeObra() && permissionsOfItensRelatorio.getMaoDeObra();
+        boolean canViewComentarios = relatorioDetails.getShowComentarios() && permissionsOfItensRelatorio.getComentarios();
 //        TODO: ADICIONAR FOTOS Boolean viewFotos = currentUserTenant.getAuthorities().getItensDeRelatorio().getFotos();
 
         Long relatorioId = relatorioDetails.getId();

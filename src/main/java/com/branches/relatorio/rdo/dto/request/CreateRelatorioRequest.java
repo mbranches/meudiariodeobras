@@ -8,8 +8,9 @@ import java.time.LocalDate;
 public record CreateRelatorioRequest(
         @NotBlank(message = "O campo 'obraId' é obrigatório")
         String obraId,
-        @NotNull(message = "O campo 'data' é obrigatório")
-        LocalDate data,
+        @NotNull(message = "O campo 'dataInicio' é obrigatório")
+        LocalDate dataInicio,
+        LocalDate dataFim,
         @NotNull(message = "O campo 'copiarInformacoesDoUltimoRelatorio' é obrigatório")
         Boolean copiarInformacoesDoUltimoRelatorio,
         @NotNull(message = "O campo 'copiarCondicoesClimaticas' é obrigatório")

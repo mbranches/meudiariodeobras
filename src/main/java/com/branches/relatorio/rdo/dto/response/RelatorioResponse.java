@@ -19,7 +19,7 @@ public record RelatorioResponse(
 
         return new RelatorioResponse(
                 relatorio.getIdExterno(),
-                relatorio.getData(),
+                relatorio.getDataInicio(),
                 relatorio.getNumero(),
                 relatorio.getStatus(),
                 relatorio.getPdfUrl(),

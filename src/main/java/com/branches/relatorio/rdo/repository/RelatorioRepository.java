@@ -30,7 +30,18 @@ public interface RelatorioRepository extends JpaRepository<RelatorioEntity, Long
         o.contratante AS obraContratante,
         o.responsavel AS obraResponsavel,
         o.numeroContrato AS obraNumeroContrato,
-        r.data AS data,
+        o.modeloDeRelatorio.recorrenciaRelatorio AS recorrenciaRelatorio,
+        o.modeloDeRelatorio.titulo AS tituloModeloDeRelatorio,
+        o.modeloDeRelatorio.showAtividades AS showAtividades,
+        o.modeloDeRelatorio.showCondicaoClimatica AS showCondicaoClimatica,
+        o.modeloDeRelatorio.showComentarios AS showComentarios,
+        o.modeloDeRelatorio.showEquipamentos AS showEquipamentos,
+        o.modeloDeRelatorio.showMaoDeObra AS showMaoDeObra,
+        o.modeloDeRelatorio.showOcorrencias AS showOcorrencias,
+        o.modeloDeRelatorio.showMateriais AS showMateriais,
+        o.modeloDeRelatorio.showHorarioDeTrabalho AS showHorarioDeTrabalho,
+        r.dataInicio AS dataInicio,
+        r.dataFim AS dataFim,
         r.numero AS numero,
         r.prazoContratualObra AS prazoContratual,
         r.prazoDecorridoObra AS prazoDecorrido,
@@ -57,7 +68,8 @@ public interface RelatorioRepository extends JpaRepository<RelatorioEntity, Long
 
     @Query("""
     SELECT r.idExterno AS idExterno,
-        r.data AS data,
+        r.dataInicio AS dataInicio,
+        r.dataFim AS dataFim,
         r.numero AS numero,
         r.status AS status,
         r.pdfUrl AS pdfUrl,
@@ -70,14 +82,15 @@ public interface RelatorioRepository extends JpaRepository<RelatorioEntity, Long
         JOIN ObraEntity o ON o.id = r.obraId AND o.tenantId = r.tenantId
     WHERE r.obraId = :id
       AND r.ativo IS TRUE
-    ORDER BY r.data DESC
+    ORDER BY r.dataInicio DESC
     LIMIT 5
 """)
     List<RelatorioProjection> findTop5ByObraIdProjection(Long id);
 
     @Query("""
     SELECT r.idExterno AS idExterno,
-        r.data AS data,
+        r.dataInicio AS dataInicio,
+        r.dataFim AS dataFim,
         r.numero AS numero,
         r.status AS status,
         r.pdfUrl AS pdfUrl,
@@ -97,7 +110,8 @@ public interface RelatorioRepository extends JpaRepository<RelatorioEntity, Long
 
     @Query("""
     SELECT r.idExterno AS idExterno,
-        r.data AS data,
+        r.dataInicio AS dataInicio,
+        r.dataFim AS dataFim,
         r.numero AS numero,
         r.status AS status,
         r.pdfUrl AS pdfUrl,

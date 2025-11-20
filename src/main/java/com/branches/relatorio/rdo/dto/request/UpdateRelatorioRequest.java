@@ -16,8 +16,9 @@ public record UpdateRelatorioRequest(
         @Min(value = 1, message = "O campo 'numeroRelatorio' deve ser maior que zero")
         Long numeroRelatorio,
 
-        @NotNull(message = "O campo 'data' é obrigatório")
-        LocalDate data,
+        @NotNull(message = "O campo 'dataInicio' é obrigatório")
+        LocalDate dataInicio,
+        LocalDate dataFim,
 
         @NotNull(message = "O campo 'prazoContratual' é obrigatório")
         Long prazoContratual,

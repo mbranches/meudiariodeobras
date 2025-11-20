@@ -7,7 +7,9 @@ import java.time.LocalDate;
 public interface RelatorioProjection {
     String getIdExterno();
 
-    LocalDate getData();
+    LocalDate getDataInicio();
+
+    LocalDate getDataFim();
 
     Long getNumero();
 

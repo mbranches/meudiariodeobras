@@ -3,6 +3,7 @@ package com.branches.relatorio.rdo.dto.response;
 import com.branches.relatorio.rdo.domain.*;
 import com.branches.relatorio.rdo.domain.enums.StatusRelatorio;
 import com.branches.relatorio.rdo.repository.projections.RelatorioDetailsProjection;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 
 import java.math.BigDecimal;
@@ -11,12 +12,15 @@ import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
 public record GetRelatorioDetailsResponse(
         String id,
         String tenantLogoUrl,
         ObraByRelatorioResponse obra,
-        LocalDate data,
+        String tituloRelatorio,
+        LocalDate dataInicio,
+        LocalDate dataFim,
         String diaDaSemana,
         Long numeroRelatorio,
         Long prazoContratual,
@@ -40,7 +44,7 @@ public record GetRelatorioDetailsResponse(
     public static GetRelatorioDetailsResponse from(RelatorioDetailsProjection relatorioDetails, List<OcorrenciaDeRelatorioEntity> ocorrencias, List<AtividadeDeRelatorioEntity> atividades, List<EquipamentoDeRelatorioEntity> equipamentos, List<MaoDeObraDeRelatorioEntity> maoDeObra, List<ComentarioDeRelatorioEntity> comentarios, Boolean canViewCondicaoDoClima) {
         ObraByRelatorioResponse obra = new ObraByRelatorioResponse(relatorioDetails.getObraIdExterno(), relatorioDetails.getObraNome(), relatorioDetails.getObraEndereco(), relatorioDetails.getObraContratante(), relatorioDetails.getObraResponsavel(), relatorioDetails.getObraNumeroContrato());
 
-        String dayOfWeekResponse = relatorioDetails.getData().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.of("pt", "BR"));
+        String dayOfWeekResponse = relatorioDetails.getDataFim().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.of("pt", "BR"));
 
         var caracteristicaManha = canViewCondicaoDoClima ?
                 CaracteristicaDePeriodoDoDiaResponse.from(relatorioDetails.getCaracteristicasManha()) : null;
@@ -64,7 +68,9 @@ public record GetRelatorioDetailsResponse(
                 relatorioDetails.getIdExterno(),
                 relatorioDetails.getTenantLogoUrl(),
                 obra,
-                relatorioDetails.getData(),
+                relatorioDetails.getTituloModeloDeRelatorio(),
+                relatorioDetails.getDataInicio(),
+                relatorioDetails.getDataFim(),
                 dayOfWeekResponse,
                 relatorioDetails.getNumero(),
                 relatorioDetails.getPrazoContratual(),
