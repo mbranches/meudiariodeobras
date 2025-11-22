@@ -75,11 +75,10 @@ public class UpdateEquipamentosDeRelatorioService {
     }
 
     private List<EquipamentoDeRelatorioEntity> updateExistingEquipamentoDeRelatorio(List<EquipamentoDeRelatorioRequest> requestList, RelatorioEntity relatorio, Map<Long, EquipamentoEntity> equipamentoEntityMap) {
-        List<Long> ids = requestList.stream()
+        Set<Long> ids = requestList.stream()
                 .map(EquipamentoDeRelatorioRequest::id)
                 .filter(Objects::nonNull)
-                .distinct()
-                .toList();
+                .collect(Collectors.toSet());
 
         Map<Long, EquipamentoDeRelatorioRequest> requestMap = requestList.stream()
                 .filter(r -> r.id() != null)

@@ -34,8 +34,9 @@ public class UserEntity {
     private Role role;
     @Column(columnDefinition = "TEXT")
     private String fotoUrl;
+    @Builder.Default
     @Column(nullable = false)
-    private Boolean ativo;
+    private Boolean ativo = true;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
     private List<UserTenantEntity> userTenantEntities;
 

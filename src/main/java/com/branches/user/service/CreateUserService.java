@@ -38,7 +38,6 @@ public class CreateUserService {
                 .password(passwordEncoder.encode(request.password()))
                 .cargo(request.cargo())
                 .role(requestingUserIsAdmin ? request.role() : Role.USER)
-                .ativo(true)
                 .build();
 
         UserEntity saved = userRepository.save(userToSave);

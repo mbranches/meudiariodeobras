@@ -2,6 +2,8 @@ package com.branches.obra.service;
 
 import com.branches.assinatura.domain.AssinaturaEntity;
 import com.branches.assinatura.service.GetAssinaturaActiveByTenantIdService;
+import com.branches.configuradores.domain.ModeloDeRelatorioEntity;
+import com.branches.configuradores.service.GetModeloDeRelatorioByIdAndTenantIdService;
 import com.branches.obra.domain.ConfiguracaoRelatoriosEntity;
 import com.branches.obra.domain.GrupoDeObraEntity;
 import com.branches.obra.domain.ObraEntity;
@@ -29,6 +31,7 @@ public class CreateObraService {
     private final GetGrupoDeObraByIdAndTenantIdService getGrupoDeObraByIdAndTenantIdService;
     private final GetCurrentUserTenantService getCurrentUserTenantService;
     private final GetTenantByIdExternoService getTenantByIdExternoService;
+    private final GetModeloDeRelatorioByIdAndTenantIdService getModeloDeRelatorioByIdAndTenantIdService;
 
     public CreateObraResponse execute(CreateObraRequest request, String tenantDaObraExternalId, List<UserTenantEntity> userTenants) {
         TenantEntity tenant = getTenantByIdExternoService.execute(tenantDaObraExternalId);
@@ -41,7 +44,9 @@ public class CreateObraService {
 
         verifyIfPlanoAllowsCreateObra(tenantId);
 
-        ConfiguracaoRelatoriosEntity configuracaoRelatorios = ConfiguracaoRelatoriosEntity.by(tenant.getModeloDeRelatorioDefault());
+        ModeloDeRelatorioEntity modeloDeRelatorio = getModeloDeRelatorioByIdAndTenantIdService.execute(request.modeloDeRelatorioId(), tenantId);
+        ConfiguracaoRelatoriosEntity configuracaoRelatorios = ConfiguracaoRelatoriosEntity.by(modeloDeRelatorio);
+
         ObraEntity obraToSave = ObraEntity.builder()
                 .nome(request.nome())
                 .responsavel(request.responsavel())
