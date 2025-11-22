@@ -2,7 +2,7 @@ package com.branches.relatorio.maodeobra.controller;
 
 import com.branches.config.security.UserTenantsContext;
 import com.branches.relatorio.rdo.dto.request.UpdateMaoDeObraDeRelatorioRequest;
-import com.branches.relatorio.rdo.service.UpdateMaoDeObraDeRelatorioService;
+import com.branches.relatorio.maodeobra.service.UpdateMaoDeObraDeRelatorioService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

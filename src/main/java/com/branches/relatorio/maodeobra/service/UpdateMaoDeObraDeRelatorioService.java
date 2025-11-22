@@ -1,4 +1,4 @@
-package com.branches.relatorio.rdo.service;
+package com.branches.relatorio.maodeobra.service;
 
 import com.branches.exception.ForbiddenException;
 import com.branches.obra.domain.ObraEntity;
@@ -6,12 +6,13 @@ import com.branches.obra.domain.enums.TipoMaoDeObra;
 import com.branches.obra.service.GetObraByIdAndTenantIdService;
 import com.branches.relatorio.maodeobra.domain.MaoDeObraEntity;
 import com.branches.relatorio.maodeobra.domain.enums.PresencaMaoDeObra;
-import com.branches.relatorio.maodeobra.service.GetMaoDeObraByIdAndTenantIdService;
+import com.branches.relatorio.rdo.service.CheckIfUserHasAccessToEditRelatorioService;
+import com.branches.relatorio.rdo.service.GetMaoDeObraDeRelatorioByIdAndRelatorioId;
+import com.branches.relatorio.rdo.service.GetRelatorioByIdExternoAndTenantIdService;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
 import com.branches.utils.CalculateHorasTotais;
-import com.branches.relatorio.maodeobra.service.GetMaoDeObraByIdAndTenantIdAndTypeService;
 import com.branches.relatorio.rdo.domain.MaoDeObraDeRelatorioEntity;
 import com.branches.relatorio.rdo.domain.RelatorioEntity;
 import com.branches.relatorio.rdo.dto.request.UpdateMaoDeObraDeRelatorioRequest;
