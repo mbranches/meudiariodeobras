@@ -4,8 +4,7 @@ import com.branches.relatorio.domain.enums.TipoMaterial;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record MaterialDeRelatorioRequest(
-        Long id,
+public record UpdateMaterialDeRelatorioRequest(
         @NotBlank(message = "O campo 'descricao' é obrigatório")
         String descricao,
         String quantidade,
