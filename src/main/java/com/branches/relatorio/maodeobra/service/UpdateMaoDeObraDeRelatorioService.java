@@ -36,7 +36,6 @@ public class UpdateMaoDeObraDeRelatorioService {
     private final CheckIfUserHasAccessToEditRelatorioService checkIfUserHasAccessToEditRelatorioService;
     private final GetCurrentUserTenantService getCurrentUserTenantService;
     private final GetObraByIdAndTenantIdService getObraByIdAndTenantIdService;
-    private final GetMaoDeObraByIdAndTenantIdService getMaoDeObraByIdAndTenantIdService;
 
     public void execute(UpdateMaoDeObraDeRelatorioRequest request, Long id, String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
