@@ -6,8 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import java.time.LocalTime;
 import java.util.List;
 
-public record OcorrenciaDeRelatorioRequest(
-        Long id,
+public record UpdateOcorrenciaDeRelatorioRequest(
         @NotBlank(message = "O campo 'descricao' é obrigatório")
         String descricao,
         List<Long> tiposOcorrenciaIds,
