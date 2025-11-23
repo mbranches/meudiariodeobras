@@ -1,8 +1,5 @@
 package com.branches.equipamento.service;
 
-import com.branches.exception.ForbiddenException;
-import com.branches.obra.domain.ObraEntity;
-import com.branches.obra.service.GetObraByIdAndTenantIdService;
 import com.branches.equipamento.domain.EquipamentoEntity;
 import com.branches.equipamento.domain.EquipamentoDeRelatorioEntity;
 import com.branches.relatorio.domain.RelatorioEntity;
@@ -30,8 +27,9 @@ public class UpdateEquipamentoDeRelatorioService {
     private final GetCurrentUserTenantService getCurrentUserTenantService;
     private final CheckIfUserHasAccessToEditRelatorioService checkIfUserHasAccessToEditRelatorioService;
     private final GetRelatorioByIdExternoAndTenantIdService getRelatorioByIdExternoAndTenantIdService;
-    private final GetObraByIdAndTenantIdService getObraByIdAndTenantIdService;
     private final GetEquipamentoByIdAndTenantIdService getEquipamentoByIdAndTenantIdService;
+    private final CheckIfConfiguracaoDeRelatorioDaObraPermiteEquipamentoService checkIfConfiguracaoDeRelatorioDaObraPermiteEquipamentoService;
+    private final CheckIfUserCanViewEquipamentosService checkIfUserCanViewEquipamentosService;
 
     public void execute(UpdateEquipamentoDeRelatorioRequest request, Long id, String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -42,9 +40,9 @@ public class UpdateEquipamentoDeRelatorioService {
 
         checkIfUserHasAccessToEditRelatorioService.execute(userTenant, relatorio.getStatus());
 
-        checkIfConfiguracaoDeRelatorioDaObraPermiteEquipamento(relatorio, tenantId);
+        checkIfConfiguracaoDeRelatorioDaObraPermiteEquipamentoService.execute(relatorio.getObraId(), tenantId);
 
-        checkIfUserCanViewEquipamentos(userTenant);
+        checkIfUserCanViewEquipamentosService.execute(userTenant);
 
         EquipamentoDeRelatorioEntity entity = getEquipamentoDeRelatorioByIdAndRelatorioIdService.execute(id, relatorio.getId());
 
@@ -54,19 +52,5 @@ public class UpdateEquipamentoDeRelatorioService {
         entity.setQuantidade(request.quantidade());
 
         equipamentoDeRelatorioRepository.save(entity);
-    }
-
-    private void checkIfUserCanViewEquipamentos(UserTenantEntity userTenant) {
-        if (userTenant.getAuthorities().getItensDeRelatorio().getEquipamentos()) return;
-
-        throw new ForbiddenException();
-    }
-
-    private void checkIfConfiguracaoDeRelatorioDaObraPermiteEquipamento(RelatorioEntity relatorio, Long tenantId) {
-        ObraEntity obra = getObraByIdAndTenantIdService.execute(relatorio.getObraId(), tenantId);
-
-        if (obra.getConfiguracaoRelatorios().getShowEquipamentos()) return;
-
-        throw new ForbiddenException();
     }
 }
