@@ -1,5 +1,7 @@
-package com.branches.relatorio.domain;
+package com.branches.comentarios.model;
 
+import com.branches.relatorio.domain.CampoPersonalizadoEntity;
+import com.branches.relatorio.domain.RelatorioEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

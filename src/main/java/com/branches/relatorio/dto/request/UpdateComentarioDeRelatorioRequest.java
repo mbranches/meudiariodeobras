@@ -5,8 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 
-public record ComentarioDeRelatorioRequest(
-    Long id,
+public record UpdateComentarioDeRelatorioRequest(
     @NotBlank(message = "O campo 'descricao' é obrigatório")
     String descricao,
     @Valid

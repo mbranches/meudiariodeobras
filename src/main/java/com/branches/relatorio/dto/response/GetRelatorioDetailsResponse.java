@@ -1,5 +1,6 @@
 package com.branches.relatorio.dto.response;
 
+import com.branches.comentarios.model.ComentarioDeRelatorioEntity;
 import com.branches.relatorio.domain.*;
 import com.branches.relatorio.domain.enums.StatusRelatorio;
 import com.branches.relatorio.repository.projections.RelatorioDetailsProjection;

@@ -1,5 +1,6 @@
 package com.branches.relatorio.service;
 
+import com.branches.comentarios.model.ComentarioDeRelatorioEntity;
 import com.branches.exception.ForbiddenException;
 import com.branches.exception.NotFoundException;
 import com.branches.relatorio.domain.*;

@@ -1,6 +1,6 @@
 package com.branches.relatorio.dto.response;
 
-import com.branches.relatorio.domain.ComentarioDeRelatorioEntity;
+import com.branches.comentarios.model.ComentarioDeRelatorioEntity;
 
 import java.util.List;
 
