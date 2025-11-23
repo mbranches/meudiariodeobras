@@ -12,7 +12,7 @@ import com.branches.usertenant.service.GetCurrentUserTenantService;
 import com.branches.utils.CalculateHorasTotais;
 import com.branches.relatorio.domain.OcorrenciaDeRelatorioEntity;
 import com.branches.relatorio.domain.RelatorioEntity;
-import com.branches.relatorio.dto.request.UpdateOcorrenciaDeRelatorioRequest;
+import com.branches.ocorrencia.dto.request.UpdateOcorrenciaDeRelatorioRequest;
 import com.branches.relatorio.repository.OcorrenciaDeRelatorioRepository;
 import com.branches.ocorrencia.domain.TipoDeOcorrenciaEntity;
 import com.branches.utils.ValidateHoraInicioAndHoraFim;

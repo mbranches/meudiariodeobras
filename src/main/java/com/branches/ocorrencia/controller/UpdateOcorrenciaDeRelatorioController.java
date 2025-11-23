@@ -1,7 +1,7 @@
 package com.branches.ocorrencia.controller;
 
 import com.branches.config.security.UserTenantsContext;
-import com.branches.relatorio.dto.request.UpdateOcorrenciaDeRelatorioRequest;
+import com.branches.ocorrencia.dto.request.UpdateOcorrenciaDeRelatorioRequest;
 import com.branches.ocorrencia.service.UpdateOcorrenciaDeRelatorioService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import jakarta.validation.Valid;

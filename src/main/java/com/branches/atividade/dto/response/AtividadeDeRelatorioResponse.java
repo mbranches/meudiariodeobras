@@ -1,7 +1,9 @@
-package com.branches.relatorio.dto.response;
+package com.branches.atividade.dto.response;
 
+import com.branches.maodeobra.dto.response.MaoDeObraDeAtividadeResponse;
 import com.branches.relatorio.domain.AtividadeDeRelatorioEntity;
 import com.branches.relatorio.domain.enums.StatusAtividade;
+import com.branches.relatorio.dto.response.CampoPersonalizadoResponse;
 
 import java.math.BigDecimal;
 import java.time.LocalTime;

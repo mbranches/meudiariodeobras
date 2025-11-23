@@ -14,7 +14,7 @@ import com.branches.usertenant.service.GetCurrentUserTenantService;
 import com.branches.utils.CalculateHorasTotais;
 import com.branches.relatorio.domain.MaoDeObraDeRelatorioEntity;
 import com.branches.relatorio.domain.RelatorioEntity;
-import com.branches.relatorio.dto.request.UpdateMaoDeObraDeRelatorioRequest;
+import com.branches.maodeobra.dto.request.UpdateMaoDeObraDeRelatorioRequest;
 import com.branches.relatorio.repository.MaoDeObraDeRelatorioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package com.branches.relatorio.dto.response;
+package com.branches.equipamento.dto.response;
 
 import com.branches.relatorio.domain.EquipamentoDeRelatorioEntity;
 

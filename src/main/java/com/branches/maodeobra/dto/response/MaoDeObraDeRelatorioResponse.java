@@ -1,4 +1,4 @@
-package com.branches.relatorio.dto.response;
+package com.branches.maodeobra.dto.response;
 
 import com.branches.maodeobra.domain.enums.PresencaMaoDeObra;
 import com.branches.relatorio.domain.MaoDeObraDeRelatorioEntity;

@@ -2,7 +2,7 @@ package com.branches.comentarios.controller;
 
 import com.branches.comentarios.service.UpdateComentarioDeRelatorioService;
 import com.branches.config.security.UserTenantsContext;
-import com.branches.relatorio.dto.request.UpdateComentarioDeRelatorioRequest;
+import com.branches.comentarios.dto.request.UpdateComentarioDeRelatorioRequest;
 import com.branches.usertenant.domain.UserTenantEntity;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

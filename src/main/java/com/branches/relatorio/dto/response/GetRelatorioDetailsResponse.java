@@ -1,6 +1,12 @@
 package com.branches.relatorio.dto.response;
 
+import com.branches.atividade.dto.response.AtividadeDeRelatorioResponse;
+import com.branches.comentarios.dto.response.ComentarioDeRelatorioResponse;
 import com.branches.comentarios.model.ComentarioDeRelatorioEntity;
+import com.branches.equipamento.dto.response.EquipamentoDeRelatorioResponse;
+import com.branches.maodeobra.dto.response.MaoDeObraDeRelatorioResponse;
+import com.branches.obra.dto.response.ObraByRelatorioResponse;
+import com.branches.ocorrencia.dto.response.OcorrenciaDeRelatorioResponse;
 import com.branches.relatorio.domain.*;
 import com.branches.relatorio.domain.enums.StatusRelatorio;
 import com.branches.relatorio.repository.projections.RelatorioDetailsProjection;

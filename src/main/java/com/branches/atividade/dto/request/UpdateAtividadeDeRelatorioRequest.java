@@ -1,6 +1,8 @@
-package com.branches.relatorio.dto.request;
+package com.branches.atividade.dto.request;
 
+import com.branches.maodeobra.dto.request.MaoDeObraDeAtividadeRequest;
 import com.branches.relatorio.domain.enums.StatusAtividade;
+import com.branches.relatorio.dto.request.CampoPersonalizadoRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 

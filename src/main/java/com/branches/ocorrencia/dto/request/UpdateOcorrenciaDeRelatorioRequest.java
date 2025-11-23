@@ -1,5 +1,6 @@
-package com.branches.relatorio.dto.request;
+package com.branches.ocorrencia.dto.request;
 
+import com.branches.relatorio.dto.request.CampoPersonalizadoRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 

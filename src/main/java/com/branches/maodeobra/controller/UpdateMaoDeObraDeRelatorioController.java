@@ -1,7 +1,7 @@
 package com.branches.maodeobra.controller;
 
 import com.branches.config.security.UserTenantsContext;
-import com.branches.relatorio.dto.request.UpdateMaoDeObraDeRelatorioRequest;
+import com.branches.maodeobra.dto.request.UpdateMaoDeObraDeRelatorioRequest;
 import com.branches.maodeobra.service.UpdateMaoDeObraDeRelatorioService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import jakarta.validation.Valid;

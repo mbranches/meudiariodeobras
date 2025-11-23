@@ -1,6 +1,7 @@
-package com.branches.relatorio.dto.response;
+package com.branches.comentarios.dto.response;
 
 import com.branches.comentarios.model.ComentarioDeRelatorioEntity;
+import com.branches.relatorio.dto.response.CampoPersonalizadoResponse;
 
 import java.util.List;
 

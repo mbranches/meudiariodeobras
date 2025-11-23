@@ -1,4 +1,4 @@
-package com.branches.relatorio.dto.response;
+package com.branches.obra.dto.response;
 
 public record ObraByRelatorioResponse(
         String id,

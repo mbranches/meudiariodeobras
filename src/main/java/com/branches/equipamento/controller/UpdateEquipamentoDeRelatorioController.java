@@ -2,7 +2,7 @@ package com.branches.equipamento.controller;
 
 import com.branches.config.security.UserTenantsContext;
 import com.branches.equipamento.service.UpdateEquipamentoDeRelatorioService;
-import com.branches.relatorio.dto.request.UpdateEquipamentoDeRelatorioRequest;
+import com.branches.equipamento.dto.request.UpdateEquipamentoDeRelatorioRequest;
 import com.branches.usertenant.domain.UserTenantEntity;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.branches.relatorio.dto.request;
+package com.branches.equipamento.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 

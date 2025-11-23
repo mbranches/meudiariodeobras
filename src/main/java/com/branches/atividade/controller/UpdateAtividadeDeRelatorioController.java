@@ -2,7 +2,7 @@ package com.branches.atividade.controller;
 
 import com.branches.config.security.UserTenantsContext;
 import com.branches.atividade.service.UpdateAtividadeDeRelatorioService;
-import com.branches.relatorio.dto.request.UpdateAtividadeDeRelatorioRequest;
+import com.branches.atividade.dto.request.UpdateAtividadeDeRelatorioRequest;
 import com.branches.usertenant.domain.UserTenantEntity;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
