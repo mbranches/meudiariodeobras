@@ -1,8 +1,5 @@
 package com.branches.ocorrencia.service;
 
-import com.branches.exception.ForbiddenException;
-import com.branches.obra.domain.ObraEntity;
-import com.branches.obra.service.GetObraByIdAndTenantIdService;
 import com.branches.relatorio.dto.request.CampoPersonalizadoRequest;
 import com.branches.relatorio.service.CheckIfUserHasAccessToEditRelatorioService;
 import com.branches.relatorio.service.GetRelatorioByIdExternoAndTenantIdService;
@@ -35,7 +32,8 @@ public class UpdateOcorrenciaDeRelatorioService {
     private final GetCurrentUserTenantService getCurrentUserTenantService;
     private final CheckIfUserHasAccessToEditRelatorioService checkIfUserHasAccessToEditRelatorioService;
     private final GetRelatorioByIdExternoAndTenantIdService getRelatorioByIdExternoAndTenantIdService;
-    private final GetObraByIdAndTenantIdService getObraByIdAndTenantIdService;
+    private final CheckIfConfiguracaoDeRelatorioDaObraPermiteOcorrenciaService checkIfConfiguracaoDeRelatorioDaObraPermiteOcorrenciaService;
+    private final CheckIfUserCanViewOcorrenciasService checkIfUserCanViewOcorrenciasService;
 
     public void execute(UpdateOcorrenciaDeRelatorioRequest request, Long id, String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -46,9 +44,9 @@ public class UpdateOcorrenciaDeRelatorioService {
 
         checkIfUserHasAccessToEditRelatorioService.execute(userTenant, relatorio.getStatus());
 
-        checkIfConfiguracaoDeRelatorioDaObraPermiteOcorrencia(relatorio, tenantId);
+        checkIfConfiguracaoDeRelatorioDaObraPermiteOcorrenciaService.execute(relatorio.getObraId(), tenantId);
 
-        checkIfUserCanViewOcorrencias(userTenant);
+        checkIfUserCanViewOcorrenciasService.execute(userTenant);
 
         OcorrenciaDeRelatorioEntity entity = getOcorrenciaByIdAndRelatorioIdService.execute(id, relatorio.getId());
 
@@ -77,19 +75,5 @@ public class UpdateOcorrenciaDeRelatorioService {
     private List<TipoDeOcorrenciaEntity> getTiposDeOcorrenciaList(List<Long> ids, Long tenantId) {
         return ids != null && !ids.isEmpty() ? getTiposDeOcorrenciaByTenantIdAndIdInService.execute(tenantId, new HashSet<>(ids))
                 : List.of();
-    }
-
-    private void checkIfUserCanViewOcorrencias(UserTenantEntity userTenant) {
-        if (userTenant.getAuthorities().getItensDeRelatorio().getOcorrencias()) return;
-
-        throw new ForbiddenException();
-    }
-
-    private void checkIfConfiguracaoDeRelatorioDaObraPermiteOcorrencia(RelatorioEntity relatorio, Long tenantId) {
-        ObraEntity obra = getObraByIdAndTenantIdService.execute(relatorio.getObraId(), tenantId);
-
-        if (obra.getConfiguracaoRelatorios().getShowOcorrencias()) return;
-
-        throw new ForbiddenException();
     }
 }
