@@ -1,8 +1,7 @@
 package com.branches.atividade.service;
 
-import com.branches.exception.NotFoundException;
 import com.branches.maodeobra.domain.MaoDeObraEntity;
-import com.branches.maodeobra.repository.MaoDeObraRepository;
+import com.branches.maodeobra.service.GetMaoDeObraListByIdInAndTenantIdAndTypeService;
 import com.branches.relatorio.dto.request.CampoPersonalizadoRequest;
 import com.branches.relatorio.service.CheckIfUserHasAccessToEditRelatorioService;
 import com.branches.maodeobra.service.GetMaoDeObraDeAtividadeListByAtividadeIdAndIdInService;
@@ -38,9 +37,9 @@ public class UpdateAtividadeDeRelatorioService {
     private final CheckIfUserHasAccessToEditRelatorioService checkIfUserHasAccessToEditRelatorioService;
     private final GetRelatorioByIdExternoAndTenantIdService getRelatorioByIdExternoAndTenantIdService;
     private final GetAtividadeDeRelatorioByIdAndRelatorioIdService getAtividadeDeRelatorioByIdAndRelatorioIdService;
-    private final MaoDeObraRepository maoDeObraRepository;
     private final CheckIfConfiguracaoDeRelatorioDaObraPermiteAtividade checkIfConfiguracaoDeRelatorioDaObraPermiteAtividade;
     private final CheckIfUserCanViewAtividadesService checkIfUserCanViewAtividadesService;
+    private final GetMaoDeObraListByIdInAndTenantIdAndTypeService getMaoDeObraListByIdInAndTenantIdAndTypeService;
 
     public void execute(UpdateAtividadeDeRelatorioRequest request, Long id, String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -139,18 +138,7 @@ public class UpdateAtividadeDeRelatorioService {
                 .map(UpdateMaoDeObraDeAtividadeRequest::maoDeObraId)
                 .collect(Collectors.toSet());
 
-        List<MaoDeObraEntity> maoDeObraEntities = maoDeObraRepository.findAllByIdInAndTenantIdAndTipoAndAtivoIsTrue(
-                maoDeObraIds,
-                tenantId,
-                relatorio.getTipoMaoDeObra()
-        );
-
-        if (maoDeObraEntities.size() != maoDeObraIds.size()) {
-            List<Long> notFoundIds = new ArrayList<>(maoDeObraIds);
-            notFoundIds.removeAll(maoDeObraEntities.stream().map(MaoDeObraEntity::getId).toList());
-
-            throw new NotFoundException("Mão de obra não encontrada com o(s) id(s): " + notFoundIds);
-        }
+        List<MaoDeObraEntity> maoDeObraEntities = getMaoDeObraListByIdInAndTenantIdAndTypeService.execute(maoDeObraIds, tenantId, relatorio.getTipoMaoDeObra());
 
         return maoDeObraEntities.stream()
                 .collect(Collectors.toMap(MaoDeObraEntity::getId, Function.identity()));
