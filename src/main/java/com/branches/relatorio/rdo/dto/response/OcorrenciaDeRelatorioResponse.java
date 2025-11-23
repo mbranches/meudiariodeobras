@@ -1,7 +1,7 @@
 package com.branches.relatorio.rdo.dto.response;
 
 import com.branches.relatorio.rdo.domain.OcorrenciaDeRelatorioEntity;
-import com.branches.relatorio.tipodeocorrencia.dto.response.TipoDeOcorrenciaResponse;
+import com.branches.relatorio.ocorrencia.dto.response.TipoDeOcorrenciaResponse;
 
 import java.time.LocalTime;
 import java.util.List;

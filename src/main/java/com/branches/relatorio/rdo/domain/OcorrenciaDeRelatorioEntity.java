@@ -1,6 +1,6 @@
 package com.branches.relatorio.rdo.domain;
 
-import com.branches.relatorio.tipodeocorrencia.domain.TipoDeOcorrenciaEntity;
+import com.branches.relatorio.ocorrencia.domain.TipoDeOcorrenciaEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
