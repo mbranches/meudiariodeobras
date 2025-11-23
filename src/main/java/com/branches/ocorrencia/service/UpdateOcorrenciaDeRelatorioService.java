@@ -13,7 +13,7 @@ import com.branches.utils.CalculateHorasTotais;
 import com.branches.ocorrencia.domain.OcorrenciaDeRelatorioEntity;
 import com.branches.relatorio.domain.RelatorioEntity;
 import com.branches.ocorrencia.dto.request.UpdateOcorrenciaDeRelatorioRequest;
-import com.branches.relatorio.repository.OcorrenciaDeRelatorioRepository;
+import com.branches.ocorrencia.repository.OcorrenciaDeRelatorioRepository;
 import com.branches.ocorrencia.domain.TipoDeOcorrenciaEntity;
 import com.branches.utils.ValidateHoraInicioAndHoraFim;
 import lombok.RequiredArgsConstructor;

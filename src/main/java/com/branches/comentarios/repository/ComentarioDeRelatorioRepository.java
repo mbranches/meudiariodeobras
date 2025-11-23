@@ -1,4 +1,4 @@
-package com.branches.relatorio.repository;
+package com.branches.comentarios.repository;
 
 import com.branches.comentarios.model.ComentarioDeRelatorioEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

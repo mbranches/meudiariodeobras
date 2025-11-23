@@ -1,8 +1,8 @@
 package com.branches.condicaoclimatica.dto.response;
 
 import com.branches.condicaoclimatica.domain.CondicaoClimaticaEntity;
-import com.branches.relatorio.domain.enums.Clima;
-import com.branches.relatorio.domain.enums.CondicaoDoTempo;
+import com.branches.condicaoclimatica.domain.enums.Clima;
+import com.branches.condicaoclimatica.domain.enums.CondicaoDoTempo;
 
 public record CaracteristicaDePeriodoDoDiaResponse(
         Long id,

@@ -1,4 +1,4 @@
-package com.branches.relatorio.domain.enums;
+package com.branches.atividade.domain.enums;
 
 public enum StatusAtividade {
     PENDENTE,

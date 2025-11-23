@@ -8,7 +8,7 @@ import com.branches.exception.NotFoundException;
 import com.branches.obra.domain.ObraEntity;
 import com.branches.obra.service.GetObraByIdAndTenantIdService;
 import com.branches.relatorio.domain.RelatorioEntity;
-import com.branches.relatorio.repository.CaracteristicaDePeriodoDoDiaRepository;
+import com.branches.condicaoclimatica.repository.CondicaoClimaticaRepository;
 import com.branches.relatorio.repository.RelatorioRepository;
 import com.branches.relatorio.service.CheckIfUserHasAccessToEditRelatorioService;
 import com.branches.relatorio.service.GetRelatorioByIdExternoAndTenantIdService;
@@ -28,7 +28,7 @@ public class UpdateCondicaoClimaticaDeRelatorioService {
     private final CheckIfUserHasAccessToEditRelatorioService checkIfUserHasAccessToEditRelatorioService;
     private final GetRelatorioByIdExternoAndTenantIdService getRelatorioByIdExternoAndTenantIdService;
     private final GetObraByIdAndTenantIdService getObraByIdAndTenantIdService;
-    private final CaracteristicaDePeriodoDoDiaRepository caracteristicaDePeriodoDoDiaRepository;
+    private final CondicaoClimaticaRepository condicaoClimaticaRepository;
     private final RelatorioRepository relatorioRepository;
 
     public void execute(UpdateCondicaoClimaticaDeRelatorioRequest request, String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
@@ -55,7 +55,7 @@ public class UpdateCondicaoClimaticaDeRelatorioService {
     private CondicaoClimaticaEntity getUpdatedCaracteristicaEntity(CondicaoClimaticaRequest request, Long tenantId) {
         var id = request.id();
 
-        var entity = caracteristicaDePeriodoDoDiaRepository.findByIdAndTenantId(id, tenantId)
+        var entity = condicaoClimaticaRepository.findByIdAndTenantId(id, tenantId)
                 .orElseThrow(() -> new NotFoundException("Caracteristica de periodo do dia não encontrada com o id: " + id));
 
         entity.setClima(request.clima());

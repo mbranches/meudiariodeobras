@@ -1,4 +1,4 @@
-package com.branches.relatorio.repository;
+package com.branches.equipamento.repository;
 
 import com.branches.equipamento.domain.EquipamentoDeRelatorioEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

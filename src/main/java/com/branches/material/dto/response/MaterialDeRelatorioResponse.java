@@ -1,7 +1,7 @@
 package com.branches.material.dto.response;
 
 import com.branches.material.domain.MaterialDeRelatorioEntity;
-import com.branches.relatorio.domain.enums.TipoMaterial;
+import com.branches.material.domain.enums.TipoMaterial;
 
 public record MaterialDeRelatorioResponse(
          Long id,

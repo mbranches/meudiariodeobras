@@ -2,7 +2,7 @@ package com.branches.ocorrencia.service;
 
 import com.branches.exception.NotFoundException;
 import com.branches.ocorrencia.domain.OcorrenciaDeRelatorioEntity;
-import com.branches.relatorio.repository.OcorrenciaDeRelatorioRepository;
+import com.branches.ocorrencia.repository.OcorrenciaDeRelatorioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

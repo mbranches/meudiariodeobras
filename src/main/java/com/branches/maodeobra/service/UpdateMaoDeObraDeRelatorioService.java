@@ -15,7 +15,7 @@ import com.branches.utils.CalculateHorasTotais;
 import com.branches.maodeobra.domain.MaoDeObraDeRelatorioEntity;
 import com.branches.relatorio.domain.RelatorioEntity;
 import com.branches.maodeobra.dto.request.UpdateMaoDeObraDeRelatorioRequest;
-import com.branches.relatorio.repository.MaoDeObraDeRelatorioRepository;
+import com.branches.maodeobra.repository.MaoDeObraDeRelatorioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

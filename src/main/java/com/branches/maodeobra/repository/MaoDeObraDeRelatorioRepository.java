@@ -1,4 +1,4 @@
-package com.branches.relatorio.repository;
+package com.branches.maodeobra.repository;
 
 import com.branches.maodeobra.domain.MaoDeObraDeRelatorioEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

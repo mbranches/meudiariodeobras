@@ -1,13 +1,19 @@
 package com.branches.relatorio.service;
 
 import com.branches.atividade.domain.AtividadeDeRelatorioEntity;
+import com.branches.atividade.repository.AtividadeDeRelatorioRepository;
 import com.branches.comentarios.model.ComentarioDeRelatorioEntity;
+import com.branches.comentarios.repository.ComentarioDeRelatorioRepository;
 import com.branches.equipamento.domain.EquipamentoDeRelatorioEntity;
+import com.branches.equipamento.repository.EquipamentoDeRelatorioRepository;
 import com.branches.exception.ForbiddenException;
 import com.branches.exception.NotFoundException;
 import com.branches.maodeobra.domain.MaoDeObraDeRelatorioEntity;
+import com.branches.maodeobra.repository.MaoDeObraDeRelatorioRepository;
 import com.branches.material.domain.MaterialDeRelatorioEntity;
+import com.branches.material.repository.MaterialDeRelatorioRepository;
 import com.branches.ocorrencia.domain.OcorrenciaDeRelatorioEntity;
+import com.branches.ocorrencia.repository.OcorrenciaDeRelatorioRepository;
 import com.branches.relatorio.domain.enums.StatusRelatorio;
 import com.branches.relatorio.dto.response.GetRelatorioDetailsResponse;
 import com.branches.relatorio.repository.*;

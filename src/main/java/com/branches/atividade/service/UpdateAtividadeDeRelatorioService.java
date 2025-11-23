@@ -19,8 +19,8 @@ import com.branches.maodeobra.domain.MaoDeObraDeAtividadeDeRelatorioEntity;
 import com.branches.relatorio.domain.RelatorioEntity;
 import com.branches.atividade.dto.request.UpdateAtividadeDeRelatorioRequest;
 import com.branches.maodeobra.dto.request.MaoDeObraDeAtividadeRequest;
-import com.branches.relatorio.repository.AtividadeDeRelatorioRepository;
-import com.branches.relatorio.repository.MaoDeObraDeAtividadeDeRelatorioRepository;
+import com.branches.atividade.repository.AtividadeDeRelatorioRepository;
+import com.branches.maodeobra.repository.MaoDeObraDeAtividadeDeRelatorioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

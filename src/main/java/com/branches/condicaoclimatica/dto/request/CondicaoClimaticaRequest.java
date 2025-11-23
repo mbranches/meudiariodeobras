@@ -1,7 +1,7 @@
 package com.branches.condicaoclimatica.dto.request;
 
-import com.branches.relatorio.domain.enums.Clima;
-import com.branches.relatorio.domain.enums.CondicaoDoTempo;
+import com.branches.condicaoclimatica.domain.enums.Clima;
+import com.branches.condicaoclimatica.domain.enums.CondicaoDoTempo;
 import jakarta.validation.constraints.NotNull;
 
 public record CondicaoClimaticaRequest(

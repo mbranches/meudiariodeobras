@@ -1,4 +1,4 @@
-package com.branches.relatorio.repository;
+package com.branches.atividade.repository;
 
 import com.branches.atividade.domain.AtividadeDeRelatorioEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

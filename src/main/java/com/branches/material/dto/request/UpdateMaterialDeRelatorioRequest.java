@@ -1,6 +1,6 @@
 package com.branches.material.dto.request;
 
-import com.branches.relatorio.domain.enums.TipoMaterial;
+import com.branches.material.domain.enums.TipoMaterial;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 

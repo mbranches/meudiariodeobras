@@ -2,7 +2,7 @@ package com.branches.maodeobra.service;
 
 import com.branches.exception.NotFoundException;
 import com.branches.maodeobra.domain.MaoDeObraDeAtividadeDeRelatorioEntity;
-import com.branches.relatorio.repository.MaoDeObraDeAtividadeDeRelatorioRepository;
+import com.branches.maodeobra.repository.MaoDeObraDeAtividadeDeRelatorioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

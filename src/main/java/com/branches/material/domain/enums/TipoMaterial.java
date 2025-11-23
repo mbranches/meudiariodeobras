@@ -1,4 +1,4 @@
-package com.branches.relatorio.domain.enums;
+package com.branches.material.domain.enums;
 
 public enum TipoMaterial {
     RECEBIDO,

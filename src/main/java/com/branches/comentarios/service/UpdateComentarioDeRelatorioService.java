@@ -7,7 +7,7 @@ import com.branches.obra.service.GetObraByIdAndTenantIdService;
 import com.branches.relatorio.domain.RelatorioEntity;
 import com.branches.relatorio.dto.request.CampoPersonalizadoRequest;
 import com.branches.comentarios.dto.request.UpdateComentarioDeRelatorioRequest;
-import com.branches.relatorio.repository.ComentarioDeRelatorioRepository;
+import com.branches.comentarios.repository.ComentarioDeRelatorioRepository;
 import com.branches.relatorio.service.CheckIfUserHasAccessToEditRelatorioService;
 import com.branches.relatorio.service.GetRelatorioByIdExternoAndTenantIdService;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;

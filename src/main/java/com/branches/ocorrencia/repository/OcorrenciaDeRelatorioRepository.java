@@ -1,4 +1,4 @@
-package com.branches.relatorio.repository;
+package com.branches.ocorrencia.repository;
 
 import com.branches.ocorrencia.domain.OcorrenciaDeRelatorioEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

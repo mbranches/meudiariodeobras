@@ -1,6 +1,6 @@
 package com.branches.arquivo.domain;
 
-import com.branches.relatorio.domain.enums.TipoArquivo;
+import com.branches.arquivo.domain.enums.TipoArquivo;
 import jakarta.persistence.*;
 import lombok.*;
 

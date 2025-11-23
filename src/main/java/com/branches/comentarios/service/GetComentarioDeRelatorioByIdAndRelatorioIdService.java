@@ -2,7 +2,7 @@ package com.branches.comentarios.service;
 
 import com.branches.comentarios.model.ComentarioDeRelatorioEntity;
 import com.branches.exception.NotFoundException;
-import com.branches.relatorio.repository.ComentarioDeRelatorioRepository;
+import com.branches.comentarios.repository.ComentarioDeRelatorioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

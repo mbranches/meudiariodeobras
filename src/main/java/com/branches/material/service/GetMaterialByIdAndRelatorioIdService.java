@@ -2,7 +2,7 @@ package com.branches.material.service;
 
 import com.branches.exception.NotFoundException;
 import com.branches.material.domain.MaterialDeRelatorioEntity;
-import com.branches.relatorio.repository.MaterialDeRelatorioRepository;
+import com.branches.material.repository.MaterialDeRelatorioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

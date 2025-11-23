@@ -1,8 +1,8 @@
 package com.branches.condicaoclimatica.domain;
 
 import com.branches.config.envers.AuditableTenantOwned;
-import com.branches.relatorio.domain.enums.Clima;
-import com.branches.relatorio.domain.enums.CondicaoDoTempo;
+import com.branches.condicaoclimatica.domain.enums.Clima;
+import com.branches.condicaoclimatica.domain.enums.CondicaoDoTempo;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
