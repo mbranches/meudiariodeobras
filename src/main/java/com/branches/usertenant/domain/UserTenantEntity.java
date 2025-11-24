@@ -38,13 +38,21 @@ public class UserTenantEntity {
     @Column(nullable = false, columnDefinition = "TEXT")
     private Authorities authorities;
 
+    @Builder.Default
     @Column(nullable = false)
-    private Boolean ativo;
+    private Boolean ativo = true;
 
     public List<Long> getObrasPermitidasIds() {
         return this.userObraPermitidaEntities.stream()
                 .map(UserObraPermitidaEntity::getObraId)
                 .toList();
+    }
+
+    @PrePersist
+    public void prePersist() {
+        if (id != null) return;
+
+        setarId();
     }
 
     public void setarId() {

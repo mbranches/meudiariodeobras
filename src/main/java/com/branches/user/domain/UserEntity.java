@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Setter
@@ -44,5 +45,16 @@ public class UserEntity {
         return userTenantEntities.stream()
                 .map(UserTenantEntity::getTenantId)
                 .toList();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof UserEntity user)) return false;
+        return Objects.equals(id, user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }
