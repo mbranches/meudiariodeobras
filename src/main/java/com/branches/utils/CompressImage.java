@@ -12,7 +12,7 @@ import java.util.Base64;
 
 @Component
 public class CompressImage {
-    public byte[] execute(String imageBase64) {
+    public byte[] execute(String imageBase64, int maxWidth, int maxHeight, double percentageQuality, ImageOutPutFormat outputFormat) {
         try {
             String formattedImage = imageBase64.substring(imageBase64.indexOf(",") + 1);
 
@@ -22,9 +22,9 @@ public class CompressImage {
 
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             Thumbnails.of(originalImage)
-                    .size(400 ,  400 )
-                    .outputFormat("jpg")
-                    .outputQuality(0.7)
+                    .size(maxWidth, maxHeight)
+                    .outputFormat(outputFormat.getFormat())
+                    .outputQuality(percentageQuality)
                     .toOutputStream(outputStream);
 
             return outputStream.toByteArray();
