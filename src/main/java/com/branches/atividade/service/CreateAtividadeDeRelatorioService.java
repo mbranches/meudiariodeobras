@@ -17,7 +17,6 @@ import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
 import com.branches.utils.CalculateHorasTotais;
-import com.branches.utils.ValidateHoraInicioAndHoraFim;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +37,6 @@ public class CreateAtividadeDeRelatorioService {
     private final CheckIfUserCanViewAtividadesService checkIfUserCanViewAtividadesService;
     private final GetMaoDeObraListByIdInAndTenantIdAndTypeService getMaoDeObraListByIdInAndTenantIdAndTypeService;
     private final CalculateHorasTotais calculateHorasTotais;
-    private final ValidateHoraInicioAndHoraFim validateHoraInicioAndHoraFim;
     private final AtividadeDeRelatorioRepository atividadeDeRelatorioRepository;
     private final MaoDeObraDeAtividadeDeRelatorioRepository maoDeObraDeAtividadeDeRelatorioRepository;
 
@@ -56,8 +54,6 @@ public class CreateAtividadeDeRelatorioService {
         checkIfUserCanViewAtividadesService.execute(currentUserTenant);
 
         List<MaoDeObraEntity> maoDeObraEntities = getMaoDeObraDaAtividade(request, tenantId, relatorio.getTipoMaoDeObra());
-
-        validateHoraInicioAndHoraFim.execute(request.horaInicio(), request.horaFim());
 
         List<CampoPersonalizadoEntity> camposPersonalizados =  request.camposPersonalizados() != null ?
                 request.camposPersonalizados().stream()

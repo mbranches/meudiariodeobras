@@ -12,7 +12,6 @@ import com.branches.relatorio.domain.RelatorioEntity;
 import com.branches.ocorrencia.dto.request.UpdateOcorrenciaDeRelatorioRequest;
 import com.branches.ocorrencia.repository.OcorrenciaDeRelatorioRepository;
 import com.branches.ocorrencia.domain.TipoDeOcorrenciaEntity;
-import com.branches.utils.ValidateHoraInicioAndHoraFim;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +25,6 @@ public class UpdateOcorrenciaDeRelatorioService {
     private final OcorrenciaDeRelatorioRepository ocorrenciaDeRelatorioRepository;
     private final GetOcorrenciaByIdAndRelatorioIdService getOcorrenciaByIdAndRelatorioIdService;
     private final GetTiposDeOcorrenciaByTenantIdAndIdInService getTiposDeOcorrenciaByTenantIdAndIdInService;
-    private final ValidateHoraInicioAndHoraFim validateHoraInicioAndHoraFim;
     private final CalculateHorasTotais calculateHorasTotais;
     private final GetTenantIdByIdExternoService getTenantIdByIdExternoService;
     private final GetCurrentUserTenantService getCurrentUserTenantService;
@@ -52,7 +50,6 @@ public class UpdateOcorrenciaDeRelatorioService {
 
         entity.setDescricao(request.descricao());
 
-        validateHoraInicioAndHoraFim.execute(request.horaInicio(), request.horaFim());
         entity.setHoraInicio(request.horaInicio());
         entity.setHoraFim(request.horaFim());
         entity.setTotalHoras(calculateHorasTotais.execute(request.horaInicio(), request.horaFim(), null));

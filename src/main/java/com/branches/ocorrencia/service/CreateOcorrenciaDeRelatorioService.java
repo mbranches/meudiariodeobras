@@ -13,7 +13,6 @@ import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
 import com.branches.utils.CalculateHorasTotais;
-import com.branches.utils.ValidateHoraInicioAndHoraFim;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +31,6 @@ public class CreateOcorrenciaDeRelatorioService {
     private final OcorrenciaDeRelatorioRepository ocorrenciaDeRelatorioRepository;
     private final GetTiposDeOcorrenciaByTenantIdAndIdInService getTiposDeOcorrenciaByTenantIdAndIdInService;
     private final CalculateHorasTotais calculateHorasTotais;
-    private final ValidateHoraInicioAndHoraFim validateHoraInicioAndHoraFim;
 
     public CreateOcorrenciaDeRelatorioResponse execute(CreateOcorrenciaDeRelatorioRequest request, String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -55,7 +53,6 @@ public class CreateOcorrenciaDeRelatorioService {
                 .toList()
                 : null;
 
-        validateHoraInicioAndHoraFim.execute(request.horaInicio(), request.horaFim());
         OcorrenciaDeRelatorioEntity toSave = OcorrenciaDeRelatorioEntity.builder()
                 .relatorio(relatorio)
                 .descricao(request.descricao())
