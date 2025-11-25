@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class CheckIfUserCanViewFotosService {
     public void execute(UserTenantEntity userTenant) {
-        if (userTenant.getAuthorities().getItensDeRelatorio().getAtividades()) return;
+        if (userTenant.getAuthorities().getItensDeRelatorio().getFotos()) return;
 
         throw new ForbiddenException();
     }
