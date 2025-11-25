@@ -4,6 +4,7 @@ import com.branches.arquivo.domain.ArquivoEntity;
 import com.branches.arquivo.domain.enums.TipoArquivo;
 import com.branches.arquivo.dto.request.CreateFotoDeRelatorioRequest;
 import com.branches.arquivo.dto.response.CreateFotoDeRelatorioResponse;
+import com.branches.arquivo.repository.ArquivoRepository;
 import com.branches.external.aws.S3UploadFile;
 import com.branches.relatorio.repository.projections.RelatorioWithObraProjection;
 import com.branches.relatorio.service.GetRelatorioWithObraByIdExternoAndTenantIdService;
@@ -28,6 +29,7 @@ public class CreateFotoDeRelatorioService {
     private final CheckIfConfiguracaoDeRelatorioDaObraPermiteFoto checkIfConfiguracaoDeRelatorioDaObraPermiteFoto;
     private final CheckIfUserCanViewFotosService checkIfUserCanViewFotosService;
     private final GetRelatorioWithObraByIdExternoAndTenantIdService getRelatorioWithObraByIdExternoAndTenantIdService;
+    private final ArquivoRepository arquivoRepository;
 
     public CreateFotoDeRelatorioResponse execute(CreateFotoDeRelatorioRequest request, String tenantExternalId, String relatorioExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -51,6 +53,8 @@ public class CreateFotoDeRelatorioService {
                 .relatorio(relatorio.getRelatorio())
                 .build();
 
-        return CreateFotoDeRelatorioResponse.from(arquivo);
+        ArquivoEntity saved = arquivoRepository.save(arquivo);
+
+        return CreateFotoDeRelatorioResponse.from(saved);
     }
 }
