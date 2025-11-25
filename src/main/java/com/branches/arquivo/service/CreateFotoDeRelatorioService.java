@@ -4,10 +4,9 @@ import com.branches.arquivo.domain.ArquivoEntity;
 import com.branches.arquivo.domain.enums.TipoArquivo;
 import com.branches.arquivo.dto.request.CreateFotoDeRelatorioRequest;
 import com.branches.arquivo.dto.response.CreateFotoDeRelatorioResponse;
-import com.branches.exception.NotFoundException;
 import com.branches.external.aws.S3UploadFile;
-import com.branches.relatorio.repository.RelatorioRepository;
 import com.branches.relatorio.repository.projections.RelatorioWithObraProjection;
+import com.branches.relatorio.service.GetRelatorioWithObraByIdExternoAndTenantIdService;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
@@ -24,19 +23,18 @@ import java.util.List;
 public class CreateFotoDeRelatorioService {
     private final CompressImage compressImage;
     private final S3UploadFile s3UploadFile;
-    private final RelatorioRepository relatorioRepository;
     private final GetTenantIdByIdExternoService getTenantIdByIdExternoService;
     private final GetCurrentUserTenantService getCurrentUserTenantService;
     private final CheckIfConfiguracaoDeRelatorioDaObraPermiteFoto checkIfConfiguracaoDeRelatorioDaObraPermiteFoto;
     private final CheckIfUserCanViewFotosService checkIfUserCanViewFotosService;
+    private final GetRelatorioWithObraByIdExternoAndTenantIdService getRelatorioWithObraByIdExternoAndTenantIdService;
 
     public CreateFotoDeRelatorioResponse execute(CreateFotoDeRelatorioRequest request, String tenantExternalId, String relatorioExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
 
         UserTenantEntity currentUserTenant = getCurrentUserTenantService.execute(userTenants, tenantId);
 
-        RelatorioWithObraProjection relatorio = relatorioRepository.findRelatorioWithObraByIdExternoAndTenantId(relatorioExternalId, tenantId)
-                .orElseThrow(() -> new NotFoundException("Relatório não encontrado com o id: " + relatorioExternalId));
+        RelatorioWithObraProjection relatorio = getRelatorioWithObraByIdExternoAndTenantIdService.execute(relatorioExternalId, tenantId);
 
         checkIfConfiguracaoDeRelatorioDaObraPermiteFoto.execute(relatorio);
         checkIfUserCanViewFotosService.execute(currentUserTenant);
