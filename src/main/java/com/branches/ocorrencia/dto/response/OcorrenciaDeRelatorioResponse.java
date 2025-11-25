@@ -1,5 +1,6 @@
 package com.branches.ocorrencia.dto.response;
 
+import com.branches.atividade.dto.response.AtividadeDeOcorrenciaResponse;
 import com.branches.ocorrencia.domain.OcorrenciaDeRelatorioEntity;
 import com.branches.relatorio.dto.response.CampoPersonalizadoResponse;
 
@@ -12,6 +13,8 @@ public record OcorrenciaDeRelatorioResponse(
         List<TipoDeOcorrenciaResponse> tiposOcorrencia,
         LocalTime horaInicio,
         LocalTime horaFim,
+        LocalTime totalHoras,
+        AtividadeDeOcorrenciaResponse atividadeVinculada,
         List<CampoPersonalizadoResponse> camposPersonalizados
 ) {
     public static OcorrenciaDeRelatorioResponse from(OcorrenciaDeRelatorioEntity ocorrenciaDeRelatorioEntity) {
@@ -24,12 +27,18 @@ public record OcorrenciaDeRelatorioResponse(
                         .map(CampoPersonalizadoResponse::from)
                         .toList() : null;
 
+        AtividadeDeOcorrenciaResponse atividadeVinculadaResponse = ocorrenciaDeRelatorioEntity.getAtividadeVinculada() != null ?
+                AtividadeDeOcorrenciaResponse.from(ocorrenciaDeRelatorioEntity.getAtividadeVinculada())
+                : null;
+
         return new OcorrenciaDeRelatorioResponse(
                 ocorrenciaDeRelatorioEntity.getId(),
                 ocorrenciaDeRelatorioEntity.getDescricao(),
                 tiposOcorrencia,
                 ocorrenciaDeRelatorioEntity.getHoraInicio(),
                 ocorrenciaDeRelatorioEntity.getHoraFim(),
+                ocorrenciaDeRelatorioEntity.getTotalHoras(),
+                atividadeVinculadaResponse,
                 camposPersonalizados
         );
     }

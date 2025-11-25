@@ -13,6 +13,7 @@ public record CreateOcorrenciaDeRelatorioRequest(
         List<Long> tiposOcorrenciaIds,
         LocalTime horaInicio,
         LocalTime horaFim,
+        Long atividadeVinculadaId,
         @Valid
         List<CampoPersonalizadoRequest> camposPersonalizados
 ) {

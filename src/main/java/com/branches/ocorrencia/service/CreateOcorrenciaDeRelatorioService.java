@@ -1,5 +1,7 @@
 package com.branches.ocorrencia.service;
 
+import com.branches.atividade.domain.AtividadeDeRelatorioEntity;
+import com.branches.atividade.service.GetAtividadeDeRelatorioByIdAndRelatorioIdService;
 import com.branches.ocorrencia.domain.OcorrenciaDeRelatorioEntity;
 import com.branches.ocorrencia.domain.TipoDeOcorrenciaEntity;
 import com.branches.ocorrencia.dto.request.CreateOcorrenciaDeRelatorioRequest;
@@ -31,6 +33,7 @@ public class CreateOcorrenciaDeRelatorioService {
     private final OcorrenciaDeRelatorioRepository ocorrenciaDeRelatorioRepository;
     private final GetTiposDeOcorrenciaByTenantIdAndIdInService getTiposDeOcorrenciaByTenantIdAndIdInService;
     private final CalculateHorasTotais calculateHorasTotais;
+    private final GetAtividadeDeRelatorioByIdAndRelatorioIdService getAtividadeDeRelatorioByIdAndRelatorioIdService;
 
     public CreateOcorrenciaDeRelatorioResponse execute(CreateOcorrenciaDeRelatorioRequest request, String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -62,6 +65,12 @@ public class CreateOcorrenciaDeRelatorioService {
                 .tiposDeOcorrencia(tiposDeOcorrencia)
                 .camposPersonalizados(camposPersonalizados)
                 .build();
+
+        if (request.atividadeVinculadaId() != null) {
+            AtividadeDeRelatorioEntity atividade = getAtividadeDeRelatorioByIdAndRelatorioIdService.execute(request.atividadeVinculadaId(), relatorio.getId());
+
+            toSave.setAtividadeVinculada(atividade);
+        }
 
         OcorrenciaDeRelatorioEntity saved = ocorrenciaDeRelatorioRepository.save(toSave);
 

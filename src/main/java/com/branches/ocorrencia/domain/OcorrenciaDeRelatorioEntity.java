@@ -1,5 +1,6 @@
 package com.branches.ocorrencia.domain;
 
+import com.branches.atividade.domain.AtividadeDeRelatorioEntity;
 import com.branches.relatorio.domain.CampoPersonalizadoEntity;
 import com.branches.relatorio.domain.RelatorioEntity;
 import jakarta.persistence.*;
@@ -37,6 +38,10 @@ public class OcorrenciaDeRelatorioEntity {
     private LocalTime horaInicio;
     private LocalTime horaFim;
     private LocalTime totalHoras;
+
+    @ManyToOne
+    @JoinColumn(name = "atividade_vinculada_id")
+    private AtividadeDeRelatorioEntity atividadeVinculada;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(

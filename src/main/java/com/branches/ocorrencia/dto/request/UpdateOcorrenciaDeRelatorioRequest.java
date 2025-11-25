@@ -13,6 +13,7 @@ public record UpdateOcorrenciaDeRelatorioRequest(
         List<Long> tiposOcorrenciaIds,
         LocalTime horaInicio,
         LocalTime horaFim,
+        Long atividadeVincululadaId,
         @Valid
         List<CampoPersonalizadoRequest> camposPersonalizados
 ) {

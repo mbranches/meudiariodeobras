@@ -1,5 +1,7 @@
 package com.branches.ocorrencia.service;
 
+import com.branches.atividade.domain.AtividadeDeRelatorioEntity;
+import com.branches.atividade.service.GetAtividadeDeRelatorioByIdAndRelatorioIdService;
 import com.branches.relatorio.dto.request.CampoPersonalizadoRequest;
 import com.branches.relatorio.service.CheckIfUserHasAccessToEditRelatorioService;
 import com.branches.relatorio.service.GetRelatorioByIdExternoAndTenantIdService;
@@ -32,6 +34,7 @@ public class UpdateOcorrenciaDeRelatorioService {
     private final GetRelatorioByIdExternoAndTenantIdService getRelatorioByIdExternoAndTenantIdService;
     private final CheckIfConfiguracaoDeRelatorioDaObraPermiteOcorrenciaService checkIfConfiguracaoDeRelatorioDaObraPermiteOcorrenciaService;
     private final CheckIfUserCanViewOcorrenciasService checkIfUserCanViewOcorrenciasService;
+    private final GetAtividadeDeRelatorioByIdAndRelatorioIdService getAtividadeDeRelatorioByIdAndRelatorioIdService;
 
     public void execute(UpdateOcorrenciaDeRelatorioRequest request, Long id, String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -53,6 +56,11 @@ public class UpdateOcorrenciaDeRelatorioService {
         entity.setHoraInicio(request.horaInicio());
         entity.setHoraFim(request.horaFim());
         entity.setTotalHoras(calculateHorasTotais.execute(request.horaInicio(), request.horaFim(), null));
+
+        AtividadeDeRelatorioEntity atividadeVinculada = request.atividadeVincululadaId() != null
+                ? getAtividadeDeRelatorioByIdAndRelatorioIdService.execute(request.atividadeVincululadaId(), relatorio.getId())
+                : null;
+        entity.setAtividadeVinculada(atividadeVinculada);
 
         List<TipoDeOcorrenciaEntity> tiposDeOcorrencia = getTiposDeOcorrenciaList(request.tiposOcorrenciaIds(), tenantId);
         entity.getTiposDeOcorrencia().clear();
