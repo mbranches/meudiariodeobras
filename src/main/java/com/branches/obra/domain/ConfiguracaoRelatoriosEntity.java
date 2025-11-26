@@ -34,6 +34,16 @@ public class ConfiguracaoRelatoriosEntity {
     @JoinColumn(name = "logo_de_relatorio_3_id")
     private LogoDeRelatorioEntity logoDeRelatorio3;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "configuracao_de_assinatura_de_relatorio_1_id")
+    private ConfiguracaoDeAssinaturaDeRelatorioEntity configuracaoDeAssinaturaDeRelatorio1;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "configuracao_de_assinatura_de_relatorio_2_id")
+    private ConfiguracaoDeAssinaturaDeRelatorioEntity configuracaoDeAssinaturaDeRelatorio2;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "configuracao_de_assinatura_de_relatorio_3_id")
+    private ConfiguracaoDeAssinaturaDeRelatorioEntity configuracaoDeAssinaturaDeRelatorio3;
+
     @Column(nullable = false)
     private Boolean showCondicaoClimatica;
     @Column(nullable = false)
@@ -55,17 +65,27 @@ public class ConfiguracaoRelatoriosEntity {
     @Column(nullable = false)
     private Boolean showVideos;
 
-    public static ConfiguracaoRelatoriosEntity by(ModeloDeRelatorioEntity modeloDeRelatorioDefault, String urlLogoTenant) {
+    public static ConfiguracaoRelatoriosEntity by(ModeloDeRelatorioEntity modeloDeRelatorioDefault, String urlLogoTenant, String nomeFantasiaTenant, String nomeClienteObra) {
         LogoDeRelatorioEntity logoDeRelatorioDefault = LogoDeRelatorioEntity.builder()
                 .url(urlLogoTenant)
                 .exibir(urlLogoTenant != null && !urlLogoTenant.isBlank())
                 .isLogoDoTenant(true)
                 .build();
 
+        ConfiguracaoDeAssinaturaDeRelatorioEntity assinaturaTenantDefault = ConfiguracaoDeAssinaturaDeRelatorioEntity.builder()
+                .nomeAssinante(nomeFantasiaTenant)
+                .build();
+
+        ConfiguracaoDeAssinaturaDeRelatorioEntity assinaturaClienteDefault = ConfiguracaoDeAssinaturaDeRelatorioEntity.builder()
+                .nomeAssinante(nomeClienteObra != null && !nomeClienteObra.isBlank() ? nomeClienteObra : "Assinatura")
+                .build();
+
         return ConfiguracaoRelatoriosEntity.builder()
                 .modeloDeRelatorio(modeloDeRelatorioDefault)
                 .recorrenciaRelatorio(modeloDeRelatorioDefault.getRecorrenciaRelatorio())
                 .logoDeRelatorio1(logoDeRelatorioDefault)
+                .configuracaoDeAssinaturaDeRelatorio1(assinaturaTenantDefault)
+                .configuracaoDeAssinaturaDeRelatorio2(assinaturaClienteDefault)
                 .showCondicaoClimatica(modeloDeRelatorioDefault.getShowCondicaoClimatica())
                 .showMaoDeObra(modeloDeRelatorioDefault.getShowMaoDeObra())
                 .showEquipamentos(modeloDeRelatorioDefault.getShowEquipamentos())

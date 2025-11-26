@@ -45,7 +45,7 @@ public class CreateObraService {
         verifyIfPlanoAllowsCreateObra(tenantId);
 
         ModeloDeRelatorioEntity modeloDeRelatorio = getModeloDeRelatorioByIdAndTenantIdService.execute(request.modeloDeRelatorioId(), tenantId);
-        ConfiguracaoRelatoriosEntity configuracaoRelatorios = ConfiguracaoRelatoriosEntity.by(modeloDeRelatorio);
+        ConfiguracaoRelatoriosEntity configuracaoRelatorios = ConfiguracaoRelatoriosEntity.by(modeloDeRelatorio, tenant.getLogoUrl(), tenant.getNomeFantasia(), request.contratante());
 
         ObraEntity obraToSave = ObraEntity.builder()
                 .nome(request.nome())
