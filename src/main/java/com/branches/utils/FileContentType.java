@@ -8,7 +8,10 @@ import lombok.RequiredArgsConstructor;
 public enum FileContentType {
     JPEG("image/jpeg", "jpeg"),
     PNG("image/png", "png"),
-    PDF("application/pdf", "pdf");
+    PDF("application/pdf", "pdf"),
+    MP4("video/mp4", "mp4"),
+    AVI("video/x-msvideo", "avi"),
+    MOV("video/quicktime", "mov");
 
     private final String mimeType;
     private final String extension;

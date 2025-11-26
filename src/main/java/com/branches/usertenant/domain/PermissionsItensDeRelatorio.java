@@ -14,12 +14,14 @@ public class PermissionsItensDeRelatorio {
     private Boolean maoDeObra;
     private Boolean comentarios;
     private Boolean fotos;
+    private Boolean videos;
     private Boolean condicaoDoClima;
     private Boolean materiais;
     private Boolean horarioDeTrabalho;
 
     public static PermissionsItensDeRelatorio fullPermissions() {
         return new PermissionsItensDeRelatorio(
+                true,
                 true,
                 true,
                 true,
