@@ -30,7 +30,9 @@ import java.util.Locale;
 @Builder
 public record GetRelatorioDetailsResponse(
         String id,
-        String tenantLogoUrl,
+        LogoDeRelatorioResponse logo1,
+        LogoDeRelatorioResponse logo2,
+        LogoDeRelatorioResponse logo3,
         ObraByRelatorioResponse obra,
         String tituloRelatorio,
         LocalDate dataInicio,
@@ -94,9 +96,18 @@ public record GetRelatorioDetailsResponse(
         var materiaisResponse = materiais != null ?
                 materiais.stream().map(MaterialDeRelatorioResponse::from).toList() : null;
 
+        var logo1 = relatorioDetails.getLogoDeRelatorio1() != null ?
+                LogoDeRelatorioResponse.from(relatorioDetails.getLogoDeRelatorio1()) : null;
+        var logo2 = relatorioDetails.getLogoDeRelatorio2() != null ?
+                LogoDeRelatorioResponse.from(relatorioDetails.getLogoDeRelatorio2()) : null;
+        var logo3 = relatorioDetails.getLogoDeRelatorio3() != null ?
+                LogoDeRelatorioResponse.from(relatorioDetails.getLogoDeRelatorio3()) : null;
+
         return new GetRelatorioDetailsResponse(
                 relatorioDetails.getIdExterno(),
-                relatorioDetails.getTenantLogoUrl(),
+                logo1,
+                logo2,
+                logo3,
                 obra,
                 relatorioDetails.getTituloModeloDeRelatorio(),
                 relatorioDetails.getDataInicio(),

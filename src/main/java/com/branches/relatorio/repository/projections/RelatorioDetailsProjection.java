@@ -1,6 +1,7 @@
 package com.branches.relatorio.repository.projections;
 
 import com.branches.condicaoclimatica.domain.CondicaoClimaticaEntity;
+import com.branches.obra.domain.LogoDeRelatorioEntity;
 import com.branches.relatorio.domain.enums.StatusRelatorio;
 
 import java.math.BigDecimal;
@@ -12,7 +13,9 @@ public interface RelatorioDetailsProjection {
     Long getId();
     String getIdExterno();
 
-    String getTenantLogoUrl();
+    LogoDeRelatorioEntity getLogoDeRelatorio1();
+    LogoDeRelatorioEntity getLogoDeRelatorio2();
+    LogoDeRelatorioEntity getLogoDeRelatorio3();
 
     String getObraIdExterno();
     String getObraNome();

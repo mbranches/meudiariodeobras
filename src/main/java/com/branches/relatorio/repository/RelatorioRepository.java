@@ -24,23 +24,25 @@ public interface RelatorioRepository extends JpaRepository<RelatorioEntity, Long
     @Query("""
     SELECT r.id AS id,
         r.idExterno AS idExterno,
-        t.logoUrl AS tenantLogoUrl,
         o.idExterno AS obraIdExterno,
         o.nome AS obraNome,
         o.endereco AS obraEndereco,
         o.contratante AS obraContratante,
         o.responsavel AS obraResponsavel,
         o.numeroContrato AS obraNumeroContrato,
-        o.configuracaoRelatorios.recorrenciaRelatorio AS recorrenciaRelatorio,
-        o.configuracaoRelatorios.modeloDeRelatorio.titulo AS tituloModeloDeRelatorio,
-        o.configuracaoRelatorios.showAtividades AS showAtividades,
-        o.configuracaoRelatorios.showCondicaoClimatica AS showCondicaoClimatica,
-        o.configuracaoRelatorios.showComentarios AS showComentarios,
-        o.configuracaoRelatorios.showEquipamentos AS showEquipamentos,
-        o.configuracaoRelatorios.showMaoDeObra AS showMaoDeObra,
-        o.configuracaoRelatorios.showOcorrencias AS showOcorrencias,
-        o.configuracaoRelatorios.showMateriais AS showMateriais,
-        o.configuracaoRelatorios.showHorarioDeTrabalho AS showHorarioDeTrabalho,
+        lr1 AS logoDeRelatorio1,
+        lr2 AS logoDeRelatorio2,
+        lr3 AS logoDeRelatorio3,
+        cr.recorrenciaRelatorio AS recorrenciaRelatorio,
+        cr.modeloDeRelatorio.titulo AS tituloModeloDeRelatorio,
+        cr.showAtividades AS showAtividades,
+        cr.showCondicaoClimatica AS showCondicaoClimatica,
+        cr.showComentarios AS showComentarios,
+        cr.showEquipamentos AS showEquipamentos,
+        cr.showMaoDeObra AS showMaoDeObra,
+        cr.showOcorrencias AS showOcorrencias,
+        cr.showMateriais AS showMateriais,
+        cr.showHorarioDeTrabalho AS showHorarioDeTrabalho,
         r.dataInicio AS dataInicio,
         r.dataFim AS dataFim,
         r.numero AS numero,
@@ -59,6 +61,10 @@ public interface RelatorioRepository extends JpaRepository<RelatorioEntity, Long
     FROM RelatorioEntity r
         JOIN TenantEntity t ON r.tenantId = t.id
         JOIN ObraEntity o ON o.id = r.obraId AND o.tenantId = r.tenantId
+        JOIN o.configuracaoRelatorios cr
+        LEFT JOIN cr.logoDeRelatorio1 lr1
+        LEFT JOIN cr.logoDeRelatorio2 lr2
+        LEFT JOIN cr.logoDeRelatorio3 lr3
         JOIN UserEntity u ON u.id = r.enversCreator
         JOIN UserEntity u2 ON u2.id = r.enversModifier
     WHERE r.idExterno = :relatorioExternalId
