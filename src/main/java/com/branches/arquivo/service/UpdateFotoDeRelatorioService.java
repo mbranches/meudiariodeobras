@@ -16,7 +16,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-public class UpdateArquivoDeRelatorioService {
+public class UpdateFotoDeRelatorioService {
     private final GetTenantIdByIdExternoService getTenantIdByIdExternoService;
     private final GetCurrentUserTenantService getCurrentUserTenantService;
     private final GetRelatorioWithObraByIdExternoAndTenantIdService getRelatorioWithObraByIdExternoAndTenantIdService;

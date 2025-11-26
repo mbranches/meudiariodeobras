@@ -1,7 +1,7 @@
 package com.branches.arquivo.controller;
 
 import com.branches.arquivo.dto.UpdateArquivoRequest;
-import com.branches.arquivo.service.UpdateArquivoDeRelatorioService;
+import com.branches.arquivo.service.UpdateFotoDeRelatorioService;
 import com.branches.config.security.UserTenantsContext;
 import com.branches.usertenant.domain.UserTenantEntity;
 import jakarta.validation.Valid;
@@ -16,15 +16,15 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-public class UpdateArquivoDeRelatorioController {
-    private final UpdateArquivoDeRelatorioService updateArquivoDeRelatorioService;
+public class UpdateFotoDeRelatorioController {
+    private final UpdateFotoDeRelatorioService updateFotoDeRelatorioService;
 
-    @PutMapping("/api/tenants/{tenantExternalId}/relatorios/{relatorioExternalId}/arquivos/{arquivoId}")
+    @PutMapping("/api/tenants/{tenantExternalId}/relatorios/{relatorioExternalId}/fotos/{arquivoId}")
     public ResponseEntity<Void> execute(@RequestBody @Valid UpdateArquivoRequest request, @PathVariable String tenantExternalId,
                                         @PathVariable String relatorioExternalId, @PathVariable Long arquivoId) {
         List<UserTenantEntity> userTenants = UserTenantsContext.getUserTenants();
 
-        updateArquivoDeRelatorioService.execute(request, arquivoId, relatorioExternalId, tenantExternalId, userTenants);
+        updateFotoDeRelatorioService.execute(request, arquivoId, relatorioExternalId, tenantExternalId, userTenants);
 
         return ResponseEntity.noContent().build();
     }
