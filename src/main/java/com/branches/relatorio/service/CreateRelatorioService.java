@@ -11,6 +11,7 @@ import com.branches.exception.ForbiddenException;
 import com.branches.maodeobra.domain.MaoDeObraDeAtividadeDeRelatorioEntity;
 import com.branches.maodeobra.domain.MaoDeObraDeRelatorioEntity;
 import com.branches.maodeobra.repository.MaoDeObraDeRelatorioRepository;
+import com.branches.obra.domain.ConfiguracaoDeAssinaturaDeRelatorioEntity;
 import com.branches.obra.domain.ConfiguracaoRelatoriosEntity;
 import com.branches.obra.domain.ObraEntity;
 import com.branches.obra.service.GetObraByIdExternoAndTenantIdService;
@@ -67,6 +68,11 @@ public class CreateRelatorioService {
         relatorio.setDataInicio(request.dataInicio());
         relatorio.setDataFim(request.dataFim());
         relatorio.setTipoMaoDeObra(obra.getTipoMaoDeObra());
+
+        List<ConfiguracaoDeAssinaturaDeRelatorioEntity> configuracoesDeAssinaturaDeRelatorio = configuracaoRelatorios.getConfiguracoesDeAssinaturaDeRelatorio();
+        List<AssinaturaDeRelatorioEntity> assinaturas = getNewAssinaturas(configuracoesDeAssinaturaDeRelatorio, relatorio);
+
+        relatorio.setAssinaturas(assinaturas);
         relatorio.setPrazoContratualObra(ChronoUnit.DAYS.between(obra.getDataInicio(), obra.getDataPrevistaFim()));
         relatorio.setPrazoDecorridoObra(ChronoUnit.DAYS.between(obra.getDataInicio(), request.dataInicio()));
         relatorio.setPrazoPraVencerObra(diferencaEntreDataRelatorioEDataPrevistaFim < 0 ? 0L : diferencaEntreDataRelatorioEDataPrevistaFim);
@@ -88,6 +94,16 @@ public class CreateRelatorioService {
         //todo: atualizar o relatorio com o pdf url
 
         return new CreateRelatorioResponse(savedRelatorio.getIdExterno());
+    }
+
+    private List<AssinaturaDeRelatorioEntity> getNewAssinaturas(List<ConfiguracaoDeAssinaturaDeRelatorioEntity> configuracoesDeAssinaturaDeRelatorio, RelatorioEntity relatorio) {
+        return configuracoesDeAssinaturaDeRelatorio.stream()
+                .map(config -> AssinaturaDeRelatorioEntity
+                        .builder()
+                        .configuracao(config)
+                        .relatorio(relatorio)
+                        .build()
+                ).toList();
     }
 
     private CondicaoClimaticaEntity buildCaracteristicaDefault(Long tenantId) {

@@ -14,6 +14,7 @@ import com.branches.material.domain.MaterialDeRelatorioEntity;
 import com.branches.material.repository.MaterialDeRelatorioRepository;
 import com.branches.ocorrencia.domain.OcorrenciaDeRelatorioEntity;
 import com.branches.ocorrencia.repository.OcorrenciaDeRelatorioRepository;
+import com.branches.relatorio.domain.AssinaturaDeRelatorioEntity;
 import com.branches.relatorio.domain.enums.StatusRelatorio;
 import com.branches.relatorio.dto.response.GetRelatorioDetailsResponse;
 import com.branches.relatorio.repository.*;
@@ -39,6 +40,7 @@ public class GetRelatorioDetailsService {
     private final MaoDeObraDeRelatorioRepository maoDeObraDeRelatorioRepository;
     private final ComentarioDeRelatorioRepository comentarioDeRelatorioRepository;
     private final MaterialDeRelatorioRepository materialDeRelatorioRepository;
+    private final AssinaturaDeRelatorioRepository assinaturaDeRelatorioRepository;
 
     public GetRelatorioDetailsResponse execute(String tenantExternalId,
                                                String relatorioExternalId,
@@ -71,6 +73,7 @@ public class GetRelatorioDetailsService {
         List<MaoDeObraDeRelatorioEntity> maoDeObra = canViewMaoDeObra ? maoDeObraDeRelatorioRepository.findAllByRelatorioId(relatorioId) : null;
         List<ComentarioDeRelatorioEntity> comentarios = canViewComentarios ? comentarioDeRelatorioRepository.findAllByRelatorioId(relatorioId) : null;
         List<MaterialDeRelatorioEntity> materiais = canViewMateriais ? materialDeRelatorioRepository.findAllByRelatorioId(relatorioId) : null;
+        List<AssinaturaDeRelatorioEntity> assinaturas = assinaturaDeRelatorioRepository.findAllByRelatorioId(relatorioId);
 
         return GetRelatorioDetailsResponse.from(
                 relatorioDetails,
@@ -80,6 +83,7 @@ public class GetRelatorioDetailsService {
                 maoDeObra,
                 comentarios,
                 materiais,
+                assinaturas,
                 canViewCondicaoDoClima,
                 canViewHorarioDeTrabalho
         );

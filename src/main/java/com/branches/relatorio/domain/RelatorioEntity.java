@@ -11,6 +11,7 @@ import lombok.experimental.SuperBuilder;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.UUID;
 
 @Setter
@@ -71,6 +72,9 @@ public class RelatorioEntity extends AuditableTenantOwned {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "caracteristicas_noite_id")
     private CondicaoClimaticaEntity caracteristicasNoite;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    private List<AssinaturaDeRelatorioEntity> assinaturas;
 
     @Builder.Default
     @Column(nullable = false)

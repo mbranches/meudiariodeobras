@@ -5,6 +5,8 @@ import com.branches.configuradores.domain.enums.RecorrenciaRelatorio;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Setter
 @Getter
 @Builder
@@ -34,15 +36,8 @@ public class ConfiguracaoRelatoriosEntity {
     @JoinColumn(name = "logo_de_relatorio_3_id")
     private LogoDeRelatorioEntity logoDeRelatorio3;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "configuracao_de_assinatura_de_relatorio_1_id")
-    private ConfiguracaoDeAssinaturaDeRelatorioEntity configuracaoDeAssinaturaDeRelatorio1;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "configuracao_de_assinatura_de_relatorio_2_id")
-    private ConfiguracaoDeAssinaturaDeRelatorioEntity configuracaoDeAssinaturaDeRelatorio2;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "configuracao_de_assinatura_de_relatorio_3_id")
-    private ConfiguracaoDeAssinaturaDeRelatorioEntity configuracaoDeAssinaturaDeRelatorio3;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    private List<ConfiguracaoDeAssinaturaDeRelatorioEntity> configuracoesDeAssinaturaDeRelatorio;
 
     @Column(nullable = false)
     private Boolean showCondicaoClimatica;
@@ -72,20 +67,22 @@ public class ConfiguracaoRelatoriosEntity {
                 .isLogoDoTenant(true)
                 .build();
 
+        boolean clienteNameIsNotEmpty = nomeClienteObra != null && !nomeClienteObra.isBlank();
         ConfiguracaoDeAssinaturaDeRelatorioEntity assinaturaTenantDefault = ConfiguracaoDeAssinaturaDeRelatorioEntity.builder()
-                .nomeAssinante(nomeFantasiaTenant)
+                .nomeAssinante(clienteNameIsNotEmpty ? nomeFantasiaTenant : "Assinatura")
                 .build();
 
         ConfiguracaoDeAssinaturaDeRelatorioEntity assinaturaClienteDefault = ConfiguracaoDeAssinaturaDeRelatorioEntity.builder()
-                .nomeAssinante(nomeClienteObra != null && !nomeClienteObra.isBlank() ? nomeClienteObra : "Assinatura")
+                .nomeAssinante(clienteNameIsNotEmpty ? nomeClienteObra : "Assinatura")
                 .build();
+
+        List<ConfiguracaoDeAssinaturaDeRelatorioEntity> assinaturasDefault = List.of(assinaturaTenantDefault, assinaturaClienteDefault);
 
         return ConfiguracaoRelatoriosEntity.builder()
                 .modeloDeRelatorio(modeloDeRelatorioDefault)
                 .recorrenciaRelatorio(modeloDeRelatorioDefault.getRecorrenciaRelatorio())
                 .logoDeRelatorio1(logoDeRelatorioDefault)
-                .configuracaoDeAssinaturaDeRelatorio1(assinaturaTenantDefault)
-                .configuracaoDeAssinaturaDeRelatorio2(assinaturaClienteDefault)
+                .configuracoesDeAssinaturaDeRelatorio(assinaturasDefault)
                 .showCondicaoClimatica(modeloDeRelatorioDefault.getShowCondicaoClimatica())
                 .showMaoDeObra(modeloDeRelatorioDefault.getShowMaoDeObra())
                 .showEquipamentos(modeloDeRelatorioDefault.getShowEquipamentos())

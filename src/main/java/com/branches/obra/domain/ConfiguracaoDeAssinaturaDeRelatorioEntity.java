@@ -1,7 +1,10 @@
 package com.branches.obra.domain;
 
+import com.branches.relatorio.domain.AssinaturaDeRelatorioEntity;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Setter
 @Getter
@@ -16,4 +19,7 @@ public class ConfiguracaoDeAssinaturaDeRelatorioEntity {
 
     @Column(nullable = false)
     private String nomeAssinante;
+
+    @OneToMany(mappedBy = "configuracao", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<AssinaturaDeRelatorioEntity> assinaturasDeRelatorio;
 }

@@ -14,6 +14,7 @@ import com.branches.material.dto.response.MaterialDeRelatorioResponse;
 import com.branches.obra.dto.response.ObraByRelatorioResponse;
 import com.branches.ocorrencia.domain.OcorrenciaDeRelatorioEntity;
 import com.branches.ocorrencia.dto.response.OcorrenciaDeRelatorioResponse;
+import com.branches.relatorio.domain.AssinaturaDeRelatorioEntity;
 import com.branches.relatorio.domain.enums.StatusRelatorio;
 import com.branches.relatorio.repository.projections.RelatorioDetailsProjection;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -56,13 +57,14 @@ public record GetRelatorioDetailsResponse(
         List<OcorrenciaDeRelatorioResponse> ocorrencias,
         List<ComentarioDeRelatorioResponse> comentarios,
         List<MaterialDeRelatorioResponse> materiais,
+        List<AssinaturaDeRelatorioResponse> assinaturas,
         //todo:adicionar fotos
         StatusRelatorio status,
         ModifyerByRelatorioResponse criadoPor,
         ModifyerByRelatorioResponse ultimaModificacao
 
 ) {
-    public static GetRelatorioDetailsResponse from(RelatorioDetailsProjection relatorioDetails, List<OcorrenciaDeRelatorioEntity> ocorrencias, List<AtividadeDeRelatorioEntity> atividades, List<EquipamentoDeRelatorioEntity> equipamentos, List<MaoDeObraDeRelatorioEntity> maoDeObra, List<ComentarioDeRelatorioEntity> comentarios, List<MaterialDeRelatorioEntity> materiais, Boolean canViewCondicaoDoClima, Boolean canViewHorarioDeTrabalho) {
+    public static GetRelatorioDetailsResponse from(RelatorioDetailsProjection relatorioDetails, List<OcorrenciaDeRelatorioEntity> ocorrencias, List<AtividadeDeRelatorioEntity> atividades, List<EquipamentoDeRelatorioEntity> equipamentos, List<MaoDeObraDeRelatorioEntity> maoDeObra, List<ComentarioDeRelatorioEntity> comentarios, List<MaterialDeRelatorioEntity> materiais, List<AssinaturaDeRelatorioEntity> assinaturas, Boolean canViewCondicaoDoClima, Boolean canViewHorarioDeTrabalho) {
         ObraByRelatorioResponse obra = new ObraByRelatorioResponse(relatorioDetails.getObraIdExterno(), relatorioDetails.getObraNome(), relatorioDetails.getObraEndereco(), relatorioDetails.getObraContratante(), relatorioDetails.getObraResponsavel(), relatorioDetails.getObraNumeroContrato());
 
         String dayOfWeekResponse = relatorioDetails.getDataFim().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.of("pt", "BR"));
@@ -95,6 +97,8 @@ public record GetRelatorioDetailsResponse(
                 comentarios.stream().map(ComentarioDeRelatorioResponse::from).toList() : null;
         var materiaisResponse = materiais != null ?
                 materiais.stream().map(MaterialDeRelatorioResponse::from).toList() : null;
+        var assinaturasResponse = assinaturas != null ?
+                assinaturas.stream().map(AssinaturaDeRelatorioResponse::from).toList() : null;
 
         var logo1 = relatorioDetails.getLogoDeRelatorio1() != null ?
                 LogoDeRelatorioResponse.from(relatorioDetails.getLogoDeRelatorio1()) : null;
@@ -131,6 +135,7 @@ public record GetRelatorioDetailsResponse(
                 ocorrenciasResponse,
                 comentariosResponse,
                 materiaisResponse,
+                assinaturasResponse,
                 relatorioDetails.getStatus(),
                 new ModifyerByRelatorioResponse(relatorioDetails.getCriadoPor(), relatorioDetails.getCriadoEm()),
                 new ModifyerByRelatorioResponse(relatorioDetails.getUltimaModificacaoPor(), relatorioDetails.getUltimaModificacaoEm())
