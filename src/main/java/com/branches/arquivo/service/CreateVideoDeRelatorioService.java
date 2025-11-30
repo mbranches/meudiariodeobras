@@ -8,6 +8,7 @@ import com.branches.arquivo.repository.ArquivoRepository;
 import com.branches.exception.BadRequestException;
 import com.branches.external.aws.S3UploadFile;
 import com.branches.relatorio.repository.projections.RelatorioWithObraProjection;
+import com.branches.relatorio.service.CheckIfUserHasAccessToEditRelatorioService;
 import com.branches.relatorio.service.GetRelatorioWithObraByIdExternoAndTenantIdService;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.usertenant.domain.UserTenantEntity;
@@ -31,16 +32,18 @@ public class CreateVideoDeRelatorioService {
     private final ArquivoRepository arquivoRepository;
 
     private static final long MAX_VIDEO_SIZE_BYTES = 100 * 1024 * 1024; // 100 MB
+    private final CheckIfUserHasAccessToEditRelatorioService checkIfUserHasAccessToEditRelatorioService;
 
     public CreateVideoDeRelatorioResponse execute(CreateVideoDeRelatorioRequest request, String tenantExternalId, String relatorioExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
 
         UserTenantEntity currentUserTenant = getCurrentUserTenantService.execute(userTenants, tenantId);
 
-        RelatorioWithObraProjection relatorio = getRelatorioWithObraByIdExternoAndTenantIdService.execute(relatorioExternalId, tenantId);
+        RelatorioWithObraProjection relatorioWithObra = getRelatorioWithObraByIdExternoAndTenantIdService.execute(relatorioExternalId, tenantId);
 
-        checkIfConfiguracaoDeRelatorioDaObraPermiteVideo.execute(relatorio);
+        checkIfConfiguracaoDeRelatorioDaObraPermiteVideo.execute(relatorioWithObra);
         checkIfUserCanViewVideosService.execute(currentUserTenant);
+        checkIfUserHasAccessToEditRelatorioService.execute(currentUserTenant, relatorioWithObra.getRelatorio().getStatus());
 
         byte[] videoBytes;
         try {
@@ -57,7 +60,7 @@ public class CreateVideoDeRelatorioService {
 
         String videoUrl = s3UploadFile.execute(
                 request.fileName(),
-                "tenants/%s/obras/%s/relatorios/%s/videos".formatted(tenantExternalId, relatorio.getObra().getIdExterno(), relatorioExternalId),
+                "tenants/%s/obras/%s/relatorios/%s/videos".formatted(tenantExternalId, relatorioWithObra.getObra().getIdExterno(), relatorioExternalId),
                 videoBytes,
                 contentType
         );
@@ -66,7 +69,7 @@ public class CreateVideoDeRelatorioService {
                 .nomeArquivo(request.fileName())
                 .url(videoUrl)
                 .tipoArquivo(TipoArquivo.VIDEO)
-                .relatorio(relatorio.getRelatorio())
+                .relatorio(relatorioWithObra.getRelatorio())
                 .tenantId(tenantId)
                 .build();
 

@@ -5,6 +5,7 @@ import com.branches.arquivo.repository.ArquivoRepository;
 import com.branches.exception.InternalServerError;
 import com.branches.exception.NotFoundException;
 import com.branches.relatorio.repository.projections.RelatorioWithObraProjection;
+import com.branches.relatorio.service.CheckIfUserHasAccessToEditRelatorioService;
 import com.branches.relatorio.service.GetRelatorioWithObraByIdExternoAndTenantIdService;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.usertenant.domain.UserTenantEntity;
@@ -25,6 +26,7 @@ public class DeleteArquivoDeRelatorioService {
     private final CheckIfConfiguracaoDeRelatorioDaObraPermiteFoto checkIfConfiguracaoDeRelatorioDaObraPermiteFoto;
     private final CheckIfConfiguracaoDeRelatorioDaObraPermiteVideo checkIfConfiguracaoDeRelatorioDaObraPermiteVideo;
     private final CheckIfUserCanViewVideosService checkIfUserCanViewVideosService;
+    private final CheckIfUserHasAccessToEditRelatorioService checkIfUserHasAccessToEditRelatorioService;
 
     public void execute(Long arquivoId, String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -50,6 +52,7 @@ public class DeleteArquivoDeRelatorioService {
 
             //todo: quando implementar novos tipos de arquivo, adicionar os devidos cases aqui
         }
+        checkIfUserHasAccessToEditRelatorioService.execute(currentUserTenant, relatorioWithObra.getRelatorio().getStatus());
 
         arquivoRepository.delete(arquivoEntity);
     }

@@ -5,6 +5,7 @@ import com.branches.arquivo.domain.enums.TipoArquivo;
 import com.branches.arquivo.dto.UpdateArquivoRequest;
 import com.branches.arquivo.repository.ArquivoRepository;
 import com.branches.relatorio.repository.projections.RelatorioWithObraProjection;
+import com.branches.relatorio.service.CheckIfUserHasAccessToEditRelatorioService;
 import com.branches.relatorio.service.GetRelatorioWithObraByIdExternoAndTenantIdService;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.usertenant.domain.UserTenantEntity;
@@ -24,6 +25,7 @@ public class UpdateFotoDeRelatorioService {
     private final CheckIfConfiguracaoDeRelatorioDaObraPermiteFoto checkIfConfiguracaoDeRelatorioDaObraPermiteFoto;
     private final GetArquivoDeRelatorioByIdAndRelatorioIdService getArquivoDeRelatorioByIdAndRelatorioIdAndTipoService;
     private final ArquivoRepository arquivoRepository;
+    private final CheckIfUserHasAccessToEditRelatorioService checkIfUserHasAccessToEditRelatorioService;
 
     public void execute(UpdateArquivoRequest request, Long arquivoId, String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -34,6 +36,7 @@ public class UpdateFotoDeRelatorioService {
 
         checkIfConfiguracaoDeRelatorioDaObraPermiteFoto.execute(relatorioWithObra);
         checkIfUserCanViewFotosService.execute(currentUserTenant);
+        checkIfUserHasAccessToEditRelatorioService.execute(currentUserTenant, relatorioWithObra.getRelatorio().getStatus());
 
         ArquivoEntity toEdit = getArquivoDeRelatorioByIdAndRelatorioIdAndTipoService.execute(arquivoId, relatorioWithObra.getRelatorio().getId(), TipoArquivo.FOTO);
         toEdit.setDescricao(request.descricao());
