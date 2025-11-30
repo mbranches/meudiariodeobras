@@ -22,4 +22,8 @@ public class ConfiguracaoDeAssinaturaDeRelatorioEntity {
 
     @OneToMany(mappedBy = "configuracao", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<AssinaturaDeRelatorioEntity> assinaturasDeRelatorio;
+
+    @ManyToOne
+    @JoinColumn(name = "configuracao_relatorios_id", nullable = false)
+    private ConfiguracaoRelatoriosEntity configuracaoRelatorios;
 }

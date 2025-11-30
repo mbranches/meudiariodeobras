@@ -67,22 +67,10 @@ public class ConfiguracaoRelatoriosEntity {
                 .isLogoDoTenant(true)
                 .build();
 
-        boolean clienteNameIsNotEmpty = nomeClienteObra != null && !nomeClienteObra.isBlank();
-        ConfiguracaoDeAssinaturaDeRelatorioEntity assinaturaTenantDefault = ConfiguracaoDeAssinaturaDeRelatorioEntity.builder()
-                .nomeAssinante(clienteNameIsNotEmpty ? nomeFantasiaTenant : "Assinatura")
-                .build();
-
-        ConfiguracaoDeAssinaturaDeRelatorioEntity assinaturaClienteDefault = ConfiguracaoDeAssinaturaDeRelatorioEntity.builder()
-                .nomeAssinante(clienteNameIsNotEmpty ? nomeClienteObra : "Assinatura")
-                .build();
-
-        List<ConfiguracaoDeAssinaturaDeRelatorioEntity> assinaturasDefault = List.of(assinaturaTenantDefault, assinaturaClienteDefault);
-
-        return ConfiguracaoRelatoriosEntity.builder()
+        var config = ConfiguracaoRelatoriosEntity.builder()
                 .modeloDeRelatorio(modeloDeRelatorioDefault)
                 .recorrenciaRelatorio(modeloDeRelatorioDefault.getRecorrenciaRelatorio())
                 .logoDeRelatorio1(logoDeRelatorioDefault)
-                .configuracoesDeAssinaturaDeRelatorio(assinaturasDefault)
                 .showCondicaoClimatica(modeloDeRelatorioDefault.getShowCondicaoClimatica())
                 .showMaoDeObra(modeloDeRelatorioDefault.getShowMaoDeObra())
                 .showEquipamentos(modeloDeRelatorioDefault.getShowEquipamentos())
@@ -93,5 +81,22 @@ public class ConfiguracaoRelatoriosEntity {
                 .showHorarioDeTrabalho(modeloDeRelatorioDefault.getShowHorarioDeTrabalho())
                 .showFotos(modeloDeRelatorioDefault.getShowFotos())
                 .build();
+
+        boolean clienteNameIsNotEmpty = nomeClienteObra != null && !nomeClienteObra.isBlank();
+        ConfiguracaoDeAssinaturaDeRelatorioEntity assinaturaTenantDefault = ConfiguracaoDeAssinaturaDeRelatorioEntity.builder()
+                .nomeAssinante(clienteNameIsNotEmpty ? nomeFantasiaTenant : "Assinatura")
+                .configuracaoRelatorios(config)
+                .build();
+
+        ConfiguracaoDeAssinaturaDeRelatorioEntity assinaturaClienteDefault = ConfiguracaoDeAssinaturaDeRelatorioEntity.builder()
+                .nomeAssinante(clienteNameIsNotEmpty ? nomeClienteObra : "Assinatura")
+                .configuracaoRelatorios(config)
+                .build();
+
+
+        List<ConfiguracaoDeAssinaturaDeRelatorioEntity> assinaturasDefault = List.of(assinaturaTenantDefault, assinaturaClienteDefault);
+        config.setConfiguracoesDeAssinaturaDeRelatorio(assinaturasDefault);
+
+        return config;
     }
 }

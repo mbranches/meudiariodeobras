@@ -145,4 +145,5 @@ public interface RelatorioRepository extends JpaRepository<RelatorioEntity, Long
     """)
     Optional<RelatorioWithObraProjection> findRelatorioWithObraByIdExternoAndTenantId(String relatorioExternalId, Long tenantId);
 
+    List<RelatorioEntity> findAllByObraId(Long obraId);
 }
