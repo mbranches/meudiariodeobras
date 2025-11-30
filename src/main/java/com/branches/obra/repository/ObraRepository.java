@@ -17,8 +17,6 @@ public interface ObraRepository extends JpaRepository<ObraEntity, Long> {
 
     Optional<ObraEntity> findByIdExternoAndTenantIdAndAtivoIsTrue(String idExterno, Long tenantId);
 
-    List<ObraEntity> findAllByTenantIdAndIdInAndAtivoIsTrue(Long tenantId, Collection<Long> ids);
-
     List<ObraEntity> findAllByIdExternoInAndTenantIdAndAtivoIsTrue(Collection<String> obrasExternalIds, Long tenantId);
 
     @Query("""
@@ -27,6 +25,7 @@ public interface ObraRepository extends JpaRepository<ObraEntity, Long> {
         o.status AS status,
         o.capaUrl AS capaUrl,
         o.dataInicio AS dataInicio,
+        o.dataPrevistaFim AS dataPrevistaFim,
         (
             SELECT COUNT(1)
             FROM RelatorioEntity r
@@ -37,7 +36,14 @@ public interface ObraRepository extends JpaRepository<ObraEntity, Long> {
             FROM ArquivoEntity a
             WHERE a.relatorio.obraId = o.id
             AND a.tipoArquivo = 'FOTO'
-        ) AS quantityOfFotos
+        ) AS quantityOfFotos,
+        (
+            SELECT r.dataInicio
+            FROM RelatorioEntity r
+            WHERE r.obraId = o.id AND r.ativo IS TRUE
+            ORDER BY r.dataInicio DESC
+            LIMIT 1
+        ) AS dataUltimoRelatorio
     FROM ObraEntity o
     WHERE o.tenantId = :tenantId AND o.ativo IS TRUE
 """)
@@ -49,6 +55,7 @@ public interface ObraRepository extends JpaRepository<ObraEntity, Long> {
         o.status AS status,
         o.capaUrl AS capaUrl,
         o.dataInicio AS dataInicio,
+        o.dataPrevistaFim AS dataPrevistaFim,
         (
             SELECT COUNT(1)
             FROM RelatorioEntity r
@@ -59,7 +66,14 @@ public interface ObraRepository extends JpaRepository<ObraEntity, Long> {
             FROM ArquivoEntity a
             WHERE a.relatorio.obraId = o.id
             AND a.tipoArquivo = 'FOTO'
-        ) AS quantityOfFotos
+        ) AS quantityOfFotos,
+        (
+            SELECT r.dataInicio
+            FROM RelatorioEntity r
+            WHERE r.obraId = o.id AND r.ativo IS TRUE
+            ORDER BY r.dataInicio DESC
+            LIMIT 1
+        ) AS dataUltimoRelatorio
     FROM ObraEntity o
     WHERE o.id IN :userAllowedObrasIds
         AND o.tenantId = :tenantId

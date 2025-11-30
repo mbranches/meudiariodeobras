@@ -9,7 +9,9 @@ public interface ObraProjection {
     String getNome();
     String getCapaUrl();
     LocalDate getDataInicio();
+    LocalDate getDataPrevistaFim();
     StatusObra getStatus();
     Long getQuantityOfRelatorios();
     Long getQuantityOfFotos();
+    LocalDate getDataUltimoRelatorio();
 }

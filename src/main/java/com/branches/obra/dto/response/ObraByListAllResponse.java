@@ -3,6 +3,7 @@ package com.branches.obra.dto.response;
 import com.branches.obra.domain.enums.StatusObra;
 import com.branches.obra.repository.projections.ObraProjection;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record ObraByListAllResponse(
@@ -12,9 +13,11 @@ public record ObraByListAllResponse(
         String capaUrl,
         LocalDate dataInicio,
         Long quantityOfRelatorios,
-        Long quantityOfFotos
+        Long quantityOfFotos,
+        BigDecimal prazoPercentualDecorrido,
+        LocalDate dataUltimoRelatorio
 ) {
-    public static ObraByListAllResponse from(ObraProjection obra) {
+    public static ObraByListAllResponse from(ObraProjection obra, BigDecimal prazoPercentualDecorrido) {
         return new ObraByListAllResponse(
                 obra.getIdExterno(),
                 obra.getNome(),
@@ -22,7 +25,9 @@ public record ObraByListAllResponse(
                 obra.getCapaUrl(),
                 obra.getDataInicio(),
                 obra.getQuantityOfRelatorios(),
-                obra.getQuantityOfFotos()
+                obra.getQuantityOfFotos(),
+                prazoPercentualDecorrido,
+                obra.getDataUltimoRelatorio()
         );
     }
 }
