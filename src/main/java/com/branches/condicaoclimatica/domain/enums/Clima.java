@@ -1,7 +1,14 @@
 package com.branches.condicaoclimatica.domain.enums;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Getter
 public enum Clima {
-    CLARO,
-    NUBLADO,
-    CHUVOSO
+    CLARO("Claro"),
+    NUBLADO("Nublado"),
+    CHUVOSO("Chuvoso");
+
+    private final String descricao;
 }
