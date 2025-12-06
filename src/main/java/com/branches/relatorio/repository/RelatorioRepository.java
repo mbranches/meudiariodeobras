@@ -5,6 +5,8 @@ import com.branches.relatorio.domain.enums.StatusRelatorio;
 import com.branches.relatorio.repository.projections.RelatorioDetailsProjection;
 import com.branches.relatorio.repository.projections.RelatorioProjection;
 import com.branches.relatorio.repository.projections.RelatorioWithObraProjection;
+import com.branches.usertenant.domain.enums.PerfilUserTenant;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -25,6 +27,7 @@ public interface RelatorioRepository extends JpaRepository<RelatorioEntity, Long
     SELECT r.id AS id,
         r.idExterno AS idExterno,
         t.id AS tenantId,
+        o.id AS obraId,
         o.idExterno AS obraIdExterno,
         o.nome AS obraNome,
         o.endereco AS obraEndereco,
@@ -84,6 +87,7 @@ public interface RelatorioRepository extends JpaRepository<RelatorioEntity, Long
     SELECT r.id AS id,
         r.idExterno AS idExterno,
         t.id AS tenantId,
+        o.id AS obraId,
         o.idExterno AS obraIdExterno,
         o.nome AS obraNome,
         o.endereco AS obraEndereco,
@@ -208,4 +212,46 @@ public interface RelatorioRepository extends JpaRepository<RelatorioEntity, Long
     Optional<RelatorioWithObraProjection> findRelatorioWithObraByIdExternoAndTenantId(String relatorioExternalId, Long tenantId);
 
     List<RelatorioEntity> findAllByObraId(Long obraId);
+
+    @Query("""
+    SELECT r.idExterno AS idExterno,
+        r.dataInicio AS dataInicio,
+        r.dataFim AS dataFim,
+        r.numero AS numero,
+        r.status AS status,
+        o.idExterno AS obraIdExterno,
+        o.nome AS obraNome,
+        o.endereco AS obraEndereco,
+        o.contratante AS obraContratante,
+        o.responsavel AS obraResponsavel,
+        o.numeroContrato AS obraNumeroContrato
+    FROM RelatorioEntity r
+    JOIN ObraEntity o ON o.id = r.obraId AND o.tenantId = r.tenantId
+    WHERE r.tenantId = :tenantId
+      AND r.status = 'APROVADO'
+      AND (:perfil = 'ADMINISTRADOR' OR o.id IN :obrasIdAllowed)
+       
+""")
+    Page<RelatorioProjection> findAllByTenantIdAndIsAprovadoAndUserAccessToTheObraPai(Long tenantId, Long userId, List<Long> obrasIdAllowed, PerfilUserTenant perfil, Pageable pageable);
+
+    @Query("""
+    SELECT r.idExterno AS idExterno,
+        r.dataInicio AS dataInicio,
+        r.dataFim AS dataFim,
+        r.numero AS numero,
+        r.status AS status,
+        a.arquivoUrl AS pdfUrl,
+        o.idExterno AS obraIdExterno,
+        o.nome AS obraNome,
+        o.endereco AS obraEndereco,
+        o.contratante AS obraContratante,
+        o.responsavel AS obraResponsavel,
+        o.numeroContrato AS obraNumeroContrato
+    FROM RelatorioEntity r
+    JOIN ObraEntity o ON o.id = r.obraId AND o.tenantId = r.tenantId
+    JOIN ArquivoDeRelatorioDeUsuarioEntity a ON a.userId = :userId AND a.relatorioId = r.id
+    WHERE r.tenantId = :tenantId
+        AND (:perfil = 'ADMINISTRADOR' OR o.id IN :obrasIdAllowed)
+""")
+    Page<RelatorioProjection> findAllByTenantIdAndUserAccessToTheObraPai(Long tenantId, Long userId, List<Long> obrasIdAllowed, PerfilUserTenant perfil, Pageable pageable);
 }

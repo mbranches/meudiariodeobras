@@ -119,9 +119,9 @@ public class GenerateRelatorioFileToUsersService {
                 ))
                 .toList();
 
-        arquivoDeRelatorioDeUsuarioRepository.saveAll(arquivoDeRelatorioDeUsuarioToSaveList);
-
         CompletableFuture.allOf(geracoesDosRelatoriosAsync.toArray(new CompletableFuture[0])).join();
+
+        arquivoDeRelatorioDeUsuarioRepository.saveAll(arquivoDeRelatorioDeUsuarioToSaveList);
     }
 
     private void generateFile(
