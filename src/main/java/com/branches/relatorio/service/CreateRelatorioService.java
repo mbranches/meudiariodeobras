@@ -48,6 +48,7 @@ public class CreateRelatorioService {
     private final MaoDeObraDeRelatorioRepository maoDeObraDeRelatorioRepository;
     private final EquipamentoDeRelatorioRepository equipamentoDeRelatorioRepository;
     private final OcorrenciaDeRelatorioRepository ocorrenciaDeRelatorioRepository;
+    private final GenerateRelatorioFileToUsersService generateRelatorioFileToUsersService;
 
     public CreateRelatorioResponse execute(CreateRelatorioRequest request, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -88,10 +89,7 @@ public class CreateRelatorioService {
             copyInfoFromLastRelatorio(tenantId, obra.getId(), savedRelatorio, request, configuracaoRelatorios);
         }
 
-        //todo: gerar o html
-        //todo: gerar o pdf
-        //todo: salvar o pdf no s3
-        //todo: atualizar o relatorio com o pdf url
+        generateRelatorioFileToUsersService.execute(savedRelatorio.getId());
 
         return new CreateRelatorioResponse(savedRelatorio.getIdExterno());
     }
