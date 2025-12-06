@@ -48,8 +48,9 @@ public class CreateOcorrenciaDeRelatorioService {
 
         checkIfUserCanViewOcorrenciasService.execute(userTenant);
 
-        HashSet<Long> tiposOcorrenciaIds = new HashSet<>(request.tiposOcorrenciaIds());
-        List<TipoDeOcorrenciaEntity> tiposDeOcorrencia = getTiposDeOcorrenciaByTenantIdAndIdInService.execute(tenantId, tiposOcorrenciaIds);
+        List<TipoDeOcorrenciaEntity> tiposDeOcorrencia = request.tiposOcorrenciaIds() != null && !request.tiposOcorrenciaIds().isEmpty() ?
+                getTiposDeOcorrenciaByTenantIdAndIdInService.execute(tenantId, new HashSet<>(request.tiposOcorrenciaIds()))
+                : null;
 
         List<CampoPersonalizadoEntity> camposPersonalizados = request.camposPersonalizados() != null ? request.camposPersonalizados().stream()
                 .map(campoRequest -> campoRequest.toEntity(tenantId))
