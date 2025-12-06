@@ -65,10 +65,23 @@ public record GetRelatorioDetailsResponse(
         List<FileResponse> videos,
         StatusRelatorio status,
         ModifyerByRelatorioResponse criadoPor,
-        ModifyerByRelatorioResponse ultimaModificacao
+        ModifyerByRelatorioResponse ultimaModificacao,
+        String pdfUrl
 
 ) {
-    public static GetRelatorioDetailsResponse from(RelatorioDetailsProjection relatorioDetails, List<OcorrenciaDeRelatorioEntity> ocorrencias, List<AtividadeDeRelatorioEntity> atividades, List<EquipamentoDeRelatorioEntity> equipamentos, List<MaoDeObraDeRelatorioEntity> maoDeObra, List<ComentarioDeRelatorioEntity> comentarios, List<MaterialDeRelatorioEntity> materiais, List<AssinaturaDeRelatorioEntity> assinaturas, List<ArquivoEntity> fotos, List<ArquivoEntity> videos, Boolean canViewCondicaoDoClima, Boolean canViewHorarioDeTrabalho) {
+    public static GetRelatorioDetailsResponse from(RelatorioDetailsProjection relatorioDetails,
+                                                   List<OcorrenciaDeRelatorioEntity> ocorrencias,
+                                                   List<AtividadeDeRelatorioEntity> atividades,
+                                                   List<EquipamentoDeRelatorioEntity> equipamentos,
+                                                   List<MaoDeObraDeRelatorioEntity> maoDeObra,
+                                                   List<ComentarioDeRelatorioEntity> comentarios,
+                                                   List<MaterialDeRelatorioEntity> materiais,
+                                                   List<AssinaturaDeRelatorioEntity> assinaturas,
+                                                   List<ArquivoEntity> fotos,
+                                                   List<ArquivoEntity> videos,
+                                                   Boolean canViewCondicaoDoClima,
+                                                   Boolean canViewHorarioDeTrabalho,
+                                                   String pdfUrl) {
         ObraByRelatorioResponse obra = new ObraByRelatorioResponse(relatorioDetails.getObraIdExterno(), relatorioDetails.getObraNome(), relatorioDetails.getObraEndereco(), relatorioDetails.getObraContratante(), relatorioDetails.getObraResponsavel(), relatorioDetails.getObraNumeroContrato());
 
         String dayOfWeekResponse = relatorioDetails.getDataInicio().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.of("pt", "BR"));
@@ -149,7 +162,8 @@ public record GetRelatorioDetailsResponse(
                 videosResponse,
                 relatorioDetails.getStatus(),
                 new ModifyerByRelatorioResponse(relatorioDetails.getCriadoPor(), relatorioDetails.getCriadoEm()),
-                new ModifyerByRelatorioResponse(relatorioDetails.getUltimaModificacaoPor(), relatorioDetails.getUltimaModificacaoEm())
+                new ModifyerByRelatorioResponse(relatorioDetails.getUltimaModificacaoPor(), relatorioDetails.getUltimaModificacaoEm()),
+                pdfUrl
         );
     }
 }

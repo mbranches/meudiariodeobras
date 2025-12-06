@@ -44,6 +44,7 @@ public class GetRelatorioDetailsService {
     private final MaterialDeRelatorioRepository materialDeRelatorioRepository;
     private final AssinaturaDeRelatorioRepository assinaturaDeRelatorioRepository;
     private final ArquivoRepository arquivoRepository;
+    private final GetUrlDeRelatorioByUserIdService getUrlDeRelatorioByUserIdService;
 
     public GetRelatorioDetailsResponse execute(String tenantExternalId,
                                                String relatorioExternalId,
@@ -83,6 +84,8 @@ public class GetRelatorioDetailsService {
         List<ArquivoEntity> fotos = canViewFotos ? arquivos.stream().filter(ArquivoEntity::getIsFoto).toList() : null;
         List<ArquivoEntity> videos = canViewVideos ? arquivos.stream().filter(ArquivoEntity::getIsVideo).toList() : null;
 
+        String pdfUrl = getUrlDeRelatorioByUserIdService.execute(relatorioId, currentUserTenant.getUser().getId());
+
         return GetRelatorioDetailsResponse.from(
                 relatorioDetails,
                 ocorrencias,
@@ -95,7 +98,8 @@ public class GetRelatorioDetailsService {
                 fotos,
                 videos,
                 canViewCondicaoDoClima,
-                canViewHorarioDeTrabalho
+                canViewHorarioDeTrabalho,
+                pdfUrl
         );
     }
 
