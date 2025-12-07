@@ -6,6 +6,7 @@ import com.branches.relatorio.service.ListarRelatoriosService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.utils.PageResponse;
 import com.branches.utils.PageableRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class ListarRelatoriosController {
 
     @GetMapping("/api/tenants/{tenantExternalId}/relatorios")
     public ResponseEntity<PageResponse<RelatorioResponse>> execute(@PathVariable String tenantExternalId,
-                                                           PageableRequest pageableRequest) {
+                                                                   @Valid PageableRequest pageableRequest) {
         List<UserTenantEntity> userTenants = UserTenantsContext.getUserTenants();
 
         PageResponse<RelatorioResponse> response = listarRelatoriosService.execute(tenantExternalId, userTenants, pageableRequest);

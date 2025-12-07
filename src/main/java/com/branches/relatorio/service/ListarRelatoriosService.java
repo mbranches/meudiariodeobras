@@ -31,7 +31,7 @@ public class ListarRelatoriosService {
         PageRequest pageRequest = PageRequest.of(
                 pageableRequest.pageNumber(),
                 pageableRequest.pageSize(),
-                pageableRequest.sort(),
+                pageableRequest.sortDirection(),
                 "dataInicio"
         );
 
