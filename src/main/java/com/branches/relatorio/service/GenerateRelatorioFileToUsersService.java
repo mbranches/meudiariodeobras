@@ -27,6 +27,7 @@ import com.branches.tenant.domain.TenantEntity;
 import com.branches.tenant.service.GetTenantByIdService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.repository.UserTenantRepository;
+import com.branches.utils.ItemRelatorio;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -58,17 +59,81 @@ public class GenerateRelatorioFileToUsersService {
     private final ArquivoDeRelatorioDeUsuarioRepository arquivoDeRelatorioDeUsuarioRepository;
 
     public void execute(Long relatorioId) {
-        RelatorioDetailsProjection details = relatorioRepository.findDetailsWithoutPdfLinkById(relatorioId)
-                .orElseThrow(() -> new NotFoundException("Relatório não encontrado com o id: " + relatorioId));
+        RelatorioDetailsProjection details = getRelatorioDetailsOrThrow(relatorioId);
 
+        List<UserTenantEntity> userTenants = getUserTenantsWithAccessToRelatorio(details.getTenantId(), details.getObraId());
+
+        processFilesToUsers(details, userTenants);
+    }
+
+    public void executeOnlyToNecessaryUsers(Long relatorioId, ItemRelatorio itemAtualizado) {
+        RelatorioDetailsProjection details = getRelatorioDetailsOrThrow(relatorioId);
+
+        List<UserTenantEntity> userTenants = getUserTenantsWithAccessToRelatorio(details.getTenantId(), details.getObraId());
+
+        List<UserTenantEntity> necessaryUsers = userTenants.stream()
+                .filter(userTenant -> {
+                    switch (itemAtualizado) {
+                        case OCORRENCIAS -> {
+                            return userTenant.getAuthorities().getItensDeRelatorio().getOcorrencias();
+                        }
+                        case ATIVIDADES -> {
+                            return userTenant.getAuthorities().getItensDeRelatorio().getAtividades();
+                        }
+                        case EQUIPAMENTOS -> {
+                            return userTenant.getAuthorities().getItensDeRelatorio().getEquipamentos();
+                        }
+                        case MAO_DE_OBRA -> {
+                            return userTenant.getAuthorities().getItensDeRelatorio().getMaoDeObra();
+                        }
+                        case COMENTARIOS -> {
+                            return userTenant.getAuthorities().getItensDeRelatorio().getComentarios();
+                        }
+                        case MATERIAIS -> {
+                            return userTenant.getAuthorities().getItensDeRelatorio().getMateriais();
+                        }
+                        case FOTOS -> {
+                            return userTenant.getAuthorities().getItensDeRelatorio().getFotos();
+                        }
+                        case VIDEOS -> {
+                            return userTenant.getAuthorities().getItensDeRelatorio().getVideos();
+                        }
+                        case CONDICAO_CLIMATICA -> {
+                            return userTenant.getAuthorities().getItensDeRelatorio().getCondicaoDoClima();
+                        }
+                        case HORARIO_DE_TRABALHO -> {
+                            return userTenant.getAuthorities().getItensDeRelatorio().getHorarioDeTrabalho();
+                        }
+                        default -> {
+                            return false;
+                        }
+                    }
+                }).toList();
+
+        processFilesToUsers(details, necessaryUsers);
+    }
+
+    private RelatorioDetailsProjection getRelatorioDetailsOrThrow(Long relatorioId) {
+        return relatorioRepository.findDetailsWithoutPdfLinkById(relatorioId)
+                .orElseThrow(() -> new NotFoundException("Relatório não encontrado com o id: " + relatorioId));
+    }
+
+    private List<UserTenantEntity> getUserTenantsWithAccessToRelatorio(Long tenantId, Long obraId) {
+        return userTenantRepository.findAllByTenantIdAndUserHasAccessToObraId(
+                tenantId,
+                obraId
+        );
+    }
+
+    private void processFilesToUsers(
+            RelatorioDetailsProjection details,
+            List<UserTenantEntity> userTenants
+    ) {
         ObraEntity obra = getObraByIdAndTenantIdService.execute(details.getObraId(), details.getTenantId());
 
         TenantEntity tenantEntity = getTenantByIdService.execute(details.getTenantId());
 
-        List<UserTenantEntity> userTenants = userTenantRepository.findAllByTenantIdAndUserHasAccessToObraId(
-                details.getTenantId(),
-                details.getObraId()
-        );
+        Long relatorioId = details.getId();
 
         Map<Long, ArquivoDeRelatorioDeUsuarioEntity> mapUserIdAndArquivoDeRelatorio = getMapOfExistingArquivoDeRelatorioToUserId(userTenants, relatorioId);
 
@@ -99,22 +164,22 @@ public class GenerateRelatorioFileToUsersService {
         List<CompletableFuture<Void>> geracoesDosRelatoriosAsync = userTenants.stream()
                 .map(userTenant -> CompletableFuture.runAsync(() ->
                         generateFile(
-                            details,
-                            tenantEntity,
-                            obra,
-                            userTenant,
-                            ocorrencias,
-                            atividades,
-                            equipamentos,
-                            maoDeObra,
-                            comentarios,
-                            materiais,
-                            fotos,
-                            videos,
-                            assinaturas,
-                            relatorioId,
-                            mapUserIdAndArquivoDeRelatorio,
-                            arquivoDeRelatorioDeUsuarioToSaveList
+                                details,
+                                tenantEntity,
+                                obra,
+                                userTenant,
+                                ocorrencias,
+                                atividades,
+                                equipamentos,
+                                maoDeObra,
+                                comentarios,
+                                materiais,
+                                fotos,
+                                videos,
+                                assinaturas,
+                                relatorioId,
+                                mapUserIdAndArquivoDeRelatorio,
+                                arquivoDeRelatorioDeUsuarioToSaveList
                         )
                 ))
                 .toList();
