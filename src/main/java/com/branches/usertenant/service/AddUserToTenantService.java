@@ -6,6 +6,7 @@ import com.branches.exception.BadRequestException;
 import com.branches.exception.ForbiddenException;
 import com.branches.obra.domain.ObraEntity;
 import com.branches.obra.service.GetObrasByTenantIdAndIdExternoIn;
+import com.branches.relatorio.service.GenerateRelatorioFileOfObrasForSingleUserService;
 import com.branches.tenant.domain.TenantEntity;
 import com.branches.tenant.service.GetTenantByIdExternoService;
 import com.branches.user.domain.UserEntity;
@@ -47,6 +48,7 @@ public class AddUserToTenantService {
     private final GetTenantByIdExternoService getTenantByIdExternoService;
     private final ValidatePassword validatePassword;
     private final FullNameFormatter fullNameFormatter;
+    private final GenerateRelatorioFileOfObrasForSingleUserService generateRelatorioFileOfObrasForSingleUserService;
 
     public void execute(AddUserToTenantRequest request, String tenantExternalId, List<UserTenantEntity> userTenants) {
         TenantEntity tenant = getTenantByIdExternoService.execute(tenantExternalId);
@@ -85,7 +87,7 @@ public class AddUserToTenantService {
         newUserTenant.setUserObraPermitidaEntities(userObrasPermitidaEntities);
         newUserTenant.setarId();
 
-        userTenantRepository.save(newUserTenant);
+        UserTenantEntity savedUserTenant = userTenantRepository.save(newUserTenant);
 
         boolean userIsNewInSystem = userByEmailOptional.isEmpty();
         if (userIsNewInSystem) {
@@ -95,6 +97,8 @@ public class AddUserToTenantService {
         }
 
         sendEmailToExistingUserAddedToTenant(user.getEmail(), tenant);
+
+        generateRelatorioFileOfObrasForSingleUserService.execute(savedUserTenant, savedUserTenant.getObrasPermitidasIds());
     }
 
     private void sendEmailToNewUserAddedToTenant(String email, TenantEntity tenant, String password) {
