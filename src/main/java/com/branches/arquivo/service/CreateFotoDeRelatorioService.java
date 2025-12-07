@@ -35,6 +35,7 @@ public class CreateFotoDeRelatorioService {
     private final GetRelatorioWithObraByIdExternoAndTenantIdService getRelatorioWithObraByIdExternoAndTenantIdService;
     private final ArquivoRepository arquivoRepository;
     private final CheckIfUserHasAccessToEditRelatorioService checkIfUserHasAccessToEditRelatorioService;
+    private final CheckIfUserCanAddFotosToRelatorioService checkIfUserCanAddFotosToRelatorioService;
 
     public FotoDeRelatorioResponse execute(CreateFotoDeRelatorioRequest request, String tenantExternalId, String relatorioExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -46,6 +47,7 @@ public class CreateFotoDeRelatorioService {
         checkIfConfiguracaoDeRelatorioDaObraPermiteFoto.execute(relatorioWithObra);
         checkIfUserCanViewFotosService.execute(currentUserTenant);
         checkIfUserHasAccessToEditRelatorioService.execute(currentUserTenant, relatorioWithObra.getRelatorio().getStatus());
+        checkIfUserCanAddFotosToRelatorioService.execute(currentUserTenant);
 
         byte[] imageBytes = compressImage.execute(request.base64Image(), 800, 800, 0.8, ImageOutPutFormat.JPEG);
 

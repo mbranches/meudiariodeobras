@@ -26,6 +26,7 @@ public class CreateComentarioDeRelatorioService {
     private final CheckIfConfiguracaoDeRelatorioDaObraPermiteComentarioService checkIfConfiguracaoDeRelatorioDaObraPermiteComentarioService;
     private final CheckIfUserCanViewComentariosService checkIfUserCanViewComentariosService;
     private final ComentarioDeRelatorioRepository comentarioDeRelatorioRepository;
+    private final CheckIfUserCanAddComentariosToRelatorioService checkIfUserCanAddComentariosToRelatorioService;
 
     public CreateComentarioDeRelatorioResponse execute(CreateComentarioDeRelatorioRequest request, String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -35,10 +36,9 @@ public class CreateComentarioDeRelatorioService {
         RelatorioEntity relatorio = getRelatorioByIdExternoAndTenantIdService.execute(relatorioExternalId, tenantId);
 
         checkIfUserHasAccessToEditRelatorioService.execute(userTenant, relatorio.getStatus());
-
         checkIfConfiguracaoDeRelatorioDaObraPermiteComentarioService.execute(relatorio.getObraId(), tenantId);
-
         checkIfUserCanViewComentariosService.execute(userTenant);
+        checkIfUserCanAddComentariosToRelatorioService.execute(userTenant);
 
         List<CampoPersonalizadoEntity> camposPersonalizados = request.camposPersonalizados() != null ?
                 request.camposPersonalizados().stream()
