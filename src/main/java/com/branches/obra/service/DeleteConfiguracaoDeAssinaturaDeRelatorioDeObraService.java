@@ -4,6 +4,7 @@ import com.branches.exception.NotFoundException;
 import com.branches.obra.domain.ConfiguracaoDeAssinaturaDeRelatorioEntity;
 import com.branches.obra.domain.ConfiguracaoRelatoriosEntity;
 import com.branches.obra.domain.ObraEntity;
+import com.branches.relatorio.service.RegenerateTodosOsRelatoriosDeObraService;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
@@ -20,6 +21,7 @@ public class DeleteConfiguracaoDeAssinaturaDeRelatorioDeObraService {
     private final GetCurrentUserTenantService getCurrentUserTenantService;
     private final GetObraByIdExternoAndTenantIdService getObraByIdExternoAndTenantIdService;
     private final CheckIfUserCanEditObraService checkIfUserCanEditObraService;
+    private final RegenerateTodosOsRelatoriosDeObraService regenerateTodosOsRelatoriosDeObraService;
 
     @Transactional
     public void execute(Long id, String obraExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
@@ -39,5 +41,7 @@ public class DeleteConfiguracaoDeAssinaturaDeRelatorioDeObraService {
                 .orElseThrow(() -> new NotFoundException("Configuração de assinatura não encontrada com o id: " + id));
 
         configAssinaturas.remove(toDelete);
+
+        regenerateTodosOsRelatoriosDeObraService.execute(obra);
     }
 }

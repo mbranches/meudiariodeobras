@@ -3,6 +3,7 @@ package com.branches.obra.service;
 import com.branches.obra.domain.ConfiguracaoRelatoriosEntity;
 import com.branches.obra.domain.ObraEntity;
 import com.branches.obra.dto.request.UpdateConfiguracoesDeRelatoriosDeObraRequest;
+import com.branches.relatorio.service.RegenerateTodosOsRelatoriosDeObraService;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
@@ -19,6 +20,7 @@ public class UpdateConfiguracoesDeRelatoriosDeObraService {
     private final GetCurrentUserTenantService getCurrentUserTenantService;
     private final CheckIfUserCanEditObraService checkIfUserCanEditObraService;
     private final GetObraByIdExternoAndTenantIdService getObraByIdExternoAndTenantIdService;
+    private final RegenerateTodosOsRelatoriosDeObraService regenerateTodosOsRelatoriosDeObraService;
 
     @Transactional
     public void execute(UpdateConfiguracoesDeRelatoriosDeObraRequest request, String obraExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
@@ -41,5 +43,7 @@ public class UpdateConfiguracoesDeRelatoriosDeObraService {
         configuracaoRelatorios.setShowHorarioDeTrabalho(request.showHorarioDeTrabalho());
         configuracaoRelatorios.setShowFotos(request.showFotos());
         configuracaoRelatorios.setShowVideos(request.showVideos());
+
+        regenerateTodosOsRelatoriosDeObraService.execute(obra);
     }
 }

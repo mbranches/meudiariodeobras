@@ -6,6 +6,7 @@ import com.branches.obra.domain.ConfiguracaoRelatoriosEntity;
 import com.branches.obra.domain.LogoDeRelatorioEntity;
 import com.branches.obra.domain.ObraEntity;
 import com.branches.relatorio.repository.LogoDeRelatorioRepository;
+import com.branches.relatorio.service.RegenerateTodosOsRelatoriosDeObraService;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
@@ -23,6 +24,7 @@ public class RemoveLogoDeConfigDeRelatorioService {
     private final GetObraByIdExternoAndTenantIdService getObraByIdExternoAndTenantIdService;
     private final CheckIfUserCanEditObraService checkIfUserCanEditObraService;
     private final LogoDeRelatorioRepository logoDeRelatorioRepository;
+    private final RegenerateTodosOsRelatoriosDeObraService regenerateTodosOsRelatoriosDeObraService;
 
     public void execute(TipoLogoDeConfiguracaoDeRelatorio tipoLogo, String obraExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -45,5 +47,7 @@ public class RemoveLogoDeConfigDeRelatorioService {
         logoToEdit.setExibir(false);
 
         logoDeRelatorioRepository.save(logoToEdit);
+
+        regenerateTodosOsRelatoriosDeObraService.execute(obra);
     }
 }

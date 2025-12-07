@@ -8,6 +8,7 @@ import com.branches.obra.domain.LogoDeRelatorioEntity;
 import com.branches.obra.domain.ObraEntity;
 import com.branches.relatorio.dto.request.UpdateLogoDeConfigDeRelatorioRequest;
 import com.branches.relatorio.repository.LogoDeRelatorioRepository;
+import com.branches.relatorio.service.RegenerateTodosOsRelatoriosDeObraService;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
@@ -29,6 +30,7 @@ public class UpdateLogoDeConfigDeRelatorioService {
     private final CompressImage compressImage;
     private final S3UploadFile s3UploadFile;
     private final LogoDeRelatorioRepository logoDeRelatorioRepository;
+    private final RegenerateTodosOsRelatoriosDeObraService regenerateTodosOsRelatoriosDeObraService;
 
     public void execute(UpdateLogoDeConfigDeRelatorioRequest request, TipoLogoDeConfiguracaoDeRelatorio tipoLogo, String obraExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -58,5 +60,7 @@ public class UpdateLogoDeConfigDeRelatorioService {
         logoToEdit.setUrl(logoUrl);
 
         logoDeRelatorioRepository.save(logoToEdit);
+
+        regenerateTodosOsRelatoriosDeObraService.execute(obra);
     }
 }
