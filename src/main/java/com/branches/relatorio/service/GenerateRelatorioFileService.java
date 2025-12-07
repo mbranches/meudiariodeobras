@@ -21,7 +21,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-public class GenerateRelatorioToUserService {
+public class GenerateRelatorioFileService {
     private final GenerateRelatorioHtmlService generateRelatorioHtmlService;
     private final HtmlToPdfConverter htmlToPdfConverter;
     private final S3UploadFile s3UploadFile;

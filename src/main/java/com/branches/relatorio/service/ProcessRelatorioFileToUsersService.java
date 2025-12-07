@@ -23,7 +23,7 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 @Service
 public class ProcessRelatorioFileToUsersService {
-    private final GenerateRelatorioToUserService generateRelatorioToUserService;
+    private final GenerateRelatorioFileService generateRelatorioFileService;
 
     public List<ArquivoDeRelatorioDeUsuarioEntity> execute(
             RelatorioDetailsProjection details,
@@ -70,7 +70,7 @@ public class ProcessRelatorioFileToUsersService {
                             List<ArquivoEntity> fotosDoRelatorio = userCanViewFotos ? fotos : Collections.emptyList();
                             List<ArquivoEntity> videosDoRelatorio = userCanViewVideos ? videos : Collections.emptyList();
 
-                            String url = generateRelatorioToUserService.execute(
+                            String url = generateRelatorioFileService.execute(
                                     details,
                                     userTenant,
                                     ocorrenciasDoRelatorio,
