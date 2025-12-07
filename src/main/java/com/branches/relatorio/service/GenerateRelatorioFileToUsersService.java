@@ -13,8 +13,6 @@ import com.branches.maodeobra.domain.MaoDeObraDeRelatorioEntity;
 import com.branches.maodeobra.repository.MaoDeObraDeRelatorioRepository;
 import com.branches.material.domain.MaterialDeRelatorioEntity;
 import com.branches.material.repository.MaterialDeRelatorioRepository;
-import com.branches.obra.domain.ObraEntity;
-import com.branches.obra.service.GetObraByIdAndTenantIdService;
 import com.branches.ocorrencia.domain.OcorrenciaDeRelatorioEntity;
 import com.branches.ocorrencia.repository.OcorrenciaDeRelatorioRepository;
 import com.branches.relatorio.domain.ArquivoDeRelatorioDeUsuarioEntity;
@@ -23,8 +21,6 @@ import com.branches.relatorio.repository.ArquivoDeRelatorioDeUsuarioRepository;
 import com.branches.relatorio.repository.AssinaturaDeRelatorioRepository;
 import com.branches.relatorio.repository.RelatorioRepository;
 import com.branches.relatorio.repository.projections.RelatorioDetailsProjection;
-import com.branches.tenant.domain.TenantEntity;
-import com.branches.tenant.service.GetTenantByIdService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.repository.UserTenantRepository;
 import com.branches.utils.ItemRelatorio;
@@ -32,11 +28,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Async
@@ -53,10 +47,8 @@ public class GenerateRelatorioFileToUsersService {
     private final MaterialDeRelatorioRepository materialDeRelatorioRepository;
     private final ArquivoRepository arquivoRepository;
     private final AssinaturaDeRelatorioRepository assinaturaDeRelatorioRepository;
-    private final GetTenantByIdService getTenantByIdService;
-    private final GetObraByIdAndTenantIdService getObraByIdAndTenantIdService;
-    private final GenerateRelatorioToUserService generateRelatorioToUserService;
     private final ArquivoDeRelatorioDeUsuarioRepository arquivoDeRelatorioDeUsuarioRepository;
+    private final ProcessRelatorioFileToUsersService processRelatorioFileToUsersService;
 
     public void execute(Long relatorioId) {
         RelatorioDetailsProjection details = getRelatorioDetailsOrThrow(relatorioId);
@@ -129,129 +121,80 @@ public class GenerateRelatorioFileToUsersService {
             RelatorioDetailsProjection details,
             List<UserTenantEntity> userTenants
     ) {
-        ObraEntity obra = getObraByIdAndTenantIdService.execute(details.getObraId(), details.getTenantId());
+        Map<Long, ArquivoDeRelatorioDeUsuarioEntity> mapUserIdAndArquivoDeRelatorio = getMapOfExistingArquivoDeRelatorioToUserId(userTenants, details.getId());
+        List<OcorrenciaDeRelatorioEntity> ocorrencias = fetchOcorrenciasIfAllowed(details);
+        List<AtividadeDeRelatorioEntity> atividades = fetchAtividadesIfAllowed(details);
+        List<EquipamentoDeRelatorioEntity> equipamentos = fetchEquipamentosIfAllowed(details);
+        List<MaoDeObraDeRelatorioEntity> maoDeObra = fetchMaoDeObraIfAllowed(details);
+        List<ComentarioDeRelatorioEntity> comentarios = fetchComentariosIfAllowed(details);
+        List<MaterialDeRelatorioEntity> materiais = fetchMateriaisIfAllowed(details);
+        List<ArquivoEntity> arquivos = fetchArquivoIfAllowsFotosOuVideos(details);
+        List<AssinaturaDeRelatorioEntity> assinaturas = assinaturaDeRelatorioRepository.findAllByRelatorioId(details.getId());
 
-        TenantEntity tenantEntity = getTenantByIdService.execute(details.getTenantId());
-
-        Long relatorioId = details.getId();
-
-        Map<Long, ArquivoDeRelatorioDeUsuarioEntity> mapUserIdAndArquivoDeRelatorio = getMapOfExistingArquivoDeRelatorioToUserId(userTenants, relatorioId);
-
-        boolean relatorioAllowsOcorrencias = details.getShowOcorrencias();
-        boolean relatorioAllowsAtividades = details.getShowAtividades();
-        boolean relatorioAllowsEquipamentos = details.getShowEquipamentos();
-        boolean relatorioAllowsMaoDeObra = details.getShowMaoDeObra();
-        boolean relatorioAllowsComentarios = details.getShowComentarios();
-        boolean relatorioAllowsMateriais = details.getShowMateriais();
-        boolean relatorioAllowsFotos = details.getShowFotos();
-        boolean relatorioAllowsVideos = details.getShowVideos();
-
-        List<OcorrenciaDeRelatorioEntity> ocorrencias = relatorioAllowsOcorrencias ? ocorrenciaDeRelatorioRepository.findAllByRelatorioId(relatorioId) : Collections.emptyList();
-        List<AtividadeDeRelatorioEntity> atividades = relatorioAllowsAtividades ?atividadeDeRelatorioRepository.findAllByRelatorioId(relatorioId) : Collections.emptyList();
-        List<EquipamentoDeRelatorioEntity> equipamentos = relatorioAllowsEquipamentos ? equipamentoDeRelatorioRepository.findAllByRelatorioId(relatorioId) : Collections.emptyList();
-        List<MaoDeObraDeRelatorioEntity> maoDeObra = relatorioAllowsMaoDeObra ? maoDeObraDeRelatorioRepository.findAllByRelatorioId(relatorioId) : Collections.emptyList();
-        List<ComentarioDeRelatorioEntity> comentarios = relatorioAllowsComentarios ? comentarioDeRelatorioRepository.findAllByRelatorioId(relatorioId) : Collections.emptyList();
-        List<MaterialDeRelatorioEntity> materiais = relatorioAllowsMateriais ? materialDeRelatorioRepository.findAllByRelatorioId(relatorioId) : Collections.emptyList();
-        List<AssinaturaDeRelatorioEntity> assinaturas = assinaturaDeRelatorioRepository.findAllByRelatorioId(relatorioId);
-
-        List<ArquivoEntity> arquivos = arquivoRepository.findAllByRelatorioId(relatorioId);
-
-        List<ArquivoEntity> fotos = relatorioAllowsFotos ? arquivos.stream().filter(ArquivoEntity::getIsFoto).toList() : Collections.emptyList();
-        List<ArquivoEntity> videos = relatorioAllowsVideos ? arquivos.stream().filter(ArquivoEntity::getIsVideo).toList() : Collections.emptyList();
-
-        List<ArquivoDeRelatorioDeUsuarioEntity> arquivoDeRelatorioDeUsuarioToSaveList = new ArrayList<>();
-
-        List<CompletableFuture<Void>> geracoesDosRelatoriosAsync = userTenants.stream()
-                .map(userTenant -> CompletableFuture.runAsync(() ->
-                        generateFile(
-                                details,
-                                tenantEntity,
-                                obra,
-                                userTenant,
-                                ocorrencias,
-                                atividades,
-                                equipamentos,
-                                maoDeObra,
-                                comentarios,
-                                materiais,
-                                fotos,
-                                videos,
-                                assinaturas,
-                                relatorioId,
-                                mapUserIdAndArquivoDeRelatorio,
-                                arquivoDeRelatorioDeUsuarioToSaveList
-                        )
-                ))
-                .toList();
-
-        CompletableFuture.allOf(geracoesDosRelatoriosAsync.toArray(new CompletableFuture[0])).join();
-
-        arquivoDeRelatorioDeUsuarioRepository.saveAll(arquivoDeRelatorioDeUsuarioToSaveList);
-    }
-
-    private void generateFile(
-            RelatorioDetailsProjection details,
-            TenantEntity tenantEntity,
-            ObraEntity obra,
-            UserTenantEntity userTenant,
-            List<OcorrenciaDeRelatorioEntity> ocorrencias,
-            List<AtividadeDeRelatorioEntity> atividades,
-            List<EquipamentoDeRelatorioEntity> equipamentos,
-            List<MaoDeObraDeRelatorioEntity> maoDeObra,
-            List<ComentarioDeRelatorioEntity> comentarios,
-            List<MaterialDeRelatorioEntity> materiais,
-            List<ArquivoEntity> fotos,
-            List<ArquivoEntity> videos,
-            List<AssinaturaDeRelatorioEntity> assinaturas,
-            Long relatorioId,
-            Map<Long, ArquivoDeRelatorioDeUsuarioEntity> mapUserIdAndArquivoDeRelatorio,
-            List<ArquivoDeRelatorioDeUsuarioEntity> arquivoDeRelatorioDeUsuarioToSaveList
-    ) {
-        var userPermissionsItensDeRelatorio = userTenant.getAuthorities().getItensDeRelatorio();
-
-        boolean userCanViewOcorrencias = userPermissionsItensDeRelatorio.getOcorrencias();
-        boolean userCanViewAtividades = userPermissionsItensDeRelatorio.getAtividades();
-        boolean userCanViewEquipamentos = userPermissionsItensDeRelatorio.getEquipamentos();
-        boolean userCanViewMaoDeObra = userPermissionsItensDeRelatorio.getMaoDeObra();
-        boolean userCanViewComentarios = userPermissionsItensDeRelatorio.getComentarios();
-        boolean userCanViewMateriais = userPermissionsItensDeRelatorio.getMateriais();
-        boolean userCanViewFotos = userPermissionsItensDeRelatorio.getFotos();
-        boolean userCanViewVideos = userPermissionsItensDeRelatorio.getVideos();
-
-        List<OcorrenciaDeRelatorioEntity> ocorrenciasDoRelatorio = userCanViewOcorrencias ? ocorrencias : Collections.emptyList();
-        List<AtividadeDeRelatorioEntity> atividadesDoRelatorio = userCanViewAtividades ? atividades : Collections.emptyList();
-        List<EquipamentoDeRelatorioEntity> equipamentosDoRelatorio = userCanViewEquipamentos ? equipamentos : Collections.emptyList();
-        List<MaoDeObraDeRelatorioEntity> maoDeObraDoRelatorio = userCanViewMaoDeObra ? maoDeObra : Collections.emptyList();
-        List<ComentarioDeRelatorioEntity> comentariosDoRelatorio = userCanViewComentarios ? comentarios : Collections.emptyList();
-        List<MaterialDeRelatorioEntity> materiaisDoRelatorio = userCanViewMateriais ? materiais : Collections.emptyList();
-        List<ArquivoEntity> fotosDoRelatorio = userCanViewFotos ? fotos : Collections.emptyList();
-        List<ArquivoEntity> videosDoRelatorio = userCanViewVideos ? videos : Collections.emptyList();
-
-        String url = generateRelatorioToUserService.execute(
+        List<ArquivoDeRelatorioDeUsuarioEntity> arquivosToSave = processRelatorioFileToUsersService.execute(
                 details,
-                tenantEntity,
-                obra,
-                userTenant,
-                ocorrenciasDoRelatorio,
-                atividadesDoRelatorio,
-                equipamentosDoRelatorio,
-                maoDeObraDoRelatorio,
-                comentariosDoRelatorio,
-                materiaisDoRelatorio,
-                fotosDoRelatorio,
-                videosDoRelatorio,
-                assinaturas
+                userTenants,
+                mapUserIdAndArquivoDeRelatorio,
+                ocorrencias,
+                atividades,
+                equipamentos,
+                maoDeObra,
+                comentarios,
+                materiais,
+                assinaturas,
+                arquivos
         );
 
-        if (mapUserIdAndArquivoDeRelatorio.containsKey(userTenant.getUser().getId())) return;
+        arquivoDeRelatorioDeUsuarioRepository.saveAll(arquivosToSave);
+    }
 
-        ArquivoDeRelatorioDeUsuarioEntity toSave = ArquivoDeRelatorioDeUsuarioEntity.builder()
-                .arquivoUrl(url)
-                .relatorioId(relatorioId)
-                .userId(userTenant.getUser().getId())
-                .build();
+    private List<OcorrenciaDeRelatorioEntity> fetchOcorrenciasIfAllowed(RelatorioDetailsProjection details) {
+        if (details.getShowOcorrencias()) {
+            return ocorrenciaDeRelatorioRepository.findAllByRelatorioId(details.getId());
+        }
+        return Collections.emptyList();
+    }
 
-        arquivoDeRelatorioDeUsuarioToSaveList.add(toSave);
+    private List<AtividadeDeRelatorioEntity> fetchAtividadesIfAllowed(RelatorioDetailsProjection details) {
+        if (details.getShowAtividades()) {
+            return atividadeDeRelatorioRepository.findAllByRelatorioId(details.getId());
+        }
+        return Collections.emptyList();
+    }
+
+    private List<EquipamentoDeRelatorioEntity> fetchEquipamentosIfAllowed(RelatorioDetailsProjection details) {
+        if (details.getShowEquipamentos()) {
+            return equipamentoDeRelatorioRepository.findAllByRelatorioId(details.getId());
+        }
+        return Collections.emptyList();
+    }
+
+    private List<MaoDeObraDeRelatorioEntity> fetchMaoDeObraIfAllowed(RelatorioDetailsProjection details) {
+        if (details.getShowMaoDeObra()) {
+            return maoDeObraDeRelatorioRepository.findAllByRelatorioId(details.getId());
+        }
+        return Collections.emptyList();
+    }
+
+    private List<ComentarioDeRelatorioEntity> fetchComentariosIfAllowed(RelatorioDetailsProjection details) {
+        if (details.getShowComentarios()) {
+            return comentarioDeRelatorioRepository.findAllByRelatorioId(details.getId());
+        }
+        return Collections.emptyList();
+    }
+
+    private List<MaterialDeRelatorioEntity> fetchMateriaisIfAllowed(RelatorioDetailsProjection details) {
+        if (details.getShowMateriais()) {
+            return materialDeRelatorioRepository.findAllByRelatorioId(details.getId());
+        }
+        return Collections.emptyList();
+    }
+
+    private List<ArquivoEntity> fetchArquivoIfAllowsFotosOuVideos(RelatorioDetailsProjection details) {
+        if (details.getShowFotos() || details.getShowVideos()) {
+            return arquivoRepository.findAllByRelatorioId(details.getId());
+        }
+        return Collections.emptyList();
     }
 
     private Map<Long, ArquivoDeRelatorioDeUsuarioEntity> getMapOfExistingArquivoDeRelatorioToUserId(List<UserTenantEntity> userTenants, Long relatorioId) {
