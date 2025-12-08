@@ -1,6 +1,7 @@
 package com.branches.tenant.domain;
 
 import com.branches.config.envers.Auditable;
+import com.branches.tenant.domain.enums.SegmentoTenant;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,6 +37,10 @@ public class TenantEntity extends Auditable {
 
     @Column(nullable = false)
     private Long userResponsavelId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private SegmentoTenant segmento;
 
     @Builder.Default
     @Column(nullable = false)
