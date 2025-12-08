@@ -2,6 +2,7 @@ package com.branches.relatorio.service;
 
 import com.branches.exception.NotFoundException;
 import com.branches.external.aws.S3DeleteFile;
+import com.branches.obra.controller.CheckIfUserHasAccessToObraService;
 import com.branches.relatorio.domain.AssinaturaDeRelatorioEntity;
 import com.branches.relatorio.domain.RelatorioEntity;
 import com.branches.relatorio.repository.AssinaturaDeRelatorioRepository;
@@ -24,6 +25,7 @@ public class DesassinarRelatorioService {
     private final GetCurrentUserTenantService getCurrentUserTenantService;
     private final S3DeleteFile s3DeleteFile;
     private final AssinaturaDeRelatorioRepository assinaturaDeRelatorioRepository;
+    private final CheckIfUserHasAccessToObraService checkIfUserHasAccessToObraService;
 
     public void execute(Long id, String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -31,6 +33,7 @@ public class DesassinarRelatorioService {
 
         RelatorioEntity relatorio = getRelatorioByIdExternoAndTenantIdService.execute(relatorioExternalId, tenantId);
 
+        checkIfUserHasAccessToObraService.execute(currentUserTenant, relatorio.getObraId());
         checkIfUserHasAccessToEditRelatorioService.execute(currentUserTenant, relatorio.getStatus());
 
         AssinaturaDeRelatorioEntity assinaturaDeRelatorioEntity = relatorio.getAssinaturas().stream()

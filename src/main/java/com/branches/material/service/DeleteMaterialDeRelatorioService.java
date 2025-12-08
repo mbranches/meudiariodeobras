@@ -2,6 +2,7 @@ package com.branches.material.service;
 
 import com.branches.material.domain.MaterialDeRelatorioEntity;
 import com.branches.material.repository.MaterialDeRelatorioRepository;
+import com.branches.obra.controller.CheckIfUserHasAccessToObraService;
 import com.branches.relatorio.domain.RelatorioEntity;
 import com.branches.relatorio.service.CheckIfUserHasAccessToEditRelatorioService;
 import com.branches.relatorio.service.GetRelatorioByIdExternoAndTenantIdService;
@@ -24,6 +25,7 @@ public class DeleteMaterialDeRelatorioService {
     private final CheckIfUserCanViewMateriaisService checkIfUserCanViewMateriaisService;
     private final GetMaterialByIdAndRelatorioIdService getMaterialByIdAndRelatorioIdService;
     private final MaterialDeRelatorioRepository materialDeRelatorioRepository;
+    private final CheckIfUserHasAccessToObraService checkIfUserHasAccessToObraService;
 
     public void execute(Long id, String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -32,10 +34,9 @@ public class DeleteMaterialDeRelatorioService {
 
         RelatorioEntity relatorio = getRelatorioByIdExternoAndTenantIdService.execute(relatorioExternalId, tenantId);
 
+        checkIfUserHasAccessToObraService.execute(userTenant, relatorio.getObraId());
         checkIfUserHasAccessToEditRelatorioService.execute(userTenant, relatorio.getStatus());
-
         checkIfConfiguracaoDeRelatorioDaObraPermiteMaterialService.execute(relatorio.getObraId(), tenantId);
-
         checkIfUserCanViewMateriaisService.execute(userTenant);
 
         MaterialDeRelatorioEntity material = getMaterialByIdAndRelatorioIdService.execute(id, relatorio.getId());

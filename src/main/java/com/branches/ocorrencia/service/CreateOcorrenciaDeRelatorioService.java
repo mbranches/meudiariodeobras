@@ -2,6 +2,7 @@ package com.branches.ocorrencia.service;
 
 import com.branches.atividade.domain.AtividadeDeRelatorioEntity;
 import com.branches.atividade.service.GetAtividadeDeRelatorioByIdAndRelatorioIdService;
+import com.branches.obra.controller.CheckIfUserHasAccessToObraService;
 import com.branches.ocorrencia.domain.OcorrenciaDeRelatorioEntity;
 import com.branches.ocorrencia.domain.TipoDeOcorrenciaEntity;
 import com.branches.ocorrencia.dto.request.CreateOcorrenciaDeRelatorioRequest;
@@ -34,6 +35,7 @@ public class CreateOcorrenciaDeRelatorioService {
     private final GetTiposDeOcorrenciaByTenantIdAndIdInService getTiposDeOcorrenciaByTenantIdAndIdInService;
     private final CalculateHorasTotais calculateHorasTotais;
     private final GetAtividadeDeRelatorioByIdAndRelatorioIdService getAtividadeDeRelatorioByIdAndRelatorioIdService;
+    private final CheckIfUserHasAccessToObraService checkIfUserHasAccessToObraService;
 
     public CreateOcorrenciaDeRelatorioResponse execute(CreateOcorrenciaDeRelatorioRequest request, String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -42,10 +44,9 @@ public class CreateOcorrenciaDeRelatorioService {
 
         RelatorioEntity relatorio = getRelatorioByIdExternoAndTenantIdService.execute(relatorioExternalId, tenantId);
 
+        checkIfUserHasAccessToObraService.execute(userTenant, relatorio.getObraId());
         checkIfUserHasAccessToEditRelatorioService.execute(userTenant, relatorio.getStatus());
-
         checkIfConfiguracaoDeRelatorioDaObraPermiteOcorrenciaService.execute(relatorio.getObraId(), tenantId);
-
         checkIfUserCanViewOcorrenciasService.execute(userTenant);
 
         List<TipoDeOcorrenciaEntity> tiposDeOcorrencia = request.tiposOcorrenciaIds() != null && !request.tiposOcorrenciaIds().isEmpty() ?

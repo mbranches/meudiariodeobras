@@ -14,6 +14,7 @@ import com.branches.maodeobra.domain.MaoDeObraDeRelatorioEntity;
 import com.branches.maodeobra.repository.MaoDeObraDeRelatorioRepository;
 import com.branches.material.domain.MaterialDeRelatorioEntity;
 import com.branches.material.repository.MaterialDeRelatorioRepository;
+import com.branches.obra.controller.CheckIfUserHasAccessToObraService;
 import com.branches.ocorrencia.domain.OcorrenciaDeRelatorioEntity;
 import com.branches.ocorrencia.repository.OcorrenciaDeRelatorioRepository;
 import com.branches.relatorio.domain.AssinaturaDeRelatorioEntity;
@@ -44,6 +45,7 @@ public class GetRelatorioDetailsService {
     private final MaterialDeRelatorioRepository materialDeRelatorioRepository;
     private final AssinaturaDeRelatorioRepository assinaturaDeRelatorioRepository;
     private final ArquivoRepository arquivoRepository;
+    private final CheckIfUserHasAccessToObraService checkIfUserHasAccessToObraService;
 
     public GetRelatorioDetailsResponse execute(String tenantExternalId,
                                                String relatorioExternalId,
@@ -55,6 +57,7 @@ public class GetRelatorioDetailsService {
         RelatorioDetailsProjection relatorioDetails = relatorioRepository.findDetailsByIdExternoAndTenantId(relatorioExternalId, tenantId)
                 .orElseThrow(() -> new NotFoundException("Relatório não encontrado com o id: " + relatorioExternalId));
 
+        checkIfUserHasAccessToObraService.execute(currentUserTenant, relatorioDetails.getObraId());
         checkIfUserCanViewRelatorio(currentUserTenant, relatorioDetails.getStatus());
 
         PermissionsItensDeRelatorio permissionsOfItensRelatorio = currentUserTenant.getAuthorities().getItensDeRelatorio();

@@ -1,6 +1,7 @@
 package com.branches.relatorio.service;
 
 import com.branches.exception.ForbiddenException;
+import com.branches.obra.controller.CheckIfUserHasAccessToObraService;
 import com.branches.relatorio.domain.RelatorioEntity;
 import com.branches.relatorio.repository.RelatorioRepository;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
@@ -18,6 +19,7 @@ public class DeleteRelatorioService {
     private final GetCurrentUserTenantService getCurrentUserTenantService;
     private final GetRelatorioByIdExternoAndTenantIdService getRelatorioByIdExternoAndTenantIdService;
     private final RelatorioRepository relatorioRepository;
+    private final CheckIfUserHasAccessToObraService checkIfUserHasAccessToObraService;
 
     public void execute(String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -27,6 +29,9 @@ public class DeleteRelatorioService {
         checkIfUserCanDeleteRelatorio(currentUserTenant);
 
         RelatorioEntity relatorio = getRelatorioByIdExternoAndTenantIdService.execute(relatorioExternalId, tenantId);
+
+        checkIfUserHasAccessToObraService.execute(currentUserTenant, relatorio.getObraId());
+
         relatorio.setInativo();
 
         relatorioRepository.save(relatorio);

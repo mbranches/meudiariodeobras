@@ -2,6 +2,7 @@ package com.branches.ocorrencia.service;
 
 import com.branches.atividade.domain.AtividadeDeRelatorioEntity;
 import com.branches.atividade.service.GetAtividadeDeRelatorioByIdAndRelatorioIdService;
+import com.branches.obra.controller.CheckIfUserHasAccessToObraService;
 import com.branches.relatorio.dto.request.CampoPersonalizadoRequest;
 import com.branches.relatorio.service.CheckIfUserHasAccessToEditRelatorioService;
 import com.branches.relatorio.service.GetRelatorioByIdExternoAndTenantIdService;
@@ -35,6 +36,7 @@ public class UpdateOcorrenciaDeRelatorioService {
     private final CheckIfConfiguracaoDeRelatorioDaObraPermiteOcorrenciaService checkIfConfiguracaoDeRelatorioDaObraPermiteOcorrenciaService;
     private final CheckIfUserCanViewOcorrenciasService checkIfUserCanViewOcorrenciasService;
     private final GetAtividadeDeRelatorioByIdAndRelatorioIdService getAtividadeDeRelatorioByIdAndRelatorioIdService;
+    private final CheckIfUserHasAccessToObraService checkIfUserHasAccessToObraService;
 
     public void execute(UpdateOcorrenciaDeRelatorioRequest request, Long id, String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -43,10 +45,9 @@ public class UpdateOcorrenciaDeRelatorioService {
 
         RelatorioEntity relatorio = getRelatorioByIdExternoAndTenantIdService.execute(relatorioExternalId, tenantId);
 
+        checkIfUserHasAccessToObraService.execute(userTenant, relatorio.getObraId());
         checkIfUserHasAccessToEditRelatorioService.execute(userTenant, relatorio.getStatus());
-
         checkIfConfiguracaoDeRelatorioDaObraPermiteOcorrenciaService.execute(relatorio.getObraId(), tenantId);
-
         checkIfUserCanViewOcorrenciasService.execute(userTenant);
 
         OcorrenciaDeRelatorioEntity entity = getOcorrenciaByIdAndRelatorioIdService.execute(id, relatorio.getId());

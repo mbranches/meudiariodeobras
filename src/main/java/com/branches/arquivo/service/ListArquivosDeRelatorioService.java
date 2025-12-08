@@ -4,6 +4,8 @@ import com.branches.arquivo.domain.ArquivoEntity;
 import com.branches.arquivo.domain.enums.TipoArquivo;
 import com.branches.arquivo.dto.response.ArquivoResponse;
 import com.branches.arquivo.repository.ArquivoRepository;
+import com.branches.obra.controller.CheckIfUserHasAccessToObraService;
+import com.branches.relatorio.domain.RelatorioEntity;
 import com.branches.relatorio.repository.projections.RelatorioWithObraProjection;
 import com.branches.relatorio.service.GetRelatorioWithObraByIdExternoAndTenantIdService;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
@@ -23,6 +25,7 @@ public class ListArquivosDeRelatorioService {
     private final GetRelatorioWithObraByIdExternoAndTenantIdService getRelatorioWithObraByIdExternoAndTenantIdService;
     private final CheckIfUserCanViewFotosService checkIfUserCanViewFotosService;
     private final ArquivoRepository arquivoRepository;
+    private final CheckIfUserHasAccessToObraService checkIfUserHasAccessToObraService;
 
     public List<ArquivoResponse> execute(String relatorioExternalId, String tenantExternalId, TipoArquivo tipo, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -30,11 +33,13 @@ public class ListArquivosDeRelatorioService {
         UserTenantEntity currentUserTenant = getCurrentUserTenantService.execute(userTenants, tenantId);
 
         RelatorioWithObraProjection relatorioWithObra = getRelatorioWithObraByIdExternoAndTenantIdService.execute(relatorioExternalId, tenantId);
-        
+        RelatorioEntity relatorio = relatorioWithObra.getRelatorio();
+
+        checkIfUserHasAccessToObraService.execute(currentUserTenant, relatorio.getObraId());
         checkIfConfiguracaoDeRelatorioDaObraPermiteFoto.execute(relatorioWithObra);
         checkIfUserCanViewFotosService.execute(currentUserTenant);
 
-        List<ArquivoEntity> response = arquivoRepository.findAllByRelatorioIdAndTipoArquivoOrderByEnversCreatedDateDesc(relatorioWithObra.getRelatorio().getId(), tipo);
+        List<ArquivoEntity> response = arquivoRepository.findAllByRelatorioIdAndTipoArquivoOrderByEnversCreatedDateDesc(relatorio.getId(), tipo);
 
         return response.stream()
                 .map(ArquivoResponse::from)

@@ -7,6 +7,8 @@ import com.branches.arquivo.dto.response.CreateVideoDeRelatorioResponse;
 import com.branches.arquivo.repository.ArquivoRepository;
 import com.branches.exception.BadRequestException;
 import com.branches.external.aws.S3UploadFile;
+import com.branches.obra.controller.CheckIfUserHasAccessToObraService;
+import com.branches.relatorio.domain.RelatorioEntity;
 import com.branches.relatorio.repository.projections.RelatorioWithObraProjection;
 import com.branches.relatorio.service.CheckIfUserHasAccessToEditRelatorioService;
 import com.branches.relatorio.service.GetRelatorioWithObraByIdExternoAndTenantIdService;
@@ -36,6 +38,7 @@ public class CreateVideoDeRelatorioService {
 
     private static final long MAX_VIDEO_SIZE_BYTES = 100 * 1024 * 1024; // 100 MB
     private final CheckIfUserHasAccessToEditRelatorioService checkIfUserHasAccessToEditRelatorioService;
+    private final CheckIfUserHasAccessToObraService checkIfUserHasAccessToObraService;
 
     public CreateVideoDeRelatorioResponse execute(CreateVideoDeRelatorioRequest request, String tenantExternalId, String relatorioExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -43,10 +46,12 @@ public class CreateVideoDeRelatorioService {
         UserTenantEntity currentUserTenant = getCurrentUserTenantService.execute(userTenants, tenantId);
 
         RelatorioWithObraProjection relatorioWithObra = getRelatorioWithObraByIdExternoAndTenantIdService.execute(relatorioExternalId, tenantId);
+        RelatorioEntity relatorio = relatorioWithObra.getRelatorio();
 
+        checkIfUserHasAccessToObraService.execute(currentUserTenant, relatorio.getObraId());
         checkIfConfiguracaoDeRelatorioDaObraPermiteVideo.execute(relatorioWithObra);
         checkIfUserCanViewVideosService.execute(currentUserTenant);
-        checkIfUserHasAccessToEditRelatorioService.execute(currentUserTenant, relatorioWithObra.getRelatorio().getStatus());
+        checkIfUserHasAccessToEditRelatorioService.execute(currentUserTenant, relatorio.getStatus());
 
         byte[] videoBytes;
         try {
@@ -74,7 +79,7 @@ public class CreateVideoDeRelatorioService {
                 .nomeArquivo(fileName)
                 .url(videoUrl)
                 .tipoArquivo(TipoArquivo.VIDEO)
-                .relatorio(relatorioWithObra.getRelatorio())
+                .relatorio(relatorio)
                 .tamanhoEmMb(fileLengthInMb)
                 .tenantId(tenantId)
                 .build();

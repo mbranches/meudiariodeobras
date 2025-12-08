@@ -2,6 +2,7 @@ package com.branches.equipamento.service;
 
 import com.branches.equipamento.domain.EquipamentoDeRelatorioEntity;
 import com.branches.equipamento.repository.EquipamentoDeRelatorioRepository;
+import com.branches.obra.controller.CheckIfUserHasAccessToObraService;
 import com.branches.relatorio.domain.RelatorioEntity;
 import com.branches.relatorio.service.CheckIfUserHasAccessToEditRelatorioService;
 import com.branches.relatorio.service.GetRelatorioByIdExternoAndTenantIdService;
@@ -24,6 +25,7 @@ public class DeleteEquipamentoDeRelatorioService {
     private final CheckIfUserCanViewEquipamentosService checkIfUserCanViewEquipamentosService;
     private final GetEquipamentoDeRelatorioByIdAndRelatorioIdService getEquipamentoDeRelatorioByIdAndRelatorioIdService;
     private final EquipamentoDeRelatorioRepository equipamentoDeRelatorioRepository;
+    private final CheckIfUserHasAccessToObraService checkIfUserHasAccessToObraService;
 
     public void execute(Long id, String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -32,10 +34,9 @@ public class DeleteEquipamentoDeRelatorioService {
 
         RelatorioEntity relatorio = getRelatorioByIdExternoAndTenantIdService.execute(relatorioExternalId, tenantId);
 
+        checkIfUserHasAccessToObraService.execute(userTenant, relatorio.getObraId());
         checkIfUserHasAccessToEditRelatorioService.execute(userTenant, relatorio.getStatus());
-
         checkIfConfiguracaoDeRelatorioDaObraPermiteEquipamentoService.execute(relatorio.getObraId(), tenantId);
-
         checkIfUserCanViewEquipamentosService.execute(userTenant);
 
         EquipamentoDeRelatorioEntity equipamento = getEquipamentoDeRelatorioByIdAndRelatorioIdService.execute(id, relatorio.getId());

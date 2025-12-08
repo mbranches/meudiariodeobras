@@ -4,6 +4,7 @@ import com.branches.condicaoclimatica.domain.CondicaoClimaticaEntity;
 import com.branches.condicaoclimatica.dto.request.CondicaoClimaticaRequest;
 import com.branches.condicaoclimatica.dto.request.UpdateCondicaoClimaticaDeRelatorioRequest;
 import com.branches.exception.ForbiddenException;
+import com.branches.obra.controller.CheckIfUserHasAccessToObraService;
 import com.branches.obra.domain.ObraEntity;
 import com.branches.obra.service.GetObraByIdAndTenantIdService;
 import com.branches.relatorio.domain.RelatorioEntity;
@@ -27,6 +28,7 @@ public class UpdateCondicaoClimaticaDeRelatorioService {
     private final GetRelatorioByIdExternoAndTenantIdService getRelatorioByIdExternoAndTenantIdService;
     private final GetObraByIdAndTenantIdService getObraByIdAndTenantIdService;
     private final RelatorioRepository relatorioRepository;
+    private final CheckIfUserHasAccessToObraService checkIfUserHasAccessToObraService;
 
     public void execute(UpdateCondicaoClimaticaDeRelatorioRequest request, String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -35,10 +37,9 @@ public class UpdateCondicaoClimaticaDeRelatorioService {
 
         RelatorioEntity relatorio = getRelatorioByIdExternoAndTenantIdService.execute(relatorioExternalId, tenantId);
 
+        checkIfUserHasAccessToObraService.execute(userTenant, relatorio.getObraId());
         checkIfUserHasAccessToEditRelatorioService.execute(userTenant, relatorio.getStatus());
-
         checkIfConfiguracaoDeRelatorioDaObraPermiteCondicaoClimatica(relatorio, tenantId);
-
         checkIfUserCanViewCondicaoClimatica(userTenant);
 
         updateCondicaoClimatica(request.condicaoClimaticaManha(), relatorio.getCaracteristicasManha());

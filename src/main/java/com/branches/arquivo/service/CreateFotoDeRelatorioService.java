@@ -6,6 +6,8 @@ import com.branches.arquivo.dto.request.CreateFotoDeRelatorioRequest;
 import com.branches.arquivo.dto.response.FotoDeRelatorioResponse;
 import com.branches.arquivo.repository.ArquivoRepository;
 import com.branches.external.aws.S3UploadFile;
+import com.branches.obra.controller.CheckIfUserHasAccessToObraService;
+import com.branches.relatorio.domain.RelatorioEntity;
 import com.branches.relatorio.repository.projections.RelatorioWithObraProjection;
 import com.branches.relatorio.service.CheckIfUserHasAccessToEditRelatorioService;
 import com.branches.relatorio.service.GetRelatorioWithObraByIdExternoAndTenantIdService;
@@ -36,6 +38,7 @@ public class CreateFotoDeRelatorioService {
     private final ArquivoRepository arquivoRepository;
     private final CheckIfUserHasAccessToEditRelatorioService checkIfUserHasAccessToEditRelatorioService;
     private final CheckIfUserCanAddFotosToRelatorioService checkIfUserCanAddFotosToRelatorioService;
+    private final CheckIfUserHasAccessToObraService checkIfUserHasAccessToObraService;
 
     public FotoDeRelatorioResponse execute(CreateFotoDeRelatorioRequest request, String tenantExternalId, String relatorioExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -43,10 +46,12 @@ public class CreateFotoDeRelatorioService {
         UserTenantEntity currentUserTenant = getCurrentUserTenantService.execute(userTenants, tenantId);
 
         RelatorioWithObraProjection relatorioWithObra = getRelatorioWithObraByIdExternoAndTenantIdService.execute(relatorioExternalId, tenantId);
+        RelatorioEntity relatorio = relatorioWithObra.getRelatorio();
 
+        checkIfUserHasAccessToObraService.execute(currentUserTenant, relatorio.getObraId());
         checkIfConfiguracaoDeRelatorioDaObraPermiteFoto.execute(relatorioWithObra);
         checkIfUserCanViewFotosService.execute(currentUserTenant);
-        checkIfUserHasAccessToEditRelatorioService.execute(currentUserTenant, relatorioWithObra.getRelatorio().getStatus());
+        checkIfUserHasAccessToEditRelatorioService.execute(currentUserTenant, relatorio.getStatus());
         checkIfUserCanAddFotosToRelatorioService.execute(currentUserTenant);
 
         byte[] imageBytes = compressImage.execute(request.base64Image(), 800, 800, 0.8, ImageOutPutFormat.JPEG);
@@ -60,7 +65,7 @@ public class CreateFotoDeRelatorioService {
                 .nomeArquivo(filename)
                 .url(fotoUrl)
                 .tipoArquivo(TipoArquivo.FOTO)
-                .relatorio(relatorioWithObra.getRelatorio())
+                .relatorio(relatorio)
                 .tamanhoEmMb(fileLengthInMb)
                 .tenantId(tenantId)
                 .build();

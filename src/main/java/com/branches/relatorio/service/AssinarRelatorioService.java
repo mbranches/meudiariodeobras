@@ -2,6 +2,7 @@ package com.branches.relatorio.service;
 
 import com.branches.exception.NotFoundException;
 import com.branches.external.aws.S3UploadFile;
+import com.branches.obra.controller.CheckIfUserHasAccessToObraService;
 import com.branches.relatorio.domain.AssinaturaDeRelatorioEntity;
 import com.branches.relatorio.domain.RelatorioEntity;
 import com.branches.relatorio.dto.request.AssinarRelatorioRequest;
@@ -29,6 +30,7 @@ public class AssinarRelatorioService {
     private final S3UploadFile s3UploadFile;
     private final CompressImage compressImage;
     private final AssinaturaDeRelatorioRepository assinaturaDeRelatorioRepository;
+    private final CheckIfUserHasAccessToObraService checkIfUserHasAccessToObraService;
 
     public void execute(AssinarRelatorioRequest request, Long id, String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -36,6 +38,7 @@ public class AssinarRelatorioService {
 
         RelatorioEntity relatorio = getRelatorioByIdExternoAndTenantIdService.execute(relatorioExternalId, tenantId);
 
+        checkIfUserHasAccessToObraService.execute(currentUserTenant, relatorio.getObraId());
         checkIfUserHasAccessToEditRelatorioService.execute(currentUserTenant, relatorio.getStatus());
 
         AssinaturaDeRelatorioEntity assinaturaDeRelatorioEntity = relatorio.getAssinaturas().stream()

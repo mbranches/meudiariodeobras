@@ -6,6 +6,7 @@ import com.branches.maodeobra.domain.enums.PresencaMaoDeObra;
 import com.branches.maodeobra.dto.request.CreateMaoDeObraDeRelatorioRequest;
 import com.branches.maodeobra.dto.response.CreateMaoDeObraDeRelatorioResponse;
 import com.branches.maodeobra.repository.MaoDeObraDeRelatorioRepository;
+import com.branches.obra.controller.CheckIfUserHasAccessToObraService;
 import com.branches.relatorio.domain.RelatorioEntity;
 import com.branches.relatorio.service.CheckIfUserHasAccessToEditRelatorioService;
 import com.branches.relatorio.service.GetRelatorioByIdExternoAndTenantIdService;
@@ -30,6 +31,7 @@ public class CreateMaoDeObraDeRelatorioService {
     private final MaoDeObraDeRelatorioRepository maoDeObraDeRelatorioRepository;
     private final GetMaoDeObraByIdAndTenantIdService getMaoDeObraByIdAndTenantIdService;
     private final CalculateHorasTotais calculateHorasTotais;
+    private final CheckIfUserHasAccessToObraService checkIfUserHasAccessToObraService;
 
     public CreateMaoDeObraDeRelatorioResponse execute(CreateMaoDeObraDeRelatorioRequest request, String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -38,10 +40,9 @@ public class CreateMaoDeObraDeRelatorioService {
 
         RelatorioEntity relatorio = getRelatorioByIdExternoAndTenantIdService.execute(relatorioExternalId, tenantId);
 
+        checkIfUserHasAccessToObraService.execute(userTenant, relatorio.getObraId());
         checkIfUserHasAccessToEditRelatorioService.execute(userTenant, relatorio.getStatus());
-
         checkIfConfiguracaoDeRelatorioDaObraPermiteMaoDeObraService.execute(relatorio.getObraId(), tenantId);
-
         checkIfUserCanViewMaoDeObraService.execute(userTenant);
 
         MaoDeObraEntity maoDeObra = getMaoDeObraByIdAndTenantIdService.execute(request.maoDeObraId(), tenantId);

@@ -1,5 +1,6 @@
 package com.branches.maodeobra.service;
 
+import com.branches.obra.controller.CheckIfUserHasAccessToObraService;
 import com.branches.obra.domain.enums.TipoMaoDeObra;
 import com.branches.maodeobra.domain.MaoDeObraEntity;
 import com.branches.maodeobra.domain.enums.PresencaMaoDeObra;
@@ -34,6 +35,7 @@ public class UpdateMaoDeObraDeRelatorioService {
     private final GetCurrentUserTenantService getCurrentUserTenantService;
     private final CheckIfConfiguracaoDeRelatorioDaObraPermiteMaoDeObraService checkIfConfiguracaoDeRelatorioDaObraPermiteMaoDeObraService;
     private final CheckIfUserCanViewMaoDeObraService checkIfUserCanViewMaoDeObraService;
+    private final CheckIfUserHasAccessToObraService checkIfUserHasAccessToObraService;
 
     public void execute(UpdateMaoDeObraDeRelatorioRequest request, Long id, String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -42,10 +44,9 @@ public class UpdateMaoDeObraDeRelatorioService {
 
         RelatorioEntity relatorio = getRelatorioByIdExternoAndTenantIdService.execute(relatorioExternalId, tenantId);
 
+        checkIfUserHasAccessToObraService.execute(userTenant, relatorio.getObraId());
         checkIfUserHasAccessToEditRelatorioService.execute(userTenant, relatorio.getStatus());
-
         checkIfConfiguracaoDeRelatorioDaObraPermiteMaoDeObraService.execute(relatorio.getObraId(), tenantId);
-
         checkIfUserCanViewMaoDeObraService.execute(userTenant);
 
         TipoMaoDeObra tipoMaoDeObra = relatorio.getTipoMaoDeObra();

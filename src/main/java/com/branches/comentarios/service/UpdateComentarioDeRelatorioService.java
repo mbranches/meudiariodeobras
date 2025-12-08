@@ -2,6 +2,7 @@ package com.branches.comentarios.service;
 
 import com.branches.comentarios.model.ComentarioDeRelatorioEntity;
 import com.branches.exception.ForbiddenException;
+import com.branches.obra.controller.CheckIfUserHasAccessToObraService;
 import com.branches.relatorio.domain.RelatorioEntity;
 import com.branches.relatorio.dto.request.CampoPersonalizadoRequest;
 import com.branches.comentarios.dto.request.UpdateComentarioDeRelatorioRequest;
@@ -28,6 +29,7 @@ public class UpdateComentarioDeRelatorioService {
     private final GetComentarioDeRelatorioByIdAndRelatorioIdService getComentarioDeRelatorioByIdAndRelatorioIdService;
     private final CheckIfUserCanViewComentariosService checkIfUserCanViewComentariosService;
     private final CheckIfConfiguracaoDeRelatorioDaObraPermiteComentarioService checkIfConfiguracaoDeRelatorioDaObraPermiteComentarioService;
+    private final CheckIfUserHasAccessToObraService checkIfUserHasAccessToObraService;
 
     public void execute(UpdateComentarioDeRelatorioRequest request, Long id, String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -36,10 +38,9 @@ public class UpdateComentarioDeRelatorioService {
 
         RelatorioEntity relatorio = getRelatorioByIdExternoAndTenantIdService.execute(relatorioExternalId, tenantId);
 
+        checkIfUserHasAccessToObraService.execute(userTenant, relatorio.getObraId());
         checkIfUserHasAccessToEditRelatorioService.execute(userTenant, relatorio.getStatus());
-
         checkIfConfiguracaoDeRelatorioDaObraPermiteComentarioService.execute(relatorio.getObraId(), tenantId);
-
         checkIfUserCanViewComentariosService.execute(userTenant);
 
         ComentarioDeRelatorioEntity entity = getComentarioDeRelatorioByIdAndRelatorioIdService.execute(id, relatorio.getId());

@@ -11,6 +11,7 @@ import com.branches.exception.ForbiddenException;
 import com.branches.maodeobra.domain.MaoDeObraDeAtividadeDeRelatorioEntity;
 import com.branches.maodeobra.domain.MaoDeObraDeRelatorioEntity;
 import com.branches.maodeobra.repository.MaoDeObraDeRelatorioRepository;
+import com.branches.obra.controller.CheckIfUserHasAccessToObraService;
 import com.branches.obra.domain.ConfiguracaoDeAssinaturaDeRelatorioEntity;
 import com.branches.obra.domain.ConfiguracaoRelatoriosEntity;
 import com.branches.obra.domain.ObraEntity;
@@ -48,6 +49,7 @@ public class CreateRelatorioService {
     private final MaoDeObraDeRelatorioRepository maoDeObraDeRelatorioRepository;
     private final EquipamentoDeRelatorioRepository equipamentoDeRelatorioRepository;
     private final OcorrenciaDeRelatorioRepository ocorrenciaDeRelatorioRepository;
+    private final CheckIfUserHasAccessToObraService checkIfUserHasAccessToObraService;
 
     public CreateRelatorioResponse execute(CreateRelatorioRequest request, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -56,6 +58,7 @@ public class CreateRelatorioService {
         checkIfUserCanCreateRelatorio(currentUserTenant);
 
         ObraEntity obra = getObraByIdExternoAndTenantIdService.execute(request.obraId(), tenantId);
+        checkIfUserHasAccessToObraService.execute(currentUserTenant, obra.getId());
 
         long quantityOfRelatoriosOfObra = relatorioRepository.countByTenantIdAndObraIdAndAtivoIsTrue(tenantId, obra.getId());
 

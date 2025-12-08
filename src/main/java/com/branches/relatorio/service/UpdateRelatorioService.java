@@ -1,7 +1,7 @@
 package com.branches.relatorio.service;
 
-import com.branches.exception.ForbiddenException;
 import com.branches.exception.NotFoundException;
+import com.branches.obra.controller.CheckIfUserHasAccessToObraService;
 import com.branches.obra.domain.ConfiguracaoRelatoriosEntity;
 import com.branches.obra.domain.ObraEntity;
 import com.branches.obra.repository.ObraRepository;
@@ -28,6 +28,8 @@ public class UpdateRelatorioService {
     private final RelatorioRepository relatorioRepository;
     private final ObraRepository obraRepository;
     private final CalculateHorasTotais calculateHorasTotais;
+    private final CheckIfUserHasAccessToEditRelatorioService checkIfUserHasAccessToEditRelatorioService;
+    private final CheckIfUserHasAccessToObraService checkIfUserHasAccessToObraService;
 
     @Transactional
     public void execute(UpdateRelatorioRequest request, String tenantExternalId, String relatorioExternalId, List<UserTenantEntity> userTenants) {
@@ -35,9 +37,10 @@ public class UpdateRelatorioService {
 
         UserTenantEntity currentUserTenant = getCurrentUserTenantService.execute(userTenants, tenantId);
 
-        checkIfUserCanUpdateRelatorio(currentUserTenant);
-
         RelatorioEntity relatorio = getRelatorioByIdExternoAndTenantIdService.execute(relatorioExternalId, tenantId);
+
+        checkIfUserHasAccessToObraService.execute(currentUserTenant, relatorio.getObraId());
+        checkIfUserHasAccessToEditRelatorioService.execute(currentUserTenant, relatorio.getStatus());
 
         ObraEntity obra = obraRepository.findById(relatorio.getObraId())
                         .orElseThrow(() -> new NotFoundException("Não foi possível encontra a obra do relatório com id: " + relatorioExternalId));
@@ -66,11 +69,5 @@ public class UpdateRelatorioService {
         if (status == StatusRelatorio.APROVADO && !currentUserTenant.getAuthorities().getRelatorios().getCanAprovar()) return;
 
         relatorio.setStatus(status);
-    }
-
-    private void checkIfUserCanUpdateRelatorio(UserTenantEntity currentUserTenant) {
-        if (currentUserTenant.getAuthorities().getRelatorios().getCanCreateAndEdit()) return;
-
-        throw new ForbiddenException();
     }
 }

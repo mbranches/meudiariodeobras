@@ -13,6 +13,7 @@ import com.branches.maodeobra.domain.MaoDeObraDeRelatorioEntity;
 import com.branches.maodeobra.repository.MaoDeObraDeRelatorioRepository;
 import com.branches.material.domain.MaterialDeRelatorioEntity;
 import com.branches.material.repository.MaterialDeRelatorioRepository;
+import com.branches.obra.controller.CheckIfUserHasAccessToObraService;
 import com.branches.ocorrencia.domain.OcorrenciaDeRelatorioEntity;
 import com.branches.ocorrencia.repository.OcorrenciaDeRelatorioRepository;
 import com.branches.relatorio.domain.AssinaturaDeRelatorioEntity;
@@ -44,6 +45,7 @@ public class ImprimirRelatorioService {
     private final MaoDeObraDeRelatorioRepository maoDeObraDeRelatorioRepository;
     private final ComentarioDeRelatorioRepository comentarioDeRelatorioRepository;
     private final MaterialDeRelatorioRepository materialDeRelatorioRepository;
+    private final CheckIfUserHasAccessToObraService checkIfUserHasAccessToObraService;
 
     public ImprimirRelatorioResponse execute(String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -63,6 +65,8 @@ public class ImprimirRelatorioService {
 
         RelatorioDetailsProjection relatorioDetails = relatorioRepository.findDetailsByIdExternoAndTenantId(relatorioExternalId, tenantId)
                 .orElseThrow(() -> new NotFoundException("Relatório não encontrado com o id: " + relatorioExternalId));
+
+        checkIfUserHasAccessToObraService.execute(currentUserTenant, relatorioDetails.getObraId());
 
         List<OcorrenciaDeRelatorioEntity> ocorrenciasDoRelatorio = fetchOcorrenciasIfAllowed(relatorioDetails, userCanViewOcorrencias);
         List<AtividadeDeRelatorioEntity> atividadesDoRelatorio = fetchAtividadesIfAllowed(relatorioDetails, userCanViewAtividades);

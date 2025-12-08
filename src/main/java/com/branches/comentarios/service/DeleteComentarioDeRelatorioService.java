@@ -3,6 +3,7 @@ package com.branches.comentarios.service;
 import com.branches.comentarios.model.ComentarioDeRelatorioEntity;
 import com.branches.comentarios.repository.ComentarioDeRelatorioRepository;
 import com.branches.exception.ForbiddenException;
+import com.branches.obra.controller.CheckIfUserHasAccessToObraService;
 import com.branches.relatorio.domain.RelatorioEntity;
 import com.branches.relatorio.service.CheckIfUserHasAccessToEditRelatorioService;
 import com.branches.relatorio.service.GetRelatorioByIdExternoAndTenantIdService;
@@ -27,6 +28,7 @@ public class DeleteComentarioDeRelatorioService {
     private final CheckIfUserCanViewComentariosService checkIfUserCanViewComentariosService;
     private final GetComentarioDeRelatorioByIdAndRelatorioIdService getComentarioDeRelatorioByIdAndRelatorioIdService;
     private final ComentarioDeRelatorioRepository comentarioDeRelatorioRepository;
+    private final CheckIfUserHasAccessToObraService checkIfUserHasAccessToObraService;
 
     public void execute(Long id, String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -35,6 +37,7 @@ public class DeleteComentarioDeRelatorioService {
 
         RelatorioEntity relatorio = getRelatorioByIdExternoAndTenantIdService.execute(relatorioExternalId, tenantId);
 
+        checkIfUserHasAccessToObraService.execute(userTenant, relatorio.getObraId());
         checkIfUserHasAccessToEditRelatorioService.execute(userTenant, relatorio.getStatus());
         checkIfConfiguracaoDeRelatorioDaObraPermiteComentarioService.execute(relatorio.getObraId(), tenantId);
         checkIfUserCanViewComentariosService.execute(userTenant);
