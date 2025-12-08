@@ -50,6 +50,7 @@ public class UpdateUserOfTenantService {
         userTenantToEdit.setPerfil(request.perfil());
         userTenantToEdit.setAuthorities(isPerfilAdmin ? Authorities.adminAuthorities() : request.authorities());
         userTenantToEdit.setAtivo(request.ativo());
+        userTenantToEdit.setCargo(request.cargo());
 
         List<ObraEntity> obrasAllowed = getObrasByTenantIdAndIdExternoIn.execute(tenantId, request.obrasIds());
 
