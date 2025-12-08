@@ -18,7 +18,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     SELECT u.idExterno AS idExterno,
            u.nome AS nome,
            u.email AS email,
-           u.cargo AS cargo,
+           ut.cargo AS cargo,
            u.fotoUrl AS fotoUrl,
            ut.authorities as authorities,
            ut.perfil AS perfil
