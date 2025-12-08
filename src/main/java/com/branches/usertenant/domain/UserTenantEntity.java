@@ -51,13 +51,6 @@ public class UserTenantEntity {
                 .toList();
     }
 
-    @PrePersist
-    public void prePersist() {
-        if (id != null) return;
-
-        setarId();
-    }
-
     public void setarId() {
         id = UserTenantKey.from(this.user.getId(), this.tenantId);
     }

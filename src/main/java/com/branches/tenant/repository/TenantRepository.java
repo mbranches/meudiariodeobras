@@ -52,4 +52,8 @@ public interface TenantRepository extends JpaRepository<TenantEntity, Long> {
     List<TenantEntity> findAllByIdInAndAtivoIsTrue(Collection<Long> ids);
 
     Optional<TenantEntity> findByIdExterno(String idExterno);
+
+    boolean existsByCnpj(String cnpj);
+
+    boolean existsByTelefone(String telefone);
 }
