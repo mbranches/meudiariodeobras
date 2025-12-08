@@ -5,6 +5,7 @@ import com.branches.usertenant.domain.UserTenantKey;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -12,4 +13,6 @@ public interface UserTenantRepository extends JpaRepository<UserTenantEntity, Us
     long countByTenantIdAndAtivoIsTrue(Long tenantId);
 
     Optional<UserTenantEntity> findByUserIdExternoAndTenantId(String userIdExterno, Long tenantId);
+
+    List<UserTenantEntity> findAllByTenantId(Long tenantId);
 }

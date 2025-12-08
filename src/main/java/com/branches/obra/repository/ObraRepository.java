@@ -3,6 +3,7 @@ package com.branches.obra.repository;
 import com.branches.obra.domain.ObraEntity;
 import com.branches.obra.repository.projections.ObraDetailsProjection;
 import com.branches.obra.repository.projections.ObraProjection;
+import com.branches.obra.repository.projections.ObraResumeProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -143,4 +144,14 @@ public interface ObraRepository extends JpaRepository<ObraEntity, Long> {
     Optional<Long> findIdByIdExternoAndTenantId(String idExterno, Long tenantId);
 
     Optional<ObraEntity> findByIdAndTenantId(Long id, Long tenantId);
+
+    @Query("""
+    SELECT o.id AS id,
+        o.idExterno AS idExterno,
+        o.nome AS nome
+    FROM ObraEntity o
+    WHERE o.id IN :todasAsObrasPermitidasIds
+    AND o.ativo IS TRUE
+    """)
+    List<ObraResumeProjection> findResumedByIdInList(Collection<Long> obrasIds);
 }
