@@ -5,7 +5,6 @@ import com.branches.obra.domain.ObraEntity;
 import com.branches.obra.domain.enums.StatusObra;
 import com.branches.obra.dto.request.UpdateObraRequest;
 import com.branches.obra.repository.ObraRepository;
-import com.branches.relatorio.service.RegenerateTodosOsRelatoriosDeObraService;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
@@ -24,7 +23,6 @@ public class UpdateObraService {
     private final GetObraByIdExternoAndTenantIdService getObraByIdExternoAndTenantIdService;
     private final GetCurrentUserTenantService getCurrentUserTenantService;
     private final CheckIfUserCanEditObraService checkIfUserCanEditObraService;
-    private final RegenerateTodosOsRelatoriosDeObraService regenerateTodosOsRelatoriosDeObraService;
 
     public void execute(UpdateObraRequest request, String obraExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -66,7 +64,5 @@ public class UpdateObraService {
         }
 
         obraRepository.save(obra);
-
-        regenerateTodosOsRelatoriosDeObraService.execute(obra);
     }
 }

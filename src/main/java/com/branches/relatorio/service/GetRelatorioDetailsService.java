@@ -52,7 +52,7 @@ public class GetRelatorioDetailsService {
 
         UserTenantEntity currentUserTenant = getCurrentUserTenantService.execute(userTenants, tenantId);
 
-        RelatorioDetailsProjection relatorioDetails = relatorioRepository.findDetailsByIdExternoAndTenantId(relatorioExternalId, tenantId, currentUserTenant.getUser().getId())
+        RelatorioDetailsProjection relatorioDetails = relatorioRepository.findDetailsByIdExternoAndTenantId(relatorioExternalId, tenantId)
                 .orElseThrow(() -> new NotFoundException("Relatório não encontrado com o id: " + relatorioExternalId));
 
         checkIfUserCanViewRelatorio(currentUserTenant, relatorioDetails.getStatus());

@@ -12,13 +12,11 @@ import com.branches.obra.domain.enums.TipoMaoDeObra;
 import com.branches.relatorio.domain.CampoPersonalizadoEntity;
 import com.branches.relatorio.domain.RelatorioEntity;
 import com.branches.relatorio.service.CheckIfUserHasAccessToEditRelatorioService;
-import com.branches.relatorio.service.GenerateRelatorioFileToUsersService;
 import com.branches.relatorio.service.GetRelatorioByIdExternoAndTenantIdService;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
 import com.branches.utils.CalculateHorasTotais;
-import com.branches.utils.ItemRelatorio;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +39,6 @@ public class CreateAtividadeDeRelatorioService {
     private final CalculateHorasTotais calculateHorasTotais;
     private final AtividadeDeRelatorioRepository atividadeDeRelatorioRepository;
     private final MaoDeObraDeAtividadeDeRelatorioRepository maoDeObraDeAtividadeDeRelatorioRepository;
-    private final GenerateRelatorioFileToUsersService generateRelatorioFileToUsersService;
 
     public CreateAtividadeDeRelatorioResponse execute(CreateAtividadeDeRelatorioRequest request, String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -81,8 +78,6 @@ public class CreateAtividadeDeRelatorioService {
 
         List<MaoDeObraDeAtividadeDeRelatorioEntity> maoDeObra = saveMaoDeObraDeAtividade(saved, maoDeObraEntities);
         saved.setMaoDeObra(maoDeObra);
-
-        generateRelatorioFileToUsersService.executeOnlyToNecessaryUsers(relatorio.getId(), ItemRelatorio.ATIVIDADES);
 
         return CreateAtividadeDeRelatorioResponse.from(saved);
     }

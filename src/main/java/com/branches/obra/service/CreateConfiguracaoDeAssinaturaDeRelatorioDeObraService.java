@@ -11,7 +11,6 @@ import com.branches.relatorio.domain.AssinaturaDeRelatorioEntity;
 import com.branches.relatorio.domain.RelatorioEntity;
 import com.branches.relatorio.repository.AssinaturaDeRelatorioRepository;
 import com.branches.relatorio.repository.RelatorioRepository;
-import com.branches.relatorio.service.RegenerateTodosOsRelatoriosDeObraService;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
@@ -30,7 +29,6 @@ public class CreateConfiguracaoDeAssinaturaDeRelatorioDeObraService {
     private final ConfiguracaoDeAssinaturaDeRelatorioRepository configuracaoDeAssinaturaDeRelatorioRepository;
     private final RelatorioRepository relatorioRepository;
     private final AssinaturaDeRelatorioRepository assinaturaDeRelatorioRepository;
-    private final RegenerateTodosOsRelatoriosDeObraService regenerateTodosOsRelatoriosDeObraService;
 
     public ConfiguracaoDeAssinaturaDeRelatorioResponse execute(CreateConfigDeAssinaturaDeRelatorioDeObraRequest request, String obraExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -57,8 +55,6 @@ public class CreateConfiguracaoDeAssinaturaDeRelatorioDeObraService {
         configAssinaturas.add(saved);
 
         addNewAssinaturaToExistingRelatorios(obra.getId(), saved);
-
-        regenerateTodosOsRelatoriosDeObraService.execute(obra);
 
         return ConfiguracaoDeAssinaturaDeRelatorioResponse.from(saved);
     }

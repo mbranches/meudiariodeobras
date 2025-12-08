@@ -6,12 +6,10 @@ import com.branches.material.dto.response.CreateMaterialDeRelatorioResponse;
 import com.branches.material.repository.MaterialDeRelatorioRepository;
 import com.branches.relatorio.domain.RelatorioEntity;
 import com.branches.relatorio.service.CheckIfUserHasAccessToEditRelatorioService;
-import com.branches.relatorio.service.GenerateRelatorioFileToUsersService;
 import com.branches.relatorio.service.GetRelatorioByIdExternoAndTenantIdService;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
-import com.branches.utils.ItemRelatorio;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +25,6 @@ public class CreateMaterialDeRelatorioService {
     private final CheckIfConfiguracaoDeRelatorioDaObraPermiteMaterialService checkIfConfiguracaoDeRelatorioDaObraPermiteMaterialService;
     private final CheckIfUserCanViewMateriaisService checkIfUserCanViewMateriaisService;
     private final MaterialDeRelatorioRepository materialDeRelatorioRepository;
-    private final GenerateRelatorioFileToUsersService generateRelatorioFileToUsersService;
 
     public CreateMaterialDeRelatorioResponse execute(CreateMaterialDeRelatorioRequest request, String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -50,8 +47,6 @@ public class CreateMaterialDeRelatorioService {
                 .build();
 
         MaterialDeRelatorioEntity saved = materialDeRelatorioRepository.save(toSave);
-
-        generateRelatorioFileToUsersService.executeOnlyToNecessaryUsers(relatorio.getId(), ItemRelatorio.MATERIAIS);
 
         return CreateMaterialDeRelatorioResponse.from(saved);
     }

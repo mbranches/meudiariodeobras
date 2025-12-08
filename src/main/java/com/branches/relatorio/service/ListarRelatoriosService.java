@@ -35,9 +35,8 @@ public class ListarRelatoriosService {
                 "dataInicio"
         );
 
-        Long userId = currentUserTenant.getUser().getId();
-        Page<RelatorioProjection> relatorios = canViewOnlyAprovados ? relatorioRepository.findAllByTenantIdAndIsAprovadoAndUserAccessToTheObraPai(tenantId, userId, currentUserTenant.getObrasPermitidasIds(), currentUserTenant.isAdministrador(), pageRequest)
-                : relatorioRepository.findAllByTenantIdAndUserAccessToTheObraPai(tenantId, userId, currentUserTenant.getObrasPermitidasIds(), currentUserTenant.isAdministrador(), pageRequest);
+        Page<RelatorioProjection> relatorios = canViewOnlyAprovados ? relatorioRepository.findAllByTenantIdAndIsAprovadoAndUserAccessToTheObraPai(tenantId, currentUserTenant.getObrasPermitidasIds(), currentUserTenant.isAdministrador(), pageRequest)
+                : relatorioRepository.findAllByTenantIdAndUserAccessToTheObraPai(tenantId, currentUserTenant.getObrasPermitidasIds(), currentUserTenant.isAdministrador(), pageRequest);
 
         Page<RelatorioResponse> response = relatorios.map(RelatorioResponse::from);
 

@@ -28,7 +28,6 @@ public class UpdateRelatorioService {
     private final RelatorioRepository relatorioRepository;
     private final ObraRepository obraRepository;
     private final CalculateHorasTotais calculateHorasTotais;
-    private final GenerateRelatorioFileToUsersService generateRelatorioFileToUsersService;
 
     @Transactional
     public void execute(UpdateRelatorioRequest request, String tenantExternalId, String relatorioExternalId, List<UserTenantEntity> userTenants) {
@@ -61,8 +60,6 @@ public class UpdateRelatorioService {
         }
 
         relatorioRepository.save(relatorio);
-
-        generateRelatorioFileToUsersService.execute(relatorio.getId());
     }
 
     private void updateStatus(UserTenantEntity currentUserTenant, RelatorioEntity relatorio, StatusRelatorio status) {

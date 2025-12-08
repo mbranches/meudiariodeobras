@@ -28,7 +28,6 @@ public class AssinarRelatorioService {
     private final GetCurrentUserTenantService getCurrentUserTenantService;
     private final S3UploadFile s3UploadFile;
     private final CompressImage compressImage;
-    private final GenerateRelatorioFileToUsersService generateRelatorioFileToUsersService;
     private final AssinaturaDeRelatorioRepository assinaturaDeRelatorioRepository;
 
     public void execute(AssinarRelatorioRequest request, Long id, String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
@@ -54,7 +53,5 @@ public class AssinarRelatorioService {
         assinaturaDeRelatorioEntity.setAssinaturaUrl(signatureUrl);
 
         assinaturaDeRelatorioRepository.save(assinaturaDeRelatorioEntity);
-
-        generateRelatorioFileToUsersService.execute(relatorio.getId());
     }
 }

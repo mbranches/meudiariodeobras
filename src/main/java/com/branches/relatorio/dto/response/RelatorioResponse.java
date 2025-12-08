@@ -12,7 +12,6 @@ public record RelatorioResponse(
         Long numero,
         StatusRelatorio status,
         Long quantidadeFotos,
-        String pdfUrl,
         ObraByRelatorioResponse obra
 ) {
     public static RelatorioResponse from(RelatorioProjection relatorio) {
@@ -24,7 +23,6 @@ public record RelatorioResponse(
                 relatorio.getNumero(),
                 relatorio.getStatus(),
                 relatorio.getQuantidadeFotos(),
-                relatorio.getPdfUrl(),
                 obra
         );
     }

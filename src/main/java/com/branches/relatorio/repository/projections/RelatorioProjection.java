@@ -15,8 +15,6 @@ public interface RelatorioProjection {
 
     StatusRelatorio getStatus();
 
-    String getPdfUrl();
-
     String getObraIdExterno();
 
     String getObraNome();

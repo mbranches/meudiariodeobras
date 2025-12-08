@@ -48,7 +48,6 @@ public class CreateRelatorioService {
     private final MaoDeObraDeRelatorioRepository maoDeObraDeRelatorioRepository;
     private final EquipamentoDeRelatorioRepository equipamentoDeRelatorioRepository;
     private final OcorrenciaDeRelatorioRepository ocorrenciaDeRelatorioRepository;
-    private final GenerateRelatorioFileToUsersService generateRelatorioFileToUsersService;
 
     public CreateRelatorioResponse execute(CreateRelatorioRequest request, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -88,8 +87,6 @@ public class CreateRelatorioService {
         if(request.copiarInformacoesDoUltimoRelatorio() && quantityOfRelatoriosOfObra > 0) {
             copyInfoFromLastRelatorio(tenantId, obra.getId(), savedRelatorio, request, configuracaoRelatorios);
         }
-
-        generateRelatorioFileToUsersService.execute(savedRelatorio.getId());
 
         return new CreateRelatorioResponse(savedRelatorio.getIdExterno());
     }

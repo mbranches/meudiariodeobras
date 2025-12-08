@@ -65,8 +65,7 @@ public record GetRelatorioDetailsResponse(
         List<FileResponse> videos,
         StatusRelatorio status,
         ModifyerByRelatorioResponse criadoPor,
-        ModifyerByRelatorioResponse ultimaModificacao,
-        String pdfUrl
+        ModifyerByRelatorioResponse ultimaModificacao
 
 ) {
     public static GetRelatorioDetailsResponse from(RelatorioDetailsProjection relatorioDetails,
@@ -161,8 +160,7 @@ public record GetRelatorioDetailsResponse(
                 videosResponse,
                 relatorioDetails.getStatus(),
                 new ModifyerByRelatorioResponse(relatorioDetails.getCriadoPor(), relatorioDetails.getCriadoEm()),
-                new ModifyerByRelatorioResponse(relatorioDetails.getUltimaModificacaoPor(), relatorioDetails.getUltimaModificacaoEm()),
-                relatorioDetails.getPdfUrl()
+                new ModifyerByRelatorioResponse(relatorioDetails.getUltimaModificacaoPor(), relatorioDetails.getUltimaModificacaoEm())
         );
     }
 }

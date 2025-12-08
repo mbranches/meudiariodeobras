@@ -23,7 +23,6 @@ public class DesassinarRelatorioService {
     private final GetRelatorioByIdExternoAndTenantIdService getRelatorioByIdExternoAndTenantIdService;
     private final GetCurrentUserTenantService getCurrentUserTenantService;
     private final S3DeleteFile s3DeleteFile;
-    private final GenerateRelatorioFileToUsersService generateRelatorioFileToUsersService;
     private final AssinaturaDeRelatorioRepository assinaturaDeRelatorioRepository;
 
     public void execute(Long id, String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
@@ -46,7 +45,5 @@ public class DesassinarRelatorioService {
         assinaturaDeRelatorioEntity.setAssinaturaUrl(null);
 
         assinaturaDeRelatorioRepository.save(assinaturaDeRelatorioEntity);
-
-        generateRelatorioFileToUsersService.execute(relatorio.getId());
     }
 }
