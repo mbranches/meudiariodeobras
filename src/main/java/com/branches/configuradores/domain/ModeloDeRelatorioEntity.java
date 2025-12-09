@@ -50,4 +50,8 @@ public class ModeloDeRelatorioEntity extends AuditableTenantOwned {
     @Builder.Default
     @Column(nullable = false)
     private Boolean ativo = true;
+
+    public void desativar() {
+        this.ativo = false;
+    }
 }
