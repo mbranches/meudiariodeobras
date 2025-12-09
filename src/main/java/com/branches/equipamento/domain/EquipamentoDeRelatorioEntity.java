@@ -20,6 +20,5 @@ public class EquipamentoDeRelatorioEntity {
     @ManyToOne
     @JoinColumn(name = "relatorio_id", nullable = false)
     private RelatorioEntity relatorio;
-    @Column(nullable = false)
     private Integer quantidade;
 }
