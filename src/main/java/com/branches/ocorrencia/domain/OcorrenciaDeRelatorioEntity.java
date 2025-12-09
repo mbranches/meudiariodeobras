@@ -39,7 +39,7 @@ public class OcorrenciaDeRelatorioEntity {
     private LocalTime horaFim;
     private LocalTime totalHoras;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "atividade_vinculada_id")
     private AtividadeDeRelatorioEntity atividadeVinculada;
 
