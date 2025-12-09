@@ -131,10 +131,6 @@ public class CreateRelatorioService {
             copyComentariosFromLastRelatorio(lastRelatorio, relatorio);
         }
 
-        if (request.copiarCondicoesClimaticas()) {
-            copyCondicoesClimaticasFromLastRelatorio(lastRelatorio, relatorio);
-        }
-
         if (request.copiarMaoDeObra() && configuracaoRelatorios.getShowMaoDeObra()) {
             copyMaoDeObraFromLastRelatorio(lastRelatorio, relatorio);
         }
@@ -211,13 +207,6 @@ public class CreateRelatorioService {
         maoDeObraDeRelatorioRepository.saveAll(newMaoDeObra);
     }
 
-    private void copyCondicoesClimaticasFromLastRelatorio(RelatorioEntity lastRelatorio, RelatorioEntity relatorio) {
-        relatorio.setCaracteristicasManha(lastRelatorio.getCaracteristicasManha());
-        relatorio.setCaracteristicasManha(lastRelatorio.getCaracteristicasTarde());
-        relatorio.setCaracteristicasManha(lastRelatorio.getCaracteristicasNoite());
-
-        relatorioRepository.save(relatorio);
-    }
 
     private void copyComentariosFromLastRelatorio(RelatorioEntity lastRelatorio, RelatorioEntity relatorio) {
         List<ComentarioDeRelatorioEntity> comentariosOfThLastRelatorio = comentarioDeRelatorioRepository.findAllByRelatorioId(lastRelatorio.getId());

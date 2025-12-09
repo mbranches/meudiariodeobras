@@ -15,8 +15,6 @@ public record CreateRelatorioRequest(
         Boolean copiarInformacoesDoUltimoRelatorio,
         @NotNull(message = "O campo 'copiarHorarioDosTrabalhos' é obrigatório")
         Boolean copiarHorarioDosTrabalhos,
-        @NotNull(message = "O campo 'copiarCondicoesClimaticas' é obrigatório")
-        Boolean copiarCondicoesClimaticas,
         @NotNull(message = "O campo 'copiarMaoDeObra' é obrigatório")
         Boolean copiarMaoDeObra,
         @NotNull(message = "O campo 'copiarEquipamentos' é obrigatório")
