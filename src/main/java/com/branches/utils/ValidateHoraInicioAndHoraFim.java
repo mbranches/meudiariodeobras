@@ -13,5 +13,9 @@ public class ValidateHoraInicioAndHoraFim {
         if (horaInicio == null || horaFim == null) {
             throw new BadRequestException("Ambos os campos 'horaInicio' e 'horaFim' devem ser preenchidos ou ambos devem ser nulos");
         }
+
+        if (horaInicio.isAfter(horaFim)) {
+            throw new BadRequestException("O campo 'horaInicio' não pode ser maior que o campo 'horaFim'");
+        }
     }
 }
