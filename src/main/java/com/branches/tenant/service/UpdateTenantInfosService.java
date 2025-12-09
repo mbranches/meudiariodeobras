@@ -29,7 +29,7 @@ public class UpdateTenantInfosService {
         validatePhoneNumber.execute(request.telefone());
 
         tenantEntity.setTelefone(request.telefone());
-        tenantEntity.setNomeFantasia(request.nomeFantasia());
+        tenantEntity.setNome(request.nome());
 
         tenantRepository.save(tenantEntity);
     }

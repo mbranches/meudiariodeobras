@@ -5,8 +5,8 @@ import com.branches.assinatura.domain.AssinaturaEntity;
 public interface TenantInfoProjection {
     String getIdExterno();
     String getRazaoSocial();
-    String getNomeFantasia();
-    String getCnpj();
+    String getNome();
+    String getCpfCnpj();
     String getTelefone();
     String getLogoUrl();
     String getNomeUsuarioResponsavel();

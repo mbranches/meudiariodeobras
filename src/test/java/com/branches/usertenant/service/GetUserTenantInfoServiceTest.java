@@ -62,7 +62,7 @@ class GetUserTenantInfoServiceTest {
                 .id(1L)
                 .idExterno("tenant-ext-1")
                 .razaoSocial("Tenant 1 LTDA")
-                .nomeFantasia("Tenant 1")
+                .nome("Tenant 1")
                 .build();
 
         tenantEntities = List.of(tenant);
@@ -87,8 +87,8 @@ class GetUserTenantInfoServiceTest {
 
         when(tenantInfoProjection.getIdExterno()).thenReturn(tenantExternalId);
         when(tenantInfoProjection.getRazaoSocial()).thenReturn("Empresa Teste LTDA");
-        when(tenantInfoProjection.getNomeFantasia()).thenReturn("Empresa Teste");
-        when(tenantInfoProjection.getCnpj()).thenReturn("12.345.678/0001-99");
+        when(tenantInfoProjection.getNome()).thenReturn("Empresa Teste");
+        when(tenantInfoProjection.getCpfCnpj()).thenReturn("12.345.678/0001-99");
         when(tenantInfoProjection.getTelefone()).thenReturn("(11) 1234-5678");
         when(tenantInfoProjection.getLogoUrl()).thenReturn("https://example.com/logo.jpg");
         when(tenantInfoProjection.getNomeUsuarioResponsavel()).thenReturn("João Silva");
@@ -110,13 +110,13 @@ class GetUserTenantInfoServiceTest {
         assertEquals(PerfilUserTenant.ADMINISTRADOR, result.user().perfil());
         assertEquals(1, result.user().tenantsVinculados().size());
         assertEquals("tenant-ext-1", result.user().tenantsVinculados().getFirst().id());
-        assertEquals("Tenant 1", result.user().tenantsVinculados().getFirst().nomeFantasia());
+        assertEquals("Tenant 1", result.user().tenantsVinculados().getFirst().nome());
 
         assertNotNull(result.tenant());
         assertEquals(tenantExternalId, result.tenant().id());
-        assertEquals("Empresa Teste LTDA", result.tenant().razonSocial());
-        assertEquals("Empresa Teste", result.tenant().nomeFantasia());
-        assertEquals("12.345.678/0001-99", result.tenant().cnpj());
+        assertEquals("Empresa Teste LTDA", result.tenant().razaoSocial());
+        assertEquals("Empresa Teste", result.tenant().nome());
+        assertEquals("12.345.678/0001-99", result.tenant().cpfCnpj());
         assertEquals("(11) 1234-5678", result.tenant().telefone());
         assertEquals("https://example.com/logo.jpg", result.tenant().logoUrl());
         assertEquals("João Silva", result.tenant().responsavelNome());

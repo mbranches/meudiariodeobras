@@ -31,7 +31,7 @@ class GetTenantIdByIdExternoServiceTest {
                 .id(1L)
                 .idExterno(idExterno)
                 .razaoSocial("Tenant Teste LTDA")
-                .nomeFantasia("Tenant Teste")
+                .nome("Tenant Teste")
                 .cnpj("12.345.678/0001-90")
                 .telefone("(11) 98765-4321")
                 .logoUrl("http://example.com/logo.png")

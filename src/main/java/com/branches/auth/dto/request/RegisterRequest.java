@@ -7,13 +7,11 @@ import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.br.CNPJ;
 
 public record RegisterRequest(
-        @NotBlank(message = "O campo 'razaoSocial' é obrigatório")
         String razaoSocial,
-        @NotBlank(message = "O campo 'nomeFantasia' é obrigatório")
-        String nomeFantasia,
-        @CNPJ(format = CNPJ.Format.ALPHANUMERIC, message = "O campo 'cnpj' deve ser um CNPJ válido")
-        @NotBlank(message = "O campo 'cnpj' é obrigatório")
-        String cnpj,
+        @NotBlank(message = "O campo 'nome' é obrigatório")
+        String nome,
+        @NotBlank(message = "O campo 'cpfCnpj' é obrigatório")
+        String cpfCnpj,
         @NotBlank(message = "O campo 'telefone' é obrigatório")
         String telefone,
         @NotBlank(message = "O campo 'responsavelNome' é obrigatório")

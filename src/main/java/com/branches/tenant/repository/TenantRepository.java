@@ -23,8 +23,8 @@ public interface TenantRepository extends JpaRepository<TenantEntity, Long> {
     @Query("""
     SELECT t.idExterno AS idExterno,
         t.razaoSocial AS razaoSocial,
-        t.nomeFantasia AS nomeFantasia,
-        t.cnpj AS cnpj,
+        t.nome AS nome,
+        t.cpfCnpj AS cpfCnpj,
         t.telefone AS telefone,
         t.logoUrl AS logoUrl,
         u.nome AS nomeUsuarioResponsavel,
@@ -53,7 +53,7 @@ public interface TenantRepository extends JpaRepository<TenantEntity, Long> {
 
     Optional<TenantEntity> findByIdExterno(String idExterno);
 
-    boolean existsByCnpj(String cnpj);
+    boolean existsByCpfCnpj(String cpfCnpj);
 
     boolean existsByTelefone(String telefone);
 }

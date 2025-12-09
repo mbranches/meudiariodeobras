@@ -60,7 +60,7 @@ public class ConfiguracaoRelatoriosEntity {
     @Column(nullable = false)
     private Boolean showVideos;
 
-    public static ConfiguracaoRelatoriosEntity by(ModeloDeRelatorioEntity modeloDeRelatorioDefault, String urlLogoTenant, String nomeFantasiaTenant, String nomeClienteObra) {
+    public static ConfiguracaoRelatoriosEntity by(ModeloDeRelatorioEntity modeloDeRelatorioDefault, String urlLogoTenant, String nome, String nomeClienteObra) {
         LogoDeRelatorioEntity logoDeRelatorioDefault = LogoDeRelatorioEntity.builder()
                 .url(urlLogoTenant)
                 .exibir(urlLogoTenant != null && !urlLogoTenant.isBlank())
@@ -87,7 +87,7 @@ public class ConfiguracaoRelatoriosEntity {
 
         boolean clienteNameIsNotEmpty = nomeClienteObra != null && !nomeClienteObra.isBlank();
         ConfiguracaoDeAssinaturaDeRelatorioEntity assinaturaTenantDefault = ConfiguracaoDeAssinaturaDeRelatorioEntity.builder()
-                .nomeAssinante(clienteNameIsNotEmpty ? nomeFantasiaTenant : "Assinatura")
+                .nomeAssinante(clienteNameIsNotEmpty ? nome : "Assinatura")
                 .configuracaoRelatorios(config)
                 .build();
 

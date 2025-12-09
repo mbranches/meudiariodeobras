@@ -4,9 +4,9 @@ import com.branches.tenant.repository.projection.TenantInfoProjection;
 
 public record TenantInfoResponse(
         String id,
-        String razonSocial,
-        String nomeFantasia,
-        String cnpj,
+        String razaoSocial,
+        String nome,
+        String cpfCnpj,
         String telefone,
         String logoUrl,
         String responsavelNome,
@@ -21,8 +21,8 @@ public record TenantInfoResponse(
         return new TenantInfoResponse(
                 tenant.getIdExterno(),
                 tenant.getRazaoSocial(),
-                tenant.getNomeFantasia(),
-                tenant.getCnpj(),
+                tenant.getNome(),
+                tenant.getCpfCnpj(),
                 tenant.getTelefone(),
                 tenant.getLogoUrl(),
                 tenant.getNomeUsuarioResponsavel(),

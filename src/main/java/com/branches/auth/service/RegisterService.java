@@ -3,7 +3,7 @@ package com.branches.auth.service;
 import com.branches.auth.dto.request.RegisterRequest;
 import com.branches.tenant.domain.TenantEntity;
 import com.branches.tenant.repository.TenantRepository;
-import com.branches.tenant.service.CheckIfDoesntExistsTenantWithTheCnpjService;
+import com.branches.tenant.service.CheckIfDoesntExistsTenantWithTheCpfCnpjService;
 import com.branches.tenant.service.CheckIfDoesntExistsTenantWithTheTelefoneService;
 import com.branches.user.domain.UserEntity;
 import com.branches.user.domain.enums.Role;
@@ -13,10 +13,7 @@ import com.branches.usertenant.domain.Authorities;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.domain.enums.PerfilUserTenant;
 import com.branches.usertenant.repository.UserTenantRepository;
-import com.branches.utils.FullNameFormatter;
-import com.branches.utils.ValidateFullName;
-import com.branches.utils.ValidatePassword;
-import com.branches.utils.ValidatePhoneNumber;
+import com.branches.utils.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 public class RegisterService {
-    private final CheckIfDoesntExistsTenantWithTheCnpjService checkIfDoesntExistsTenantWithTheCnpjService;
+    private final CheckIfDoesntExistsTenantWithTheCpfCnpjService checkIfDoesntExistsTenantWithTheCpfCnpjService;
     private final CheckIfDoesntExistsTenantWithTheTelefoneService checkIfDoesntExistsTenantWithTheTelefoneService;
     private final CheckIfDoesntExistsUserWithTheEmailService checkIfDoesntExistsUserWithTheEmailService;
     private final ValidateFullName validateFullName;
@@ -36,6 +33,7 @@ public class RegisterService {
     private final UserRepository userRepository;
     private final TenantRepository tenantRepository;
     private final UserTenantRepository userTenantRepository;
+    private final ValidateCpfCnpj validateCpfCnpj;
 
     @Transactional
     public void execute(RegisterRequest request) {
@@ -54,8 +52,8 @@ public class RegisterService {
 
         TenantEntity tenantToSave = TenantEntity.builder()
                 .razaoSocial(request.razaoSocial())
-                .nomeFantasia(request.nomeFantasia())
-                .cnpj(request.cnpj().replaceAll("[^0-9]", ""))
+                .nome(request.nome())
+                .cpfCnpj(request.cpfCnpj().replaceAll("[^0-9]", ""))
                 .telefone(request.telefone())
                 .segmento(request.segmento())
                 .userResponsavelId(userResponsavel.getId())
@@ -74,10 +72,10 @@ public class RegisterService {
 
         userTenantRepository.save(userTenantToSave);
 
-        sendWelcomeEmail(userResponsavel.getEmail(), responsavelFormattedName, request.nomeFantasia());
+        sendWelcomeEmail(userResponsavel.getEmail(), responsavelFormattedName, request.nome());
     }
 
-    private void sendWelcomeEmail(String email, String responsavelFormattedName, String tenantNomeFantasia) {
+    private void sendWelcomeEmail(String email, String responsavelFormattedName, String tenantNome) {
         // todo: implementar Lógica para enviar o email de boas-vindas
     }
 
@@ -85,8 +83,9 @@ public class RegisterService {
         validateFullName.execute(request.responsavelNome());
         validatePhoneNumber.execute(request.telefone());
         validatePassword.execute(request.responsavelPassword());
+        validateCpfCnpj.execute(request.cpfCnpj());
 
-        checkIfDoesntExistsTenantWithTheCnpjService.execute(request.cnpj());
+        checkIfDoesntExistsTenantWithTheCpfCnpjService.execute(request.cpfCnpj());
         checkIfDoesntExistsTenantWithTheTelefoneService.execute(request.telefone());
         checkIfDoesntExistsUserWithTheEmailService.execute(request.responsavelEmail());
     }

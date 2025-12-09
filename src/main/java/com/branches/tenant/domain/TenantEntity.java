@@ -22,12 +22,12 @@ public class TenantEntity extends Auditable {
     private String idExterno = UUID.randomUUID().toString();
 
     @Column(length = 100, nullable = false)
-    private String nomeFantasia;
-    @Column(length = 100, nullable = false)
+    private String nome;
+    @Column(length = 100)
     private String razaoSocial;
 
     @Column(length = 14, nullable = false, unique = true)
-    private String cnpj;
+    private String cpfCnpj;
 
     @Column(columnDefinition = "TEXT")
     private String logoUrl;
