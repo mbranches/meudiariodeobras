@@ -5,7 +5,6 @@ import com.branches.user.domain.UserEntity;
 import com.branches.user.dto.request.UpdateUserInfosRequest;
 import com.branches.user.repository.UserRepository;
 import com.branches.usertenant.domain.UserTenantEntity;
-import com.branches.usertenant.repository.UserTenantRepository;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
 import com.branches.utils.FullNameFormatter;
 import com.branches.utils.ValidateFullName;
@@ -25,7 +24,6 @@ public class UpdateUserInfosService {
     private final UserRepository userRepository;
     private final GetTenantIdByIdExternoService getTenantIdByIdExternoService;
     private final GetCurrentUserTenantService getCurrentUserTenantService;
-    private final UserTenantRepository userTenantRepository;
 
     @Transactional
     public void execute(String tenantExternalId, List<UserTenantEntity> userTenants, UpdateUserInfosRequest request) {
@@ -43,9 +41,5 @@ public class UpdateUserInfosService {
         }
 
         userRepository.save(userEntity);
-
-        currentUserTenant.setCargo(request.cargo());
-
-        userTenantRepository.save(currentUserTenant);
     }
 }
