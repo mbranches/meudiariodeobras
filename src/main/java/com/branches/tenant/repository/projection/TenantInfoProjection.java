@@ -6,7 +6,7 @@ public interface TenantInfoProjection {
     String getIdExterno();
     String getRazaoSocial();
     String getNome();
-    String getCpfCnpj();
+    String getCnpj();
     String getTelefone();
     String getLogoUrl();
     String getNomeUsuarioResponsavel();

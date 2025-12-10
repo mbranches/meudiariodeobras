@@ -27,7 +27,7 @@ public class TenantEntity extends Auditable {
     private String razaoSocial;
 
     @Column(length = 14, nullable = false, unique = true)
-    private String cpfCnpj;
+    private String cnpj;
 
     @Column(columnDefinition = "TEXT")
     private String logoUrl;
