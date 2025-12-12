@@ -15,7 +15,8 @@ public record ObraByListAllResponse(
         Long quantityOfRelatorios,
         Long quantityOfFotos,
         BigDecimal prazoPercentualDecorrido,
-        LocalDate dataUltimoRelatorio
+        LocalDate dataUltimoRelatorio,
+        ConfiguracaoRelatoriosResponse configuracaoRelatorios
 ) {
     public static ObraByListAllResponse from(ObraProjection obra, BigDecimal prazoPercentualDecorrido) {
         return new ObraByListAllResponse(
@@ -27,7 +28,8 @@ public record ObraByListAllResponse(
                 obra.getQuantityOfRelatorios(),
                 obra.getQuantityOfFotos(),
                 prazoPercentualDecorrido,
-                obra.getDataUltimoRelatorio()
+                obra.getDataUltimoRelatorio(),
+                ConfiguracaoRelatoriosResponse.from(obra.getConfiguracaoRelatorios())
         );
     }
 }

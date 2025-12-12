@@ -27,6 +27,7 @@ public interface ObraRepository extends JpaRepository<ObraEntity, Long> {
         o.capaUrl AS capaUrl,
         o.dataInicio AS dataInicio,
         o.dataPrevistaFim AS dataPrevistaFim,
+        cr AS configuracaoRelatorios,
         (
             SELECT COUNT(1)
             FROM RelatorioEntity r
@@ -46,6 +47,7 @@ public interface ObraRepository extends JpaRepository<ObraEntity, Long> {
             LIMIT 1
         ) AS dataUltimoRelatorio
     FROM ObraEntity o
+    JOIN o.configuracaoRelatorios cr
     WHERE o.tenantId = :tenantId AND o.ativo IS TRUE
 """)
     List<ObraProjection> findAllByTenantIdProjection(Long tenantId);
@@ -57,6 +59,7 @@ public interface ObraRepository extends JpaRepository<ObraEntity, Long> {
         o.capaUrl AS capaUrl,
         o.dataInicio AS dataInicio,
         o.dataPrevistaFim AS dataPrevistaFim,
+        cr AS configuracaoRelatorios,
         (
             SELECT COUNT(1)
             FROM RelatorioEntity r
@@ -76,6 +79,7 @@ public interface ObraRepository extends JpaRepository<ObraEntity, Long> {
             LIMIT 1
         ) AS dataUltimoRelatorio
     FROM ObraEntity o
+    JOIN o.configuracaoRelatorios cr
     WHERE o.id IN :userAllowedObrasIds
         AND o.tenantId = :tenantId
         AND o.ativo IS TRUE

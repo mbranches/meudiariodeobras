@@ -8,7 +8,8 @@ import java.time.LocalDate;
 
 public record RelatorioResponse(
         String id,
-        LocalDate data,
+        LocalDate dataInicio,
+        LocalDate dataFim,
         Long numero,
         StatusRelatorio status,
         Long quantidadeFotos,
@@ -20,6 +21,7 @@ public record RelatorioResponse(
         return new RelatorioResponse(
                 relatorio.getIdExterno(),
                 relatorio.getDataInicio(),
+                relatorio.getDataFim(),
                 relatorio.getNumero(),
                 relatorio.getStatus(),
                 relatorio.getQuantidadeFotos(),

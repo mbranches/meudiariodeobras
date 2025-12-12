@@ -32,7 +32,8 @@ public class ListarRelatoriosService {
                 pageableRequest.pageNumber(),
                 pageableRequest.pageSize(),
                 pageableRequest.sortDirection(),
-                "dataInicio"
+                "dataInicio",
+                "enversCreatedDate"
         );
 
         Page<RelatorioProjection> relatorios = canViewOnlyAprovados ? relatorioRepository.findAllByTenantIdAndIsAprovadoAndUserAccessToTheObraPai(tenantId, currentUserTenant.getObrasPermitidasIds(), currentUserTenant.isAdministrador(), pageRequest)
