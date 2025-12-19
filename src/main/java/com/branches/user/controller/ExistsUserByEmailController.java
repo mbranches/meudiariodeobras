@@ -1,17 +1,15 @@
 package com.branches.user.controller;
 
-import com.branches.user.dto.request.ExistsUserByEmailRequest;
 import com.branches.user.dto.response.ExistsUserByEmailResponse;
 import com.branches.user.service.ExistsUserByEmailService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -27,8 +25,8 @@ public class ExistsUserByEmailController {
             @ApiResponse(responseCode = "400", description = "Requisição inválida"),
             @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     })
-    public ResponseEntity<ExistsUserByEmailResponse> execute(@RequestBody @Valid ExistsUserByEmailRequest request) {
-        boolean response = existsUserByEmailService.execute(request.email());
+    public ResponseEntity<ExistsUserByEmailResponse> execute(@RequestParam String email) {
+        boolean response = existsUserByEmailService.execute(email);
 
         return ResponseEntity.ok(new ExistsUserByEmailResponse(response));
     }

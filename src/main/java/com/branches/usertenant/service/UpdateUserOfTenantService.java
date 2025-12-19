@@ -52,7 +52,7 @@ public class UpdateUserOfTenantService {
         userTenantToEdit.setAtivo(request.ativo());
         userTenantToEdit.setCargo(request.cargo());
 
-        List<ObraEntity> obrasAllowed = getObrasByTenantIdAndIdExternoIn.execute(tenantId, request.obrasIds());
+        List<ObraEntity> obrasAllowed = getObrasByTenantIdAndIdExternoIn.execute(tenantId, request.obrasPermitidasIds());
 
         Set<UserObraPermitidaEntity> userObrasPermitidaEntities = getUserObrasPermitidaEntities(userTenantToEdit, obrasAllowed);
         userTenantToEdit.setUserObraPermitidaEntities(userObrasPermitidaEntities);
@@ -64,10 +64,15 @@ public class UpdateUserOfTenantService {
         List<Long> obrasIds = obras.stream().map(ObraEntity::getId).toList();
 
         return obrasIds.stream()
-                .map(obraId -> UserObraPermitidaEntity.builder()
-                        .userTenant(userTenantToEdit)
-                        .obraId(obraId)
-                        .build())
+                .map(obraId -> {
+                    UserObraPermitidaEntity obraPermitidaEntity = UserObraPermitidaEntity.builder()
+                            .userTenant(userTenantToEdit)
+                            .obraId(obraId)
+                            .build();
+                    obraPermitidaEntity.setarId();
+
+                    return obraPermitidaEntity;
+                })
                 .collect(Collectors.toSet());
     }
 

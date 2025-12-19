@@ -1,6 +1,5 @@
 package com.branches.usertenant.service;
 
-import com.branches.exception.ForbiddenException;
 import com.branches.obra.repository.ObraRepository;
 import com.branches.obra.repository.projections.ObraResumeProjection;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
@@ -25,8 +24,7 @@ public class ListUserTenantsService {
     public List<UserTenantResponse> execute(String tenantExternalId, List<UserTenantEntity> requestingUserTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
 
-        UserTenantEntity currentUserTenant = getCurrentUserTenantService.execute(requestingUserTenants, tenantId);
-        checkIfUserCanListUsers(currentUserTenant);
+        getCurrentUserTenantService.execute(requestingUserTenants, tenantId);
 
         List<UserTenantEntity> userTenants = userTenantRepository.findAllByTenantId(tenantId);
         List<Long> todasAsObrasPermitidasIds = userTenants.stream().flatMap(ut -> ut.getObrasPermitidasIds().stream()).distinct().toList();
@@ -45,11 +43,5 @@ public class ListUserTenantsService {
         return mapUserTenantAndObras.entrySet().stream()
                 .map(entry -> UserTenantResponse.from(entry.getKey(), entry.getValue()))
                 .toList();
-    }
-
-    private void checkIfUserCanListUsers(UserTenantEntity currentUserTenant) {
-        if (currentUserTenant.isAdministrador()) return;
-
-        throw new ForbiddenException();
     }
 }

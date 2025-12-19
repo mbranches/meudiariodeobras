@@ -9,13 +9,13 @@ public record TenantInfoResponse(
         String cnpj,
         String telefone,
         String logoUrl,
-        String responsavelNome,
+        ResponsavelInfoResponse responsavel,
         AssinaturaInfoResponse assinaturaAtiva,
         Long quantidadeDeUsersCriados,
         Long quantidadeDeObrasCriadas
 ) {
     public static TenantInfoResponse from(TenantInfoProjection tenant) {
-        AssinaturaInfoResponse assinatura = tenant.getAssinaturaAtiva() != null ? AssinaturaInfoResponse.from(tenant.getAssinaturaAtiva())
+        AssinaturaInfoResponse assinatura = tenant.getAssinaturaAtiva() != null ? com.branches.usertenant.dto.response.AssinaturaInfoResponse.from(tenant.getAssinaturaAtiva())
                 : null;
 
         return new TenantInfoResponse(
@@ -25,7 +25,7 @@ public record TenantInfoResponse(
                 tenant.getCnpj(),
                 tenant.getTelefone(),
                 tenant.getLogoUrl(),
-                tenant.getNomeUsuarioResponsavel(),
+                ResponsavelInfoResponse.from(tenant.getResponsavel()),
                 assinatura,
                 tenant.getQuantidadeDeUsersCriados(),
                 tenant.getQuantidadeDeObrasCriadas()

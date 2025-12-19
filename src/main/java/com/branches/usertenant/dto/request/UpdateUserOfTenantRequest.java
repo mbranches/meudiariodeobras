@@ -9,7 +9,7 @@ import java.util.Set;
 
 public record UpdateUserOfTenantRequest(
         @NotBlank(message = "O campo 'cargo' é obrigatório") String cargo,
-        @NotNull(message = "O campo 'obrasIds' é obrigatório") Set<String> obrasIds,
+        @NotNull(message = "O campo 'obrasPermitidasIds' é obrigatório") Set<String> obrasPermitidasIds,
         Authorities authorities,
         @NotNull(message = "O campo 'perfil' é obrigatório") PerfilUserTenant perfil,
         @NotNull(message = "O campo 'ativo' é obrigatório") Boolean ativo

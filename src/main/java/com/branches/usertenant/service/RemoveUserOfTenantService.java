@@ -12,6 +12,7 @@ import com.branches.usertenant.domain.enums.PerfilUserTenant;
 import com.branches.usertenant.repository.UserTenantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class RemoveUserOfTenantService {
     private final UserTenantRepository userTenantRepository;
     private final GetTenantByIdService getTenantByIdService;
 
+    @Transactional
     public void execute(String tenantExternalId, String userExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
 
@@ -43,6 +45,8 @@ public class RemoveUserOfTenantService {
         }
 
         userTenantRepository.delete(userTenantToDelete);
+
+        userToRemove.getUserTenantEntities().remove(userTenantToDelete);
     }
 
     private void checkIfUserCanRemoveUser(UserTenantEntity currentUserTenant) {

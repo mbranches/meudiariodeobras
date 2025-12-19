@@ -27,7 +27,7 @@ public interface TenantRepository extends JpaRepository<TenantEntity, Long> {
         t.cnpj AS cnpj,
         t.telefone AS telefone,
         t.logoUrl AS logoUrl,
-        u.nome AS nomeUsuarioResponsavel,
+        u AS responsavel,
         a AS assinaturaAtiva,
         (
             SELECT COUNT(1)

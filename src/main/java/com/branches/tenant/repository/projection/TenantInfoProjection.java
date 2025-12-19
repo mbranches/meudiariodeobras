@@ -1,6 +1,7 @@
 package com.branches.tenant.repository.projection;
 
 import com.branches.assinatura.domain.AssinaturaEntity;
+import com.branches.user.domain.UserEntity;
 
 public interface TenantInfoProjection {
     String getIdExterno();
@@ -9,7 +10,7 @@ public interface TenantInfoProjection {
     String getCnpj();
     String getTelefone();
     String getLogoUrl();
-    String getNomeUsuarioResponsavel();
+    UserEntity getResponsavel();
     AssinaturaEntity getAssinaturaAtiva();
     Long getQuantidadeDeUsersCriados();
     Long getQuantidadeDeObrasCriadas();

@@ -47,6 +47,7 @@ public class SecurityConfig {
                         .requestMatchers(publicUrls).permitAll()
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
                         .requestMatchers("/api/users/me/**").authenticated()
+                        .requestMatchers("/api/users/exists-by-email").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(tokenAuthFilter, UsernamePasswordAuthenticationFilter.class)

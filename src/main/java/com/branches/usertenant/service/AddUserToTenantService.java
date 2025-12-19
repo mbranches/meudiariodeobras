@@ -159,10 +159,16 @@ public class AddUserToTenantService {
         List<Long> obrasIds = obras.stream().map(ObraEntity::getId).toList();
 
         return obrasIds.stream()
-                .map(obraId -> UserObraPermitidaEntity.builder()
-                        .userTenant(newUserTenant)
-                        .obraId(obraId)
-                        .build())
+                .map(obraId -> {
+                    UserObraPermitidaEntity obraPermitida = UserObraPermitidaEntity.builder()
+                            .userTenant(newUserTenant)
+                            .obraId(obraId)
+                            .build();
+
+                    obraPermitida.setarId();
+
+                    return obraPermitida;
+                })
                 .collect(Collectors.toSet());
     }
 
