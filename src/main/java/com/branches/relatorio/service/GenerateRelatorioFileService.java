@@ -17,6 +17,7 @@ import com.branches.utils.HtmlToPdfConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -58,7 +59,7 @@ public class GenerateRelatorioFileService {
 
         byte[] pdfBytes = htmlToPdfConverter.execute(html);
 
-        String fileName = "relatorio_" + userTenant.getUser().getIdExterno() + ".pdf";
+        String fileName = "relatorio_" + userTenant.getUser().getIdExterno() + "_" + LocalDateTime.now() + ".pdf";
         String path = "tenants/%s/obras/%s/relatorios/%s".formatted(relatorioDetails.getTenantIdExterno(), relatorioDetails.getObraIdExterno(), relatorioDetails.getIdExterno());
 
         return s3UploadFile.execute(fileName, path, pdfBytes, FileContentType.PDF);

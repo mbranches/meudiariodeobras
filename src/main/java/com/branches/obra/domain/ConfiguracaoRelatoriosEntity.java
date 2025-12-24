@@ -1,19 +1,21 @@
 package com.branches.obra.domain;
 
+import com.branches.config.envers.AuditableTenantOwned;
 import com.branches.configuradores.domain.ModeloDeRelatorioEntity;
 import com.branches.configuradores.domain.enums.RecorrenciaRelatorio;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
 @Setter
 @Getter
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class ConfiguracaoRelatoriosEntity {
+public class ConfiguracaoRelatoriosEntity extends AuditableTenantOwned {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -65,6 +67,7 @@ public class ConfiguracaoRelatoriosEntity {
                 .url(urlLogoTenant)
                 .exibir(urlLogoTenant != null && !urlLogoTenant.isBlank())
                 .isLogoDoTenant(true)
+                .tenantId(tenantId)
                 .build();
 
         var config = ConfiguracaoRelatoriosEntity.builder()
@@ -83,6 +86,7 @@ public class ConfiguracaoRelatoriosEntity {
                 .showHorarioDeTrabalho(modeloDeRelatorioDefault.getShowHorarioDeTrabalho())
                 .showFotos(modeloDeRelatorioDefault.getShowFotos())
                 .showVideos(modeloDeRelatorioDefault.getShowVideos())
+                .tenantId(tenantId)
                 .build();
 
         boolean clienteNameIsNotEmpty = nomeClienteObra != null && !nomeClienteObra.isBlank();

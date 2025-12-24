@@ -17,6 +17,7 @@ import com.branches.utils.ImageOutPutFormat;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -51,7 +52,7 @@ public class UpdateLogoDeConfigDeRelatorioService {
             byte[] bytes = compressImage.execute(request.base64Image(), 1000, 400, 0.7, ImageOutPutFormat.PNG);
 
             String path = "tenants/%s/obras/%s/configuracao-relatorios/logos".formatted(tenantExternalId, obraExternalId);
-            String fileName = "logo-relatorio-%s-%s.png".formatted(tipoLogo.name().toLowerCase(), obraExternalId);
+            String fileName = "logo-relatorio-%s-%s.png".formatted(tipoLogo.name().toLowerCase(), LocalDateTime.now());
 
             String logoUrl = s3UploadFile.execute(fileName, path, bytes, FileContentType.PNG);
 

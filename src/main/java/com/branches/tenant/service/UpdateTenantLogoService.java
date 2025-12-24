@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Transactional
@@ -38,7 +39,7 @@ public class UpdateTenantLogoService {
         checkIfUserCanUpdateTenantLogo(currentUserTenant);
 
         String base64Image = request.base64Image();
-        String fileName = "logo-%s.png".formatted(tenantExternalId);
+        String fileName = "logo-%s-%s.png".formatted(tenantExternalId, LocalDateTime.now());
 
         byte[] bytes = compressImage.execute(base64Image, 1000, 400, 0.7, ImageOutPutFormat.PNG);
 

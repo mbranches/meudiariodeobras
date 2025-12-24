@@ -1,6 +1,9 @@
 package com.branches.auth.service;
 
 import com.branches.auth.dto.request.RegisterRequest;
+import com.branches.configuradores.domain.ModeloDeRelatorioEntity;
+import com.branches.configuradores.domain.enums.RecorrenciaRelatorio;
+import com.branches.configuradores.repositorio.ModeloDeRelatorioRepository;
 import com.branches.tenant.domain.TenantEntity;
 import com.branches.tenant.repository.TenantRepository;
 import com.branches.tenant.service.CheckIfDoesntExistsTenantWithTheCnpjService;
@@ -34,6 +37,7 @@ public class RegisterService {
     private final TenantRepository tenantRepository;
     private final UserTenantRepository userTenantRepository;
     private final ValidateCnpj validateCnpj;
+    private final ModeloDeRelatorioRepository modeloDeRelatorioRepository;
 
     @Transactional
     public void execute(RegisterRequest request) {
@@ -61,6 +65,8 @@ public class RegisterService {
 
         TenantEntity savedTenant = tenantRepository.save(tenantToSave);
 
+        createModeloDeRelatorioDefault(savedTenant.getId());
+
         UserTenantEntity userTenantToSave = UserTenantEntity.builder()
                 .user(userResponsavel)
                 .tenantId(savedTenant.getId())
@@ -73,6 +79,27 @@ public class RegisterService {
         userTenantRepository.save(userTenantToSave);
 
         sendWelcomeEmail(userResponsavel.getEmail(), responsavelFormattedName, request.nome());
+    }
+
+    private void createModeloDeRelatorioDefault(Long id) {
+        ModeloDeRelatorioEntity modeloDeRelatorio = ModeloDeRelatorioEntity.builder()
+                .titulo("Relatório Diário de Obra (RDO)")
+                .recorrenciaRelatorio(RecorrenciaRelatorio.UM_POR_DIA)
+                .showCondicaoClimatica(true)
+                .showMaoDeObra(true)
+                .showEquipamentos(true)
+                .showAtividades(true)
+                .showOcorrencias(true)
+                .showComentarios(true)
+                .showHorarioDeTrabalho(true)
+                .showFotos(true)
+                .showVideos(true)
+                .showMateriais(true)
+                .isDefault(true)
+                .tenantId(id)
+                .build();
+
+        modeloDeRelatorioRepository.save(modeloDeRelatorio);
     }
 
     private void sendWelcomeEmail(String email, String responsavelFormattedName, String tenantNome) {

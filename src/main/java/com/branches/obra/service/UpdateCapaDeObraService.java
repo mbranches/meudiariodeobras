@@ -13,6 +13,7 @@ import com.branches.utils.ImageOutPutFormat;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -37,7 +38,7 @@ public class UpdateCapaDeObraService {
         byte[] compressedImage = compressImage.execute(request.base64Image(), 800, 800, 0.9, ImageOutPutFormat.JPEG);
 
         String fileName = "capa.jpeg";
-        String path = "tenants/%s/obras/%s".formatted(tenantId, obra.getIdExterno());
+        String path = "tenants/%s/obras/capa-%s-%s".formatted(tenantId, obra.getIdExterno(), LocalDateTime.now());
 
         String url = s3UploadFile.execute(fileName, path, compressedImage, FileContentType.JPEG);
 

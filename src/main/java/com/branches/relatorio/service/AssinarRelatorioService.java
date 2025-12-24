@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Transactional
@@ -52,7 +53,7 @@ public class AssinarRelatorioService {
 
         byte[] signatureBytes = compressImage.execute(request.base64Image(), 400, 400, 0.8, ImageOutPutFormat.PNG);
 
-        String fileName = "signature-%s-%s-%s.png".formatted(assinaturaDeRelatorioEntity.getConfiguracao().getNomeAssinante(), relatorio.getIdExterno(), assinaturaDeRelatorioEntity.getId());
+        String fileName = "signature-%s-%s-%s.png".formatted(assinaturaDeRelatorioEntity.getConfiguracao().getNomeAssinante(), LocalDateTime.now(), assinaturaDeRelatorioEntity.getId());
         String path = "tenants/%s/obras/%s/relatorios/%s/assinaturas".formatted(tenantExternalId, obra.getIdExterno(), relatorio.getIdExterno());
 
         String signatureUrl = s3UploadFile.execute(fileName, path, signatureBytes, FileContentType.PNG);

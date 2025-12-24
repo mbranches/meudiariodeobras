@@ -10,6 +10,8 @@ import com.branches.utils.ImageOutPutFormat;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @RequiredArgsConstructor
 @Service
 public class UpdateUserFotoDePerfilService {
@@ -19,7 +21,7 @@ public class UpdateUserFotoDePerfilService {
 
     public void execute(UserEntity user, UpdateUserFotoDePerfilRequest request) {
         String base64Image = request.base64Image();
-        String fileName = "foto-perfil-%s.jpeg".formatted(user.getIdExterno());
+        String fileName = "foto-perfil-%s-%s.jpeg".formatted(user.getIdExterno(), LocalDateTime.now());
 
         byte[] compressedImage = compressImage.execute(base64Image, 500, 500, 0.7, ImageOutPutFormat.JPEG);
 

@@ -10,7 +10,7 @@ import lombok.With;
 import java.time.LocalDate;
 
 @With
-public record CreateObraRequest(
+public record  CreateObraRequest(
         @NotBlank(message = "O campo 'nome' é obrigatório")
         String nome,
         String responsavel,
