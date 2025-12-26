@@ -1,6 +1,5 @@
 package com.branches.atividade.dto.request;
 
-import com.branches.maodeobra.dto.request.UpdateMaoDeObraDeAtividadeRequest;
 import com.branches.atividade.domain.enums.StatusAtividade;
 import com.branches.relatorio.dto.request.CampoPersonalizadoRequest;
 import jakarta.validation.Valid;
@@ -22,8 +21,7 @@ public record UpdateAtividadeDeRelatorioRequest(
         StatusAtividade status,
         LocalTime horaInicio,
         LocalTime horaFim,
-        @Valid
-        List<UpdateMaoDeObraDeAtividadeRequest> maoDeObra,
+        List<Long> maoDeObraIds,
         @Valid
         List<CampoPersonalizadoRequest> camposPersonalizados
 ) {

@@ -218,9 +218,6 @@ public class CreateRelatorioService {
                     BeanUtils.copyProperties(comentario, newComentario, "id", "relatorio", "camposPersonalizados");
 
                     newComentario.setRelatorio(relatorio);
-                    newComentario.setCamposPersonalizados(
-                            copyCamposPersonalizados(comentario.getCamposPersonalizados())
-                    );
 
                     return newComentario;
                 }).toList();

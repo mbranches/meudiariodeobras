@@ -3,9 +3,9 @@ package com.branches.atividade.service;
 import com.branches.maodeobra.domain.MaoDeObraEntity;
 import com.branches.maodeobra.service.GetMaoDeObraListByIdInAndTenantIdAndTypeService;
 import com.branches.obra.controller.CheckIfUserHasAccessToObraService;
+import com.branches.obra.domain.enums.TipoMaoDeObra;
 import com.branches.relatorio.dto.request.CampoPersonalizadoRequest;
 import com.branches.relatorio.service.CheckIfUserHasAccessToEditRelatorioService;
-import com.branches.maodeobra.service.GetMaoDeObraDeAtividadeListByAtividadeIdAndIdInService;
 import com.branches.relatorio.service.GetRelatorioByIdExternoAndTenantIdService;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.usertenant.domain.UserTenantEntity;
@@ -15,15 +15,12 @@ import com.branches.atividade.domain.AtividadeDeRelatorioEntity;
 import com.branches.maodeobra.domain.MaoDeObraDeAtividadeDeRelatorioEntity;
 import com.branches.relatorio.domain.RelatorioEntity;
 import com.branches.atividade.dto.request.UpdateAtividadeDeRelatorioRequest;
-import com.branches.maodeobra.dto.request.UpdateMaoDeObraDeAtividadeRequest;
 import com.branches.atividade.repository.AtividadeDeRelatorioRepository;
-import com.branches.maodeobra.repository.MaoDeObraDeAtividadeDeRelatorioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -31,8 +28,6 @@ import java.util.stream.Collectors;
 public class UpdateAtividadeDeRelatorioService {
 
     private final AtividadeDeRelatorioRepository atividadeDeRelatorioRepository;
-    private final MaoDeObraDeAtividadeDeRelatorioRepository maoDeObraDeAtividadeDeRelatorioRepository;
-    private final GetMaoDeObraDeAtividadeListByAtividadeIdAndIdInService getMaoDeObraDeAtividadeListByAtividadeIdAndIdInService;
     private final CalculateHorasTotais calculateHorasTotais;
     private final GetTenantIdByIdExternoService getTenantIdByIdExternoService;
     private final GetCurrentUserTenantService getCurrentUserTenantService;
@@ -74,79 +69,28 @@ public class UpdateAtividadeDeRelatorioService {
         entity.getCamposPersonalizados().clear();
         entity.getCamposPersonalizados().addAll(campoPersonalizadoRequest.stream().map(c -> c.toEntity(tenantId)).toList());
 
-        Map<Long, MaoDeObraEntity> maoDeObraEntityMap = getMaoDeObraEntityMap(request.maoDeObra(), tenantId, relatorio);
-        List<MaoDeObraDeAtividadeDeRelatorioEntity> maoDeObraList = updateMaoDeObraDeAtividade(request.maoDeObra(), entity, maoDeObraEntityMap);
+        List<MaoDeObraDeAtividadeDeRelatorioEntity> maoDeObraToSave = createMaoDeObraDeRelatorioListToSave(entity, request.maoDeObraIds(), tenantId, relatorio.getTipoMaoDeObra());
+
         entity.getMaoDeObra().clear();
-        entity.getMaoDeObra().addAll(maoDeObraList != null ? maoDeObraList : new ArrayList<>());
+        entity.getMaoDeObra().addAll(maoDeObraToSave);
 
         atividadeDeRelatorioRepository.save(entity);
     }
 
-    private List<MaoDeObraDeAtividadeDeRelatorioEntity> updateMaoDeObraDeAtividade(List<UpdateMaoDeObraDeAtividadeRequest> requestList, AtividadeDeRelatorioEntity atividade, Map<Long, MaoDeObraEntity> maoDeObraEntityMap) {
-        if (requestList == null || requestList.isEmpty()) {
-            maoDeObraDeAtividadeDeRelatorioRepository.removeAllByAtividadeDeRelatorioId(atividade.getId());
-
-            return null;
+    private List<MaoDeObraDeAtividadeDeRelatorioEntity> createMaoDeObraDeRelatorioListToSave(AtividadeDeRelatorioEntity entity, List<Long> maoDeObraIds, Long tenantId, TipoMaoDeObra tipoMaoDeObra) {
+        if (maoDeObraIds == null || maoDeObraIds.isEmpty()) {
+            return Collections.emptyList();
         }
 
-        var existingMaoDeObraList = updateExistingMaoDeObraDeAtividade(requestList, atividade.getId(), maoDeObraEntityMap);
-
-        var newMaoDeObraDeAtividade = createNewMaoDeObraDeAtividade(requestList, atividade, maoDeObraEntityMap);
-
-        List<MaoDeObraDeAtividadeDeRelatorioEntity> maoDeObraDeAtividadeToSave = new ArrayList<>(existingMaoDeObraList);
-        maoDeObraDeAtividadeToSave.addAll(newMaoDeObraDeAtividade);
-
-        return maoDeObraDeAtividadeToSave;
-    }
-
-    private List<MaoDeObraDeAtividadeDeRelatorioEntity> createNewMaoDeObraDeAtividade(List<UpdateMaoDeObraDeAtividadeRequest> requestList, AtividadeDeRelatorioEntity atividade, Map<Long, MaoDeObraEntity> maoDeObraEntityMap) {
-        return requestList.stream()
-                .filter(r -> r.id() == null)
-                .map(request -> {
-                    MaoDeObraDeAtividadeDeRelatorioEntity entity = new MaoDeObraDeAtividadeDeRelatorioEntity();
-
-                    entity.setAtividadeDeRelatorio(atividade);
-                    MaoDeObraEntity maoDeObraEntity = maoDeObraEntityMap.get(request.maoDeObraId());
-                    entity.setMaoDeObra(maoDeObraEntity);
-                    entity.setFuncao(maoDeObraEntity.getFuncao());
-
-                    return entity;
-                })
-                .toList();
-    }
-
-    private List<MaoDeObraDeAtividadeDeRelatorioEntity> updateExistingMaoDeObraDeAtividade(List<UpdateMaoDeObraDeAtividadeRequest> requestList, Long atividadeId, Map<Long, MaoDeObraEntity> maoDeObraEntityMap) {
-        Set<Long> ids = requestList.stream()
-                .map(UpdateMaoDeObraDeAtividadeRequest::id)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
-
-        Map<Long, UpdateMaoDeObraDeAtividadeRequest> requestMap = requestList.stream()
-                .filter(r -> r.id() != null)
-                .collect(Collectors.toMap(UpdateMaoDeObraDeAtividadeRequest::id, Function.identity()));
-
-        var existingMaoDeObraList = getMaoDeObraDeAtividadeListByAtividadeIdAndIdInService.execute(atividadeId, ids);
-        existingMaoDeObraList.forEach(entity -> {
-            var request = requestMap.get(entity.getId());
-
-            MaoDeObraEntity maoDeObraEntity = maoDeObraEntityMap.get(request.maoDeObraId());
-            entity.setMaoDeObra(maoDeObraEntity);
-            entity.setFuncao(maoDeObraEntity.getFuncao());
-        });
-
-        return existingMaoDeObraList;
-    }
-
-    private Map<Long, MaoDeObraEntity> getMaoDeObraEntityMap(List<UpdateMaoDeObraDeAtividadeRequest> requestList, Long tenantId, RelatorioEntity relatorio) {
-        if (requestList == null || requestList.isEmpty()) return new HashMap<>();
-
-        Set<Long> maoDeObraIds = requestList.stream()
-                .map(UpdateMaoDeObraDeAtividadeRequest::maoDeObraId)
-                .collect(Collectors.toSet());
-
-        List<MaoDeObraEntity> maoDeObraEntities = getMaoDeObraListByIdInAndTenantIdAndTypeService.execute(maoDeObraIds, tenantId, relatorio.getTipoMaoDeObra());
+        List<MaoDeObraEntity> maoDeObraEntities = getMaoDeObraListByIdInAndTenantIdAndTypeService.execute(new HashSet<>(maoDeObraIds), tenantId, tipoMaoDeObra);
 
         return maoDeObraEntities.stream()
-                .collect(Collectors.toMap(MaoDeObraEntity::getId, Function.identity()));
+                .map(mo -> MaoDeObraDeAtividadeDeRelatorioEntity.builder()
+                        .atividadeDeRelatorio(entity)
+                        .maoDeObra(mo)
+                        .funcao(mo.getFuncao())
+                        .tenantId(mo.getTenantId())
+                        .build())
+                .collect(Collectors.toList());
     }
 }

@@ -4,7 +4,6 @@ import com.branches.comentarios.model.ComentarioDeRelatorioEntity;
 import com.branches.exception.ForbiddenException;
 import com.branches.obra.controller.CheckIfUserHasAccessToObraService;
 import com.branches.relatorio.domain.RelatorioEntity;
-import com.branches.relatorio.dto.request.CampoPersonalizadoRequest;
 import com.branches.comentarios.dto.request.UpdateComentarioDeRelatorioRequest;
 import com.branches.comentarios.repository.ComentarioDeRelatorioRepository;
 import com.branches.relatorio.service.CheckIfUserHasAccessToEditRelatorioService;
@@ -48,14 +47,6 @@ public class UpdateComentarioDeRelatorioService {
         checkIfUserCanUpdateComentario(userTenant, entity);
 
         entity.setDescricao(request.descricao());
-
-        List<CampoPersonalizadoRequest> campoPersonalizadoRequest = request.camposPersonalizados() != null
-                ? request.camposPersonalizados()
-                : List.of();
-        entity.getCamposPersonalizados().clear();
-        entity.getCamposPersonalizados().addAll(
-                campoPersonalizadoRequest.stream().map(c -> c.toEntity(tenantId)).toList()
-        );
 
         comentarioDeRelatorioRepository.save(entity);
     }

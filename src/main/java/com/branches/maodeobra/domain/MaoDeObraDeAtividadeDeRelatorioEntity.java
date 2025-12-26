@@ -1,16 +1,18 @@
 package com.branches.maodeobra.domain;
 
 import com.branches.atividade.domain.AtividadeDeRelatorioEntity;
+import com.branches.config.envers.AuditableTenantOwned;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Setter
 @Getter
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class MaoDeObraDeAtividadeDeRelatorioEntity {
+public class MaoDeObraDeAtividadeDeRelatorioEntity extends AuditableTenantOwned {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

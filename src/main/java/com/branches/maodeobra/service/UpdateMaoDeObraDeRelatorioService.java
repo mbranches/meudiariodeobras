@@ -1,8 +1,6 @@
 package com.branches.maodeobra.service;
 
 import com.branches.obra.controller.CheckIfUserHasAccessToObraService;
-import com.branches.obra.domain.enums.TipoMaoDeObra;
-import com.branches.maodeobra.domain.MaoDeObraEntity;
 import com.branches.maodeobra.domain.enums.PresencaMaoDeObra;
 import com.branches.relatorio.service.CheckIfUserHasAccessToEditRelatorioService;
 import com.branches.relatorio.service.GetRelatorioByIdExternoAndTenantIdService;
@@ -26,7 +24,6 @@ import java.util.*;
 @Service
 public class UpdateMaoDeObraDeRelatorioService {
     private final MaoDeObraDeRelatorioRepository maoDeObraDeRelatorioRepository;
-    private final GetMaoDeObraByIdAndTenantIdAndTypeService getMaoDeObraByIdAndTenantIdAndTypeService;
     private final GetMaoDeObraDeRelatorioByIdAndRelatorioId getMaoDeObraDeRelatorioByIdAndRelatorioId;
     private final CalculateHorasTotais calculateHorasTotais;
     private final GetTenantIdByIdExternoService getTenantIdByIdExternoService;
@@ -49,15 +46,9 @@ public class UpdateMaoDeObraDeRelatorioService {
         checkIfConfiguracaoDeRelatorioDaObraPermiteMaoDeObraService.execute(relatorio.getObraId(), tenantId);
         checkIfUserCanViewMaoDeObraService.execute(userTenant);
 
-        TipoMaoDeObra tipoMaoDeObra = relatorio.getTipoMaoDeObra();
-
         MaoDeObraDeRelatorioEntity entity = getMaoDeObraDeRelatorioByIdAndRelatorioId.execute(id, relatorio.getId());
 
-        MaoDeObraEntity maoDeObra = getMaoDeObraByIdAndTenantIdAndTypeService.execute(request.maoDeObraId(), tenantId, tipoMaoDeObra);
-
         entity.setPresenca(request.presenca());
-        entity.setMaoDeObra(maoDeObra);
-        entity.setFuncao(maoDeObra.getFuncao());
 
         if (request.presenca().equals(PresencaMaoDeObra.PRESENTE)) {
             entity.setHoraInicio(request.horaInicio());

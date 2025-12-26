@@ -1,6 +1,5 @@
 package com.branches.equipamento.service;
 
-import com.branches.equipamento.domain.EquipamentoEntity;
 import com.branches.equipamento.domain.EquipamentoDeRelatorioEntity;
 import com.branches.obra.controller.CheckIfUserHasAccessToObraService;
 import com.branches.relatorio.domain.RelatorioEntity;
@@ -28,7 +27,6 @@ public class UpdateEquipamentoDeRelatorioService {
     private final GetCurrentUserTenantService getCurrentUserTenantService;
     private final CheckIfUserHasAccessToEditRelatorioService checkIfUserHasAccessToEditRelatorioService;
     private final GetRelatorioByIdExternoAndTenantIdService getRelatorioByIdExternoAndTenantIdService;
-    private final GetEquipamentoByIdAndTenantIdService getEquipamentoByIdAndTenantIdService;
     private final CheckIfConfiguracaoDeRelatorioDaObraPermiteEquipamentoService checkIfConfiguracaoDeRelatorioDaObraPermiteEquipamentoService;
     private final CheckIfUserCanViewEquipamentosService checkIfUserCanViewEquipamentosService;
     private final CheckIfUserHasAccessToObraService checkIfUserHasAccessToObraService;
@@ -47,9 +45,6 @@ public class UpdateEquipamentoDeRelatorioService {
 
         EquipamentoDeRelatorioEntity entity = getEquipamentoDeRelatorioByIdAndRelatorioIdService.execute(id, relatorio.getId());
 
-        EquipamentoEntity equipamento = getEquipamentoByIdAndTenantIdService.execute(request.equipamentoId(), tenantId);
-
-        entity.setEquipamento(equipamento);
         entity.setQuantidade(request.quantidade());
 
         equipamentoDeRelatorioRepository.save(entity);

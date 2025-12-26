@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Transactional
 @RequiredArgsConstructor
@@ -84,6 +85,8 @@ public class CreateAtividadeDeRelatorioService {
     }
 
     private List<MaoDeObraEntity> getMaoDeObraDaAtividade(CreateAtividadeDeRelatorioRequest request, Long tenantId, TipoMaoDeObra tipoMaoDeObra) {
+        if (request.maoDeObraIds() == null) return Collections.emptyList();
+
         HashSet<Long> maoDeObraIds = new HashSet<>(request.maoDeObraIds());
 
         if (maoDeObraIds.isEmpty()) {
@@ -100,7 +103,7 @@ public class CreateAtividadeDeRelatorioService {
                         .maoDeObra(m)
                         .funcao(m.getFuncao())
                         .build())
-                .toList();
+                .collect(Collectors.toList());
 
         return maoDeObraDeAtividadeDeRelatorioRepository.saveAll(toSave);
     }
