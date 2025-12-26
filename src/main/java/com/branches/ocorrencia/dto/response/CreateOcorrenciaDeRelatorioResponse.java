@@ -1,6 +1,7 @@
 package com.branches.ocorrencia.dto.response;
 
 import com.branches.atividade.dto.response.AtividadeDeOcorrenciaResponse;
+import com.branches.ocorrencia.domain.OcorrenciaDeRelatorioCampoPersonalizadoEntity;
 import com.branches.ocorrencia.domain.OcorrenciaDeRelatorioEntity;
 import com.branches.relatorio.dto.response.CampoPersonalizadoResponse;
 
@@ -24,6 +25,7 @@ public record CreateOcorrenciaDeRelatorioResponse(
 
         var camposPersonalizados = ocorrenciaDeRelatorioEntity.getCamposPersonalizados() != null ?
                 ocorrenciaDeRelatorioEntity.getCamposPersonalizados().stream()
+                        .map(OcorrenciaDeRelatorioCampoPersonalizadoEntity::getCampoPersonalizado)
                         .map(CampoPersonalizadoResponse::from)
                         .toList() : null;
 

@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @Repository
 public interface RelatorioRepository extends JpaRepository<RelatorioEntity, Long> {
-    Optional<RelatorioEntity> findFirstByTenantIdAndObraIdAndAtivoIsTrueOrderByEnversCreatedDateDesc(Long tenantId, Long obraId);
+    Optional<RelatorioEntity> findFirstByTenantIdAndObraIdAndAtivoIsTrueAndIdIsNotOrderByEnversCreatedDateDesc(Long tenantId, Long obraId, Long id);
 
     long countByTenantIdAndObraIdAndAtivoIsTrue(Long tenantId, Long obraId);
 
@@ -227,4 +227,7 @@ public interface RelatorioRepository extends JpaRepository<RelatorioEntity, Long
         AND r.ativo IS TRUE
 """)
     Page<RelatorioProjection> findAllByTenantIdAndUserAccessToTheObraPai(Long tenantId, List<Long> obrasIdAllowed, boolean perfilIsAdministrador, Pageable pageable);
+
+
+
 }

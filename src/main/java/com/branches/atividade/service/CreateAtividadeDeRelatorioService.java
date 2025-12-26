@@ -1,5 +1,6 @@
 package com.branches.atividade.service;
 
+import com.branches.atividade.domain.AtividadeDeRelatorioCampoPersonalizadoEntity;
 import com.branches.atividade.domain.AtividadeDeRelatorioEntity;
 import com.branches.atividade.dto.request.CreateAtividadeDeRelatorioRequest;
 import com.branches.atividade.dto.response.CreateAtividadeDeRelatorioResponse;
@@ -10,8 +11,8 @@ import com.branches.maodeobra.repository.MaoDeObraDeAtividadeDeRelatorioReposito
 import com.branches.maodeobra.service.GetMaoDeObraListByIdInAndTenantIdAndTypeService;
 import com.branches.obra.controller.CheckIfUserHasAccessToObraService;
 import com.branches.obra.domain.enums.TipoMaoDeObra;
-import com.branches.relatorio.domain.CampoPersonalizadoEntity;
 import com.branches.relatorio.domain.RelatorioEntity;
+import com.branches.relatorio.dto.request.CampoPersonalizadoRequest;
 import com.branches.relatorio.service.CheckIfUserHasAccessToEditRelatorioService;
 import com.branches.relatorio.service.GetRelatorioByIdExternoAndTenantIdService;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
@@ -57,11 +58,6 @@ public class CreateAtividadeDeRelatorioService {
 
         List<MaoDeObraEntity> maoDeObraEntities = getMaoDeObraDaAtividade(request, tenantId, relatorio.getTipoMaoDeObra());
 
-        List<CampoPersonalizadoEntity> camposPersonalizados =  request.camposPersonalizados() != null ?
-                request.camposPersonalizados().stream()
-                        .map(cr -> cr.toEntity(tenantId))
-                        .toList()
-                : null;
 
         AtividadeDeRelatorioEntity atividadeDeRelatorio = AtividadeDeRelatorioEntity.builder()
                 .relatorio(relatorio)
@@ -72,9 +68,11 @@ public class CreateAtividadeDeRelatorioService {
                 .horaInicio(request.horaInicio())
                 .horaFim(request.horaFim())
                 .totalHoras(calculateHorasTotais.execute(request.horaInicio(), request.horaFim(), null))
-                .camposPersonalizados(camposPersonalizados)
                 .status(request.status())
                 .build();
+
+        List<AtividadeDeRelatorioCampoPersonalizadoEntity> camposPersonalizados = getCamposPersonalizadosToSave(request.camposPersonalizados(), atividadeDeRelatorio, tenantId);
+        atividadeDeRelatorio.setCamposPersonalizados(camposPersonalizados);
 
         AtividadeDeRelatorioEntity saved = atividadeDeRelatorioRepository.save(atividadeDeRelatorio);
 
@@ -82,6 +80,17 @@ public class CreateAtividadeDeRelatorioService {
         saved.setMaoDeObra(maoDeObra);
 
         return CreateAtividadeDeRelatorioResponse.from(saved);
+    }
+
+    private List<AtividadeDeRelatorioCampoPersonalizadoEntity> getCamposPersonalizadosToSave(List<CampoPersonalizadoRequest> requestList, AtividadeDeRelatorioEntity toSave, Long tenantId) {
+        if (requestList == null || requestList.isEmpty()) {
+            return List.of();
+        }
+
+        return requestList.stream()
+                .map(request -> request.toEntity(tenantId))
+                .map(campo -> AtividadeDeRelatorioCampoPersonalizadoEntity.from(toSave, campo, tenantId))
+                .toList();
     }
 
     private List<MaoDeObraEntity> getMaoDeObraDaAtividade(CreateAtividadeDeRelatorioRequest request, Long tenantId, TipoMaoDeObra tipoMaoDeObra) {

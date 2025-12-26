@@ -1,6 +1,6 @@
 package com.branches.atividade.domain;
 
-import com.branches.relatorio.domain.CampoPersonalizadoEntity;
+import com.branches.ocorrencia.domain.OcorrenciaDeRelatorioEntity;
 import com.branches.maodeobra.domain.MaoDeObraDeAtividadeDeRelatorioEntity;
 import com.branches.relatorio.domain.RelatorioEntity;
 import com.branches.atividade.domain.enums.StatusAtividade;
@@ -34,16 +34,14 @@ public class AtividadeDeRelatorioEntity {
     private LocalTime horaInicio;
     private LocalTime horaFim;
     private LocalTime totalHoras;
-    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "atividade_relatorio_campos_personalizados",
-            joinColumns = @JoinColumn(name = "atividade_relatorio_id"),
-            inverseJoinColumns = @JoinColumn(name = "campo_personalizado_id")
-    )
-    private List<CampoPersonalizadoEntity> camposPersonalizados;
+    @OneToMany(mappedBy = "atividadeDeRelatorio", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<AtividadeDeRelatorioCampoPersonalizadoEntity> camposPersonalizados;
     @OneToMany(mappedBy = "atividadeDeRelatorio", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<MaoDeObraDeAtividadeDeRelatorioEntity> maoDeObra;
     @ManyToOne
     @JoinColumn(name = "relatorio_id", nullable = false)
     private RelatorioEntity relatorio;
+
+    @OneToMany(mappedBy = "atividadeVinculada", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<OcorrenciaDeRelatorioEntity> ocorrencias; //Usado somente pro delete em cascata
 }

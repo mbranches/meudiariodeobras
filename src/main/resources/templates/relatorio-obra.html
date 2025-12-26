@@ -589,7 +589,7 @@
                     <!-- Campos personalizados -->
                     <div th:if="${item.camposPersonalizados != null and !item.camposPersonalizados.isEmpty()}" style="margin-bottom: 5px;">
                         <div th:each="campo : ${item.camposPersonalizados}" style="color: #666; font-size: 9pt; margin-left: 10px;">
-                            <span th:text="'- ' + ${campo.campo} + ': ' + ${campo.descricao}">- Supervisão: Eng. Marcelo Branches</span>
+                            <span th:text="'- ' + ${campo.getCampoPersonalizado().campo} + ': ' + ${campo.getCampoPersonalizado().descricao}"></span>
                         </div>
                     </div>
 

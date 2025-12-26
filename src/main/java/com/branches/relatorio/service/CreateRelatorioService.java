@@ -1,5 +1,6 @@
 package com.branches.relatorio.service;
 
+import com.branches.atividade.domain.AtividadeDeRelatorioCampoPersonalizadoEntity;
 import com.branches.atividade.domain.AtividadeDeRelatorioEntity;
 import com.branches.atividade.repository.AtividadeDeRelatorioRepository;
 import com.branches.comentarios.model.ComentarioDeRelatorioEntity;
@@ -16,6 +17,7 @@ import com.branches.obra.domain.ConfiguracaoDeAssinaturaDeRelatorioEntity;
 import com.branches.obra.domain.ConfiguracaoRelatoriosEntity;
 import com.branches.obra.domain.ObraEntity;
 import com.branches.obra.service.GetObraByIdExternoAndTenantIdService;
+import com.branches.ocorrencia.domain.OcorrenciaDeRelatorioCampoPersonalizadoEntity;
 import com.branches.ocorrencia.domain.OcorrenciaDeRelatorioEntity;
 import com.branches.ocorrencia.repository.OcorrenciaDeRelatorioRepository;
 import com.branches.relatorio.domain.*;
@@ -34,7 +36,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Transactional
 @RequiredArgsConstructor
@@ -114,7 +118,7 @@ public class CreateRelatorioService {
     }
 
     private void copyInfoFromLastRelatorio(Long tenantId, Long obraId, RelatorioEntity relatorio, CreateRelatorioRequest request, ConfiguracaoRelatoriosEntity configuracaoRelatorios) {
-        RelatorioEntity lastRelatorio = relatorioRepository.findFirstByTenantIdAndObraIdAndAtivoIsTrueOrderByEnversCreatedDateDesc(tenantId, obraId)
+        RelatorioEntity lastRelatorio = relatorioRepository.findFirstByTenantIdAndObraIdAndAtivoIsTrueAndIdIsNotOrderByEnversCreatedDateDesc(tenantId, obraId, relatorio.getId())
                 .orElse(null);
 
         if (lastRelatorio == null) return;
@@ -123,8 +127,9 @@ public class CreateRelatorioService {
             copyHorarioDeTrabalhoFromLastRelatorio(lastRelatorio, relatorio);
         }
 
+        Map<AtividadeDeRelatorioEntity, AtividadeDeRelatorioEntity> oldAndNewAtividadeMap = new HashMap<>();
         if (request.copiarAtividades() && configuracaoRelatorios.getShowAtividades()) {
-            copyAtividadesFromLastRelatorio(lastRelatorio, relatorio);
+            oldAndNewAtividadeMap.putAll(copyAtividadesFromLastRelatorio(lastRelatorio, relatorio));
         }
 
         if (request.copiarComentarios() && configuracaoRelatorios.getShowComentarios()) {
@@ -140,7 +145,7 @@ public class CreateRelatorioService {
         }
 
         if (request.copiarOcorrencias() && configuracaoRelatorios.getShowOcorrencias()) {
-            copyOcorrenciasFromLastRelatorio(lastRelatorio, relatorio);
+            copyOcorrenciasFromLastRelatorio(lastRelatorio, relatorio, oldAndNewAtividadeMap);
         }
     }
 
@@ -153,7 +158,7 @@ public class CreateRelatorioService {
         relatorioRepository.save(relatorio);
     }
 
-    private void copyOcorrenciasFromLastRelatorio(RelatorioEntity lastRelatorio, RelatorioEntity relatorio) {
+    private void copyOcorrenciasFromLastRelatorio(RelatorioEntity lastRelatorio, RelatorioEntity relatorio, Map<AtividadeDeRelatorioEntity, AtividadeDeRelatorioEntity> oldAndNewAtividadeMap) {
         var ocorrencias = ocorrenciaDeRelatorioRepository.findAllByRelatorioId(lastRelatorio.getId());
 
         var newOcorrencias = ocorrencias.stream()
@@ -162,10 +167,20 @@ public class CreateRelatorioService {
 
                     BeanUtils.copyProperties(ocorrencia, newOcorrencia, "relatorio", "id", "camposPersonalizados");
 
+                    if (ocorrencia.getAtividadeVinculada() != null) {
+                        AtividadeDeRelatorioEntity newAtividadeVinculada = oldAndNewAtividadeMap.get(ocorrencia.getAtividadeVinculada());
+                        newOcorrencia.setAtividadeVinculada(newAtividadeVinculada);
+                    }
+
                     newOcorrencia.setRelatorio(relatorio);
+                    List<CampoPersonalizadoEntity> campoPersonalizadoEntityList = copyCamposPersonalizados(ocorrencia.getCamposPersonalizados().stream().map(OcorrenciaDeRelatorioCampoPersonalizadoEntity::getCampoPersonalizado).toList());
                     newOcorrencia.setCamposPersonalizados(
-                            copyCamposPersonalizados(ocorrencia.getCamposPersonalizados())
+                            campoPersonalizadoEntityList.stream()
+                                    .map(campoPersonalizadoEntity ->
+                                            OcorrenciaDeRelatorioCampoPersonalizadoEntity.from(newOcorrencia, campoPersonalizadoEntity, relatorio.getTenantId())
+                                    ).toList()
                     );
+                    newOcorrencia.setTiposDeOcorrencia(List.copyOf(ocorrencia.getTiposDeOcorrencia()));
 
                     return newOcorrencia;
                 }).toList();
@@ -225,14 +240,16 @@ public class CreateRelatorioService {
         comentarioDeRelatorioRepository.saveAll(newComentarios);
     }
 
-    private void copyAtividadesFromLastRelatorio(RelatorioEntity lastRelatorio, RelatorioEntity relatorio) {
+    private Map<AtividadeDeRelatorioEntity, AtividadeDeRelatorioEntity> copyAtividadesFromLastRelatorio(RelatorioEntity lastRelatorio, RelatorioEntity relatorio) {
         var atividadesOfTheLastRelatorio = atividadeDeRelatorioRepository.findAllByRelatorioId(lastRelatorio.getId());
+
+        Map<AtividadeDeRelatorioEntity, AtividadeDeRelatorioEntity> oldToNewAtividadeMap = new HashMap<>();
 
         var newAtividades = atividadesOfTheLastRelatorio.stream()
                 .map(atividade -> {
                     var newAtividade = new AtividadeDeRelatorioEntity();
 
-                    BeanUtils.copyProperties(atividade, newAtividade, "id", "relatorio", "camposPersonalizados", "maosDeObra");
+                    BeanUtils.copyProperties(atividade, newAtividade, "id", "relatorio", "camposPersonalizados", "maoDeObra", "ocorrencias");
 
                     newAtividade.setRelatorio(relatorio);
                     newAtividade.setMaoDeObra(
@@ -247,14 +264,22 @@ public class CreateRelatorioService {
                                             }
                                     ).toList()
                     );
+                    List<CampoPersonalizadoEntity> campoPersonalizadoEntityList = copyCamposPersonalizados(atividade.getCamposPersonalizados().stream().map(AtividadeDeRelatorioCampoPersonalizadoEntity::getCampoPersonalizado).toList());
                     newAtividade.setCamposPersonalizados(
-                            copyCamposPersonalizados(atividade.getCamposPersonalizados())
+                            campoPersonalizadoEntityList.stream()
+                                    .map(campoPersonalizadoEntity ->
+                                            AtividadeDeRelatorioCampoPersonalizadoEntity.from(newAtividade, campoPersonalizadoEntity, relatorio.getTenantId())
+                                    ).toList()
                     );
+
+                    oldToNewAtividadeMap.put(atividade, newAtividade);
 
                     return newAtividade;
                 }).toList();
 
         atividadeDeRelatorioRepository.saveAll(newAtividades);
+
+        return oldToNewAtividadeMap;
     }
 
     private List<CampoPersonalizadoEntity> copyCamposPersonalizados(List<CampoPersonalizadoEntity> camposPersonalizados) {

@@ -3,13 +3,14 @@ package com.branches.ocorrencia.service;
 import com.branches.atividade.domain.AtividadeDeRelatorioEntity;
 import com.branches.atividade.service.GetAtividadeDeRelatorioByIdAndRelatorioIdService;
 import com.branches.obra.controller.CheckIfUserHasAccessToObraService;
+import com.branches.ocorrencia.domain.OcorrenciaDeRelatorioCampoPersonalizadoEntity;
 import com.branches.ocorrencia.domain.OcorrenciaDeRelatorioEntity;
 import com.branches.ocorrencia.domain.TipoDeOcorrenciaEntity;
 import com.branches.ocorrencia.dto.request.CreateOcorrenciaDeRelatorioRequest;
 import com.branches.ocorrencia.dto.response.CreateOcorrenciaDeRelatorioResponse;
 import com.branches.ocorrencia.repository.OcorrenciaDeRelatorioRepository;
-import com.branches.relatorio.domain.CampoPersonalizadoEntity;
 import com.branches.relatorio.domain.RelatorioEntity;
+import com.branches.relatorio.dto.request.CampoPersonalizadoRequest;
 import com.branches.relatorio.service.CheckIfUserHasAccessToEditRelatorioService;
 import com.branches.relatorio.service.GetRelatorioByIdExternoAndTenantIdService;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
@@ -18,6 +19,7 @@ import com.branches.usertenant.service.GetCurrentUserTenantService;
 import com.branches.utils.CalculateHorasTotais;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
@@ -37,6 +39,7 @@ public class CreateOcorrenciaDeRelatorioService {
     private final GetAtividadeDeRelatorioByIdAndRelatorioIdService getAtividadeDeRelatorioByIdAndRelatorioIdService;
     private final CheckIfUserHasAccessToObraService checkIfUserHasAccessToObraService;
 
+    @Transactional
     public CreateOcorrenciaDeRelatorioResponse execute(CreateOcorrenciaDeRelatorioRequest request, String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
 
@@ -53,11 +56,6 @@ public class CreateOcorrenciaDeRelatorioService {
                 getTiposDeOcorrenciaByTenantIdAndIdInService.execute(tenantId, new HashSet<>(request.tiposOcorrenciaIds()))
                 : null;
 
-        List<CampoPersonalizadoEntity> camposPersonalizados = request.camposPersonalizados() != null ? request.camposPersonalizados().stream()
-                .map(campoRequest -> campoRequest.toEntity(tenantId))
-                .toList()
-                : null;
-
         OcorrenciaDeRelatorioEntity toSave = OcorrenciaDeRelatorioEntity.builder()
                 .relatorio(relatorio)
                 .descricao(request.descricao())
@@ -65,8 +63,11 @@ public class CreateOcorrenciaDeRelatorioService {
                 .horaFim(request.horaFim())
                 .totalHoras(calculateHorasTotais.execute(request.horaInicio(), request.horaFim(), null))
                 .tiposDeOcorrencia(tiposDeOcorrencia)
-                .camposPersonalizados(camposPersonalizados)
+                .tenantId(tenantId)
                 .build();
+
+        List<OcorrenciaDeRelatorioCampoPersonalizadoEntity> camposPersonalizados = getCamposPersonalizadosToSave(request.camposPersonalizados(), toSave, tenantId);
+        toSave.setCamposPersonalizados(camposPersonalizados);
 
         if (request.atividadeVinculadaId() != null) {
             AtividadeDeRelatorioEntity atividade = getAtividadeDeRelatorioByIdAndRelatorioIdService.execute(request.atividadeVinculadaId(), relatorio.getId());
@@ -77,5 +78,16 @@ public class CreateOcorrenciaDeRelatorioService {
         OcorrenciaDeRelatorioEntity saved = ocorrenciaDeRelatorioRepository.save(toSave);
 
         return CreateOcorrenciaDeRelatorioResponse.from(saved);
+    }
+
+    private List<OcorrenciaDeRelatorioCampoPersonalizadoEntity> getCamposPersonalizadosToSave(List<CampoPersonalizadoRequest> requestList, OcorrenciaDeRelatorioEntity toSave, Long tenantId) {
+        if (requestList == null || requestList.isEmpty()) {
+            return List.of();
+        }
+
+        return requestList.stream()
+                .map(request -> request.toEntity(tenantId))
+                .map(campo -> OcorrenciaDeRelatorioCampoPersonalizadoEntity.from(toSave, campo, tenantId))
+                .toList();
     }
 }

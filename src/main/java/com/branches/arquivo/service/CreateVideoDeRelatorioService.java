@@ -55,7 +55,8 @@ public class CreateVideoDeRelatorioService {
 
         byte[] videoBytes;
         try {
-            videoBytes = Base64.getDecoder().decode(request.base64Video());
+            String validBase64 = request.base64Video().replaceAll("^data:video/\\w+;base64,", "");
+            videoBytes = Base64.getDecoder().decode(validBase64);
         } catch (IllegalArgumentException e) {
             throw new BadRequestException("O vídeo enviado não está em formato base64 válido");
         }

@@ -1,5 +1,6 @@
 package com.branches.atividade.dto.response;
 
+import com.branches.atividade.domain.AtividadeDeRelatorioCampoPersonalizadoEntity;
 import com.branches.atividade.domain.AtividadeDeRelatorioEntity;
 import com.branches.atividade.domain.enums.StatusAtividade;
 import com.branches.maodeobra.dto.response.MaoDeObraDeAtividadeResponse;
@@ -29,6 +30,7 @@ public record CreateAtividadeDeRelatorioResponse(
                 .toList() : null;
 
         List<CampoPersonalizadoResponse> camposPersonalizadosResponse = saved.getCamposPersonalizados() != null ? saved.getCamposPersonalizados().stream()
+                .map(AtividadeDeRelatorioCampoPersonalizadoEntity::getCampoPersonalizado)
                 .map(CampoPersonalizadoResponse::from)
                 .toList() : null;
 

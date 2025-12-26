@@ -1,21 +1,22 @@
 package com.branches.ocorrencia.domain;
 
 import com.branches.atividade.domain.AtividadeDeRelatorioEntity;
-import com.branches.relatorio.domain.CampoPersonalizadoEntity;
+import com.branches.config.envers.AuditableTenantOwned;
 import com.branches.relatorio.domain.RelatorioEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalTime;
 import java.util.List;
 
 @Setter
 @Getter
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class OcorrenciaDeRelatorioEntity {
+public class OcorrenciaDeRelatorioEntity extends AuditableTenantOwned {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -39,15 +40,10 @@ public class OcorrenciaDeRelatorioEntity {
     private LocalTime horaFim;
     private LocalTime totalHoras;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "atividade_vinculada_id")
     private AtividadeDeRelatorioEntity atividadeVinculada;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    @JoinTable(
-            name = "ocorrencia_relatorio_campos_personalizados",
-            joinColumns = @JoinColumn(name = "ocorrencia_relatorio_id"),
-            inverseJoinColumns = @JoinColumn(name = "campo_personalizado_id")
-    )
-    private List<CampoPersonalizadoEntity> camposPersonalizados;
+    @OneToMany(mappedBy = "ocorrenciaDeRelatorio", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<OcorrenciaDeRelatorioCampoPersonalizadoEntity> camposPersonalizados;
 }

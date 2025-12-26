@@ -1,5 +1,6 @@
 package com.branches.atividade.service;
 
+import com.branches.atividade.domain.AtividadeDeRelatorioCampoPersonalizadoEntity;
 import com.branches.maodeobra.domain.MaoDeObraEntity;
 import com.branches.maodeobra.service.GetMaoDeObraListByIdInAndTenantIdAndTypeService;
 import com.branches.obra.controller.CheckIfUserHasAccessToObraService;
@@ -53,9 +54,7 @@ public class UpdateAtividadeDeRelatorioService {
         checkIfUserCanViewAtividadesService.execute(userTenant);
 
         AtividadeDeRelatorioEntity entity = getAtividadeDeRelatorioByIdAndRelatorioIdService.execute(id, relatorio.getId());
-        List<CampoPersonalizadoRequest> campoPersonalizadoRequest = request.camposPersonalizados() != null
-                ? request.camposPersonalizados()
-                : List.of();
+        List<AtividadeDeRelatorioCampoPersonalizadoEntity> camposPersonalizadosToSave = getCamposPersonalizadosToSave(request.camposPersonalizados(), tenantId, entity);
 
         entity.setDescricao(request.descricao());
         entity.setQuantidadeRealizada(request.quantidadeRealizada());
@@ -67,7 +66,7 @@ public class UpdateAtividadeDeRelatorioService {
         entity.setTotalHoras(calculateHorasTotais.execute(request.horaInicio(), request.horaFim(), null));
 
         entity.getCamposPersonalizados().clear();
-        entity.getCamposPersonalizados().addAll(campoPersonalizadoRequest.stream().map(c -> c.toEntity(tenantId)).toList());
+        entity.getCamposPersonalizados().addAll(camposPersonalizadosToSave);
 
         List<MaoDeObraDeAtividadeDeRelatorioEntity> maoDeObraToSave = createMaoDeObraDeRelatorioListToSave(entity, request.maoDeObraIds(), tenantId, relatorio.getTipoMaoDeObra());
 
@@ -75,6 +74,18 @@ public class UpdateAtividadeDeRelatorioService {
         entity.getMaoDeObra().addAll(maoDeObraToSave);
 
         atividadeDeRelatorioRepository.save(entity);
+    }
+
+    private List<AtividadeDeRelatorioCampoPersonalizadoEntity> getCamposPersonalizadosToSave(List<CampoPersonalizadoRequest> requestList, Long tenantId, AtividadeDeRelatorioEntity atividadeDeRelatorioEntity) {
+        if (requestList == null || requestList.isEmpty()) {
+            return List.of();
+        }
+
+        return requestList.stream()
+                .map(request -> request.toEntity(tenantId))
+                .map(campoPersonalizadoEntity ->
+                        AtividadeDeRelatorioCampoPersonalizadoEntity.from(atividadeDeRelatorioEntity, campoPersonalizadoEntity, tenantId)
+                ).toList();
     }
 
     private List<MaoDeObraDeAtividadeDeRelatorioEntity> createMaoDeObraDeRelatorioListToSave(AtividadeDeRelatorioEntity entity, List<Long> maoDeObraIds, Long tenantId, TipoMaoDeObra tipoMaoDeObra) {
