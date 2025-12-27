@@ -21,9 +21,11 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
            ut.cargo AS cargo,
            u.fotoUrl AS fotoUrl,
            ut.authorities as authorities,
-           ut.perfil AS perfil
+           ut.perfil AS perfil,
+           a.assinaturaUrl AS assinaturaUrl
     FROM UserEntity u
     JOIN UserTenantEntity ut ON u.id = ut.user.id AND ut.tenantId = :tenantId
+    LEFT JOIN u.assinatura a
     WHERE u.id = :userId
         AND u.ativo = true
         AND ut.ativo = true

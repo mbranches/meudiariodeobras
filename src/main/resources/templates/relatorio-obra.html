@@ -653,7 +653,7 @@
                     <!-- Campos personalizados -->
                     <div th:if="${item.camposPersonalizados != null and !item.camposPersonalizados.isEmpty()}" style="margin-top: 5px;">
                         <div th:each="campo : ${item.camposPersonalizados}" style="color: #666; font-size: 9pt; margin-left: 10px;">
-                            <span th:text="'- ' + ${campo.campo} + ': ' + ${campo.descricao}">- Supervisão: Eng. Marcelo Branches</span>
+                            <span th:text="'- ' + ${campo.getCampoPersonalizado().getCampo()} + ': ' + ${campo.getCampoPersonalizado().getDescricao()}">- Supervisão: Eng. Marcelo Branches</span>
                         </div>
                     </div>
                 </td>
@@ -678,13 +678,6 @@
 
             <!-- Texto do comentário -->
             <p class="comment-text" th:text="${item.descricao != null ? item.descricao : ''}">Texto do comentário</p>
-
-            <!-- Campos personalizados -->
-            <div th:if="${item.camposPersonalizados != null and !item.camposPersonalizados.isEmpty()}" style="margin-top: 8px;">
-                <div th:each="campo : ${item.camposPersonalizados}" style="color: #666; font-size: 9pt; margin-left: 10px;">
-                    <span th:text="'- ' + ${campo.campo} + ': ' + ${campo.descricao}">- Supervisão: Eng. Marcelo Branches</span>
-                </div>
-            </div>
         </div>
     </section>
 

@@ -1,5 +1,6 @@
 package com.branches.user.domain;
 
+import com.branches.config.envers.Auditable;
 import com.branches.user.domain.enums.Role;
 import com.branches.usertenant.domain.UserTenantEntity;
 import jakarta.persistence.*;
@@ -15,29 +16,45 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class UserEntity {
+public class UserEntity extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Builder.Default
     @Column(unique = true, nullable = false)
     private String idExterno = UUID.randomUUID().toString();
+
     @Column(length = 100, nullable = false)
     private String nome;
     @Column(length = 100, unique = true, nullable = false)
     private String email;
     @Column(length = 100, nullable = false)
     private String password;
+
+    @Column(columnDefinition = "TEXT")
+    private String fotoUrl;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
-    @Column(columnDefinition = "TEXT")
-    private String fotoUrl;
+
     @Builder.Default
     @Column(nullable = false)
     private Boolean ativo = true;
+
+    @OneToOne(mappedBy = "user", fetch = FetchType.EAGER)
+    private UserAssinaturaEntity assinatura;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
     private List<UserTenantEntity> userTenantEntities;
+
+    public String getAssinaturaUrl() {
+        if (this.assinatura == null) {
+            return null;
+        }
+
+        return this.assinatura.getAssinaturaUrl();
+    }
 
     public List<Long> getTenantsIds() {
         return userTenantEntities.stream()

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -43,6 +44,10 @@ public class GenerateRelatorioHtmlService {
 
         // Add basic details
         context.setVariable("details", details);
+        String dataInicioDiaSemana = details.getDataInicio().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.of("pt", "BR"));
+        String diaDaSemanaDoRelatorio = details.getDataFim() == null || details.getDataFim().isEqual(details.getDataInicio()) ? dataInicioDiaSemana
+                : "%s - %s".formatted(dataInicioDiaSemana, details.getDataFim().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.of("pt", "BR")));
+        context.setVariable("diaDaSemanaDoRelatorio", diaDaSemanaDoRelatorio);
         context.setVariable("userCanViewCondicoesClimaticas", userCanViewCondicoesClimaticas);
         context.setVariable("userCanViewHorarioDeTrabalho", userCanViewHorarioDeTrabalho);
 

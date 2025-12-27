@@ -10,6 +10,6 @@ public interface UserInfoProjection {
     String getCargo();
     String getFotoUrl();
     Authorities getAuthorities();
+    String getAssinaturaUrl();
     PerfilUserTenant getPerfil();
-
 }

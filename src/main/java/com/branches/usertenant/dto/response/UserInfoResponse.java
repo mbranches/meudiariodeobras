@@ -15,6 +15,7 @@ public record UserInfoResponse(
         String fotoUrl,
         Authorities authorities,
         PerfilUserTenant perfil,
+        String assinaturaUrl,
         List<TenantByUserInfoResponse> tenantsVinculados
 ) {
     public static UserInfoResponse from(UserInfoProjection user, List<TenantEntity> allUserTenants) {
@@ -26,6 +27,7 @@ public record UserInfoResponse(
                 user.getFotoUrl(),
                 user.getAuthorities(),
                 user.getPerfil(),
+                user.getAssinaturaUrl(),
                 allUserTenants.stream()
                         .map(TenantByUserInfoResponse::from)
                         .toList()
