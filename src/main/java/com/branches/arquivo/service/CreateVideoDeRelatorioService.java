@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 
@@ -67,7 +67,7 @@ public class CreateVideoDeRelatorioService {
 
         FileContentType contentType = getContentTypeFromString(request.contentType());
 
-        String fileName = "%s-%s".formatted(Instant.now(), request.fileName());
+        String fileName = "%s-%s".formatted(request.fileName(), LocalDateTime.now());
         String videoUrl = s3UploadFile.execute(
                 fileName,
                 "tenants/%s/obras/%s/relatorios/%s/videos".formatted(tenantExternalId, relatorioWithObra.getObra().getIdExterno(), relatorioExternalId),

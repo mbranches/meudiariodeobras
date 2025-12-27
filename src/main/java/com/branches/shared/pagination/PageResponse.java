@@ -1,4 +1,4 @@
-package com.branches.utils;
+package com.branches.shared.pagination;
 
 import org.springframework.data.domain.Page;
 
