@@ -13,7 +13,7 @@ public class ValidateCnpj {
         }
 
         if (cnpj.length() == 14) {
-            validateCnpj(cnpj);
+//            validateCnpj(cnpj);
 
             return;
         }
