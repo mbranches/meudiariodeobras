@@ -1,9 +1,13 @@
 package com.branches.auth.service;
 
+import com.branches.assinatura.domain.AssinaturaEntity;
+import com.branches.assinatura.domain.enums.AssinaturaStatus;
+import com.branches.assinatura.repository.AssinaturaRepository;
 import com.branches.auth.dto.request.RegisterRequest;
 import com.branches.configuradores.domain.ModeloDeRelatorioEntity;
 import com.branches.configuradores.domain.enums.RecorrenciaRelatorio;
 import com.branches.configuradores.repositorio.ModeloDeRelatorioRepository;
+import com.branches.plano.repositroy.PlanoRepository;
 import com.branches.tenant.domain.TenantEntity;
 import com.branches.tenant.repository.TenantRepository;
 import com.branches.tenant.service.CheckIfDoesntExistsTenantWithTheCnpjService;
@@ -22,6 +26,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+
 @RequiredArgsConstructor
 @Service
 public class RegisterService {
@@ -38,6 +44,8 @@ public class RegisterService {
     private final UserTenantRepository userTenantRepository;
     private final ValidateCnpj validateCnpj;
     private final ModeloDeRelatorioRepository modeloDeRelatorioRepository;
+    private final PlanoRepository planoRepository;
+    private final AssinaturaRepository assinaturaRepository;
 
     @Transactional
     public void execute(RegisterRequest request) {
@@ -75,6 +83,18 @@ public class RegisterService {
                 .perfil(PerfilUserTenant.ADMINISTRADOR)
                 .build();
         userTenantToSave.setarId();
+
+        planoRepository.findByNome("Plano Gratuito").ifPresent(plano -> {
+            AssinaturaEntity assinatura = AssinaturaEntity.builder()
+                    .status(AssinaturaStatus.ATIVO)
+                    .plano(plano)
+                    .tenantId(savedTenant.getId())
+                    .dataInicio(LocalDate.now())
+                    .dataFim(LocalDate.now().plusMonths(plano.getDuracaoMeses()))
+                    .build();
+
+            assinaturaRepository.save(assinatura);
+        });
 
         userTenantRepository.save(userTenantToSave);
 
