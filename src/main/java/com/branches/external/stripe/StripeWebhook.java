@@ -3,6 +3,7 @@ package com.branches.external.stripe;
 import com.branches.exception.InternalServerError;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Event;
+import com.stripe.model.Invoice;
 import com.stripe.model.Subscription;
 import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
@@ -71,16 +72,40 @@ public class StripeWebhook {
                 stripeSubscriptionService.update(subscription);
             }
             case "invoice.payment_failed" -> {
-                Subscription subscription = (Subscription) event.getDataObjectDeserializer()
-                        .getObject().orElseThrow(() -> new InternalServerError("Erro ao desserializar objeto da assinatura do Stripe"));
+                Invoice invoice = (Invoice) event.getDataObjectDeserializer()
+                        .getObject().orElseThrow(() -> new InternalServerError("Erro ao desserializar objeto da invoice do Stripe"));
 
-                stripeSubscriptionService.handlePaymentFailed(subscription);
+                String subscriptionId = invoice.getParent().getSubscriptionDetails().getSubscription();
+
+                if (subscriptionId != null) {
+                    Subscription subscription;
+                    try {
+                        subscription = Subscription.retrieve(subscriptionId);
+                    } catch (StripeException e) {
+                        log.error("Erro ao recuperar assinatura do Stripe: {}", e.getMessage());
+                        throw new InternalServerError("Erro ao recuperar assinatura do Stripe");
+                    }
+
+                    stripeSubscriptionService.handlePaymentFailed(subscription);
+                }
             }
             case "invoice.paid" -> {
-                Subscription subscription = (Subscription) event.getDataObjectDeserializer()
-                        .getObject().orElseThrow(() -> new InternalServerError("Erro ao desserializar objeto da assinatura do Stripe"));
+                Invoice invoice = (Invoice) event.getDataObjectDeserializer()
+                        .getObject().orElseThrow(() -> new InternalServerError("Erro ao desserializar objeto da invoice do Stripe"));
 
-                stripeSubscriptionService.handlePaymentSucceeded(subscription);
+                String subscriptionId = invoice.getParent().getSubscriptionDetails().getSubscription();
+
+                if (subscriptionId != null) {
+                    Subscription subscription;
+                    try {
+                        subscription = Subscription.retrieve(subscriptionId);
+                    } catch (StripeException e) {
+                        log.error("Erro ao recuperar assinatura do Stripe: {}", e.getMessage());
+                        throw new InternalServerError("Erro ao recuperar assinatura do Stripe");
+                    }
+
+                    stripeSubscriptionService.handlePaymentSucceeded(subscription);
+                }
             }
         }
 
