@@ -90,6 +90,7 @@ public class RegisterService {
                 case SEMANAL -> LocalDate.now().plusWeeks(1);
                 case MENSAL -> LocalDate.now().plusMonths(1);
                 case ANUAL -> LocalDate.now().plusYears(1);
+                case MENSAL_AVULSO -> LocalDate.now().plusMonths(1); // Pagamento único com duração de 1 mês
             };
 
             AssinaturaEntity assinatura = AssinaturaEntity.builder()

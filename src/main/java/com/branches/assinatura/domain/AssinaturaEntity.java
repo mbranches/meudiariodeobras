@@ -24,7 +24,7 @@ public class AssinaturaEntity extends Auditable {
     @Column(nullable = false)
     private Long tenantId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "plano_id")
     private PlanoEntity plano;
 

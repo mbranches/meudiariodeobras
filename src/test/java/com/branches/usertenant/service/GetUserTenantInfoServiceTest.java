@@ -92,7 +92,7 @@ class GetUserTenantInfoServiceTest {
         when(tenantInfoProjection.getTelefone()).thenReturn("(11) 1234-5678");
         when(tenantInfoProjection.getLogoUrl()).thenReturn("https://example.com/logo.jpg");
         when(tenantInfoProjection.getNomeUsuarioResponsavel()).thenReturn("João Silva");
-        when(tenantInfoProjection.getAssinaturaAtiva()).thenReturn(null);
+        when(tenantInfoProjection.getAssinaturaCorrente()).thenReturn(null);
         when(tenantInfoProjection.getQuantidadeDeUsersCriados()).thenReturn(5L);
         when(tenantInfoProjection.getQuantidadeDeObrasCriadas()).thenReturn(10L);
 
@@ -120,7 +120,7 @@ class GetUserTenantInfoServiceTest {
         assertEquals("(11) 1234-5678", result.tenant().telefone());
         assertEquals("https://example.com/logo.jpg", result.tenant().logoUrl());
         assertEquals("João Silva", result.tenant().responsavelNome());
-        assertNull(result.tenant().assinaturaAtiva());
+        assertNull(result.tenant().assinaturaCorrente());
         assertEquals(5L, result.tenant().quantidadeDeUsersCriados());
         assertEquals(10L, result.tenant().quantidadeDeObrasCriadas());
     }

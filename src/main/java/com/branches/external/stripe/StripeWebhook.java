@@ -46,12 +46,13 @@ public class StripeWebhook {
                         .getObject().orElseThrow(() -> new InternalServerError("Erro ao desserializar objeto da sessão do Stripe"));
 
                 String subscriptionId = session.getSubscription();
+
+                // Subscription recorrente normal
                 Subscription subscription;
                 try {
-                    subscription = Subscription.retrieve(subscriptionId);
+                    subscription = subscriptionId != null ? Subscription.retrieve(subscriptionId) : null;
                 } catch (StripeException e) {
                     log.error("Erro ao recuperar assinatura do Stripe: {}", e.getMessage());
-
                     throw new InternalServerError("Erro ao recuperar assinatura do Stripe");
                 }
 

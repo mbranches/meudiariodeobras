@@ -5,6 +5,7 @@ import com.stripe.param.PriceCreateParams;
 public enum RecorrenciaPlano {
     DIARIO,
     MENSAL,
+    MENSAL_AVULSO,
     SEMANAL,
     ANUAL;
 
@@ -14,6 +15,7 @@ public enum RecorrenciaPlano {
             case SEMANAL -> PriceCreateParams.Recurring.Interval.WEEK;
             case MENSAL -> PriceCreateParams.Recurring.Interval.MONTH;
             case ANUAL -> PriceCreateParams.Recurring.Interval.YEAR;
+            case MENSAL_AVULSO -> null;
         };
     }
 }

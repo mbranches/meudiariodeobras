@@ -6,6 +6,7 @@ import com.branches.assinatura.repository.AssinaturaRepository;
 import com.branches.exception.NotFoundException;
 import com.branches.plano.domain.IntencaoDePagamentoEntity;
 import com.branches.plano.domain.PlanoEntity;
+import com.branches.plano.domain.enums.RecorrenciaPlano;
 import com.branches.plano.repository.IntencaoDePagamentoRepository;
 import com.branches.plano.repository.PlanoRepository;
 import com.stripe.model.Subscription;
@@ -29,7 +30,7 @@ public class StripeSubscriptionService {
 
     public void register(String sessionId, Subscription subscription) {
         log.info("Criando assinatura para a sessão: {}", sessionId);
-        String subscriptionId = subscription.getId();
+        String subscriptionId = subscription != null ? subscription.getId() : null;
 
         IntencaoDePagamentoEntity intencaoDePagamentoEntity = intencaoDePagamentoRepository.findByStripeSessionId(sessionId)
                 .orElseThrow(() -> new NotFoundException("Intenção de pagamento não encontrada para a sessão: " + sessionId));
@@ -37,16 +38,18 @@ public class StripeSubscriptionService {
         PlanoEntity plano = planoRepository.findById(intencaoDePagamentoEntity.getPlanoId())
                 .orElseThrow(() -> new NotFoundException("Plano não encontrado para o ID: " + intencaoDePagamentoEntity.getPlanoId()));
 
+        RecorrenciaPlano recorrenciaPlano = plano.getRecorrencia();
+        if (recorrenciaPlano != RecorrenciaPlano.MENSAL_AVULSO && subscription == null) {
+            throw new NotFoundException("Assinatura do Stripe não encontrada para o plano recorrente na sessão: " + sessionId);
+        }
+
         intencaoDePagamentoEntity.concluir();
 
-        LocalDate dataFim = Instant.ofEpochSecond(
-                        subscription.getBillingCycleAnchor()
-                )
-                .atZone(ZoneId.of("America/Sao_Paulo"))
-                .toLocalDate();
+        LocalDate dataFim = recorrenciaPlano != RecorrenciaPlano.MENSAL_AVULSO ? Instant.ofEpochSecond(subscription.getBillingCycleAnchor())
+                .atZone(ZoneId.of("America/Sao_Paulo")).toLocalDate() : LocalDate.now().plusMonths(1);
 
         AssinaturaEntity assinatura = AssinaturaEntity.builder()
-                .status(AssinaturaStatus.PENDENTE)
+                .status(recorrenciaPlano != RecorrenciaPlano.MENSAL_AVULSO ? AssinaturaStatus.PENDENTE : AssinaturaStatus.ATIVO)
                 .stripeSubscriptionId(subscriptionId)
                 .plano(plano)
                 .dataInicio(LocalDate.now())

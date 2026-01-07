@@ -28,7 +28,7 @@ public interface TenantRepository extends JpaRepository<TenantEntity, Long> {
         t.telefone AS telefone,
         t.logoUrl AS logoUrl,
         u AS responsavel,
-        a AS assinaturaAtiva,
+        a AS assinaturaCorrente,
         (
             SELECT COUNT(1)
             FROM UserTenantEntity ut2
@@ -43,7 +43,7 @@ public interface TenantRepository extends JpaRepository<TenantEntity, Long> {
         ) AS quantidadeDeObrasCriadas
     FROM TenantEntity t
     JOIN UserEntity u ON t.userResponsavelId = u.id
-    LEFT JOIN AssinaturaEntity a ON (t.id = a.tenantId AND a.status = 'ATIVO')
+    LEFT JOIN AssinaturaEntity a ON (t.id = a.tenantId AND a.status NOT IN ('INCOMPLETO', 'PENDENTE', 'NAO_INICIADO', 'CANCELADO', 'ENCERRADO', 'SUSPENSO'))
     WHERE t.id = :tenantId
         AND t.ativo IS TRUE
 """)

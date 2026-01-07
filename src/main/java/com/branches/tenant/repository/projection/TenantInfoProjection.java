@@ -11,7 +11,7 @@ public interface TenantInfoProjection {
     String getTelefone();
     String getLogoUrl();
     UserEntity getResponsavel();
-    AssinaturaEntity getAssinaturaAtiva();
+    AssinaturaEntity getAssinaturaCorrente();
     Long getQuantidadeDeUsersCriados();
     Long getQuantidadeDeObrasCriadas();
 }

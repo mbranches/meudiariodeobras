@@ -10,12 +10,12 @@ public record TenantInfoResponse(
         String telefone,
         String logoUrl,
         ResponsavelInfoResponse responsavel,
-        AssinaturaInfoResponse assinaturaAtiva,
+        AssinaturaInfoResponse assinaturaCorrente,
         Long quantidadeDeUsersCriados,
         Long quantidadeDeObrasCriadas
 ) {
     public static TenantInfoResponse from(TenantInfoProjection tenant) {
-        AssinaturaInfoResponse assinatura = tenant.getAssinaturaAtiva() != null ? com.branches.usertenant.dto.response.AssinaturaInfoResponse.from(tenant.getAssinaturaAtiva())
+        AssinaturaInfoResponse assinatura = tenant.getAssinaturaCorrente() != null ? AssinaturaInfoResponse.from(tenant.getAssinaturaCorrente())
                 : null;
 
         return new TenantInfoResponse(

@@ -1,6 +1,7 @@
 package com.branches.external.stripe;
 
 import com.branches.exception.InternalServerError;
+import com.branches.plano.domain.enums.RecorrenciaPlano;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
@@ -20,12 +21,16 @@ public class CreateStripeCheckoutSession {
     @Value("${stripe.cancel-url:http://localhost:3000/checkout/cancelado}")
     private String cancelUrl;
 
-    public CreateStripeCheckoutSessionResponse execute(String stripePriceId) {
+    public CreateStripeCheckoutSessionResponse execute(String stripePriceId, RecorrenciaPlano recorrencia) {
         try {
-            log.info("Criando sessão de checkout no Stripe para o tenant");
+            log.info("Criando sessão de checkout no Stripe para o tenant com recorrência: {}", recorrencia);
+
+            SessionCreateParams.Mode mode = recorrencia == RecorrenciaPlano.MENSAL_AVULSO
+                    ? SessionCreateParams.Mode.PAYMENT
+                    : SessionCreateParams.Mode.SUBSCRIPTION;
 
             SessionCreateParams params = SessionCreateParams.builder()
-                    .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
+                    .setMode(mode)
                     .setSuccessUrl(successUrl)
                     .setCancelUrl(cancelUrl)
                     .addLineItem(
@@ -37,7 +42,7 @@ public class CreateStripeCheckoutSession {
                     .build();
 
             Session session = Session.create(params);
-            log.info("Sessão de checkout criada com sucesso: {}", session.getId());
+            log.info("Sessão de checkout criada com sucesso: {} no modo: {}", session.getId(), mode);
 
             return new CreateStripeCheckoutSessionResponse(session.getId(), session.getUrl());
         } catch (StripeException e) {

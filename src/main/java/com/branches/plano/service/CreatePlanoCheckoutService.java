@@ -37,7 +37,8 @@ public class CreatePlanoCheckoutService {
         PlanoEntity plano = getPlanoByIdService.execute(request.planoId());
 
         CreateStripeCheckoutSessionResponse stripeResponse = createStripeCheckoutSession.execute(
-                plano.getStripePriceId()
+                plano.getStripePriceId(),
+                plano.getRecorrencia()
         );
 
         IntencaoDePagamentoEntity intencao = IntencaoDePagamentoEntity.builder()

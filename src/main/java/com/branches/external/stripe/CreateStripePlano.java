@@ -23,6 +23,7 @@ public class CreateStripePlano {
             ProductCreateParams productParams = ProductCreateParams.builder()
                     .setName(request.nome())
                     .setDescription(request.descricao())
+                    .setType(ProductCreateParams.Type.SERVICE)
                     .build();
 
             Product product;
@@ -34,16 +35,21 @@ public class CreateStripePlano {
                 throw new RuntimeException();
             }
 
-            PriceCreateParams priceParams = PriceCreateParams.builder()
+            PriceCreateParams.Builder priceParamsBuilder = PriceCreateParams.builder()
                     .setUnitAmount(request.valor().multiply(new BigDecimal("100")).longValue())
                     .setCurrency("brl")
-                    .setRecurring(
-                            PriceCreateParams.Recurring.builder()
-                                    .setInterval(request.recorrencia().toInterval())
-                                    .build()
-                    )
-                    .setProduct(product.getId())
-                    .build();
+                    .setProduct(product.getId());
+
+            // Se não for avulso, configura como recorrente
+            if (request.recorrencia().toInterval() != null) {
+                priceParamsBuilder.setRecurring(
+                        PriceCreateParams.Recurring.builder()
+                                .setInterval(request.recorrencia().toInterval())
+                                .build()
+                );
+            }
+
+            PriceCreateParams priceParams = priceParamsBuilder.build();
 
             Price price;
             try {
