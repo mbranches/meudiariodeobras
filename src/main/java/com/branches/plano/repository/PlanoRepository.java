@@ -12,4 +12,6 @@ public interface PlanoRepository extends JpaRepository<PlanoEntity, Long> {
     Optional<PlanoEntity> findByNome(String nome);
 
     List<PlanoEntity> findAllByAtivoIsTrueOrderByValorAsc();
+
+    boolean existsByNome(String nome);
 }

@@ -14,9 +14,12 @@ import org.springframework.stereotype.Service;
 public class CreatePlanoService {
     private final CreateStripePlano createStripePlano;
     private final PlanoRepository planoRepository;
+    private final CheckIfAlreadyExistsAnotherPlanoWithTheNameService checkIfAlreadyExistsAnotherPlanoWithTheNameService;
 
     public PlanoResponse execute(CreatePlanoRequest request) {
         CreateStripePlanoResponse stripeResponse = createStripePlano.execute(request);
+
+        checkIfAlreadyExistsAnotherPlanoWithTheNameService.execute(request.nome());
 
         PlanoEntity toSave = PlanoEntity.builder()
                 .nome(request.nome())
