@@ -52,6 +52,7 @@ public class StripeSubscriptionService {
                 .dataInicio(LocalDate.now())
                 .dataFim(dataFim)
                 .intencaoDePagamento(intencaoDePagamentoEntity)
+                .tenantId(intencaoDePagamentoEntity.getTenantId())
                 .build();
 
         assinaturaRepository.save(assinatura);
