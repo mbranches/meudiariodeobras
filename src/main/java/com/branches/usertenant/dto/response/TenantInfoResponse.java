@@ -34,7 +34,7 @@ public record TenantInfoResponse(
                 tenant.getQuantidadeDeUsersCriados(),
                 tenant.getQuantidadeDeObrasCriadas(),
                 tenant.getPeriodoDeTeste() != null ? PeriodoDeTesteResponse.from(tenant.getPeriodoDeTeste()) : null,
-                tenant.getPeriodoDeTeste() == null || !tenant.getAlreadyHadSubscription(),
+                tenant.getPeriodoDeTeste() == null && !tenant.getAlreadyHadSubscription(),
                 tenant.getAlreadyHadSubscription()
         );
     }
