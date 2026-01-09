@@ -37,7 +37,11 @@ public class CompressImage {
         try {
             log.info("Iniciando compressão de imagem");
             log.info("maxWidth: {}, maxHeight: {}, percentageQuality: {}, outputFormat: {}", maxWidth, maxHeight, percentageQuality, outputFormat);
+
             String formattedImage = imageBase64.substring(imageBase64.indexOf(",") + 1);
+            if (imageBase64.startsWith("data:image/heic;base64,") || imageBase64.startsWith("data:image/heif;base64,")) {
+                log.info("Imagem HEIC/HEIF detectada");
+            }
 
             byte[] imageBytes = Base64.getDecoder().decode(formattedImage);
 
@@ -70,29 +74,34 @@ public class CompressImage {
     private BufferedImage readImage(byte[] imageBytes) throws Exception {
         ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes);
 
-        // Tentar ler a imagem com ImageIO (suporta JPEG, PNG, HEIC via plugin)
-        BufferedImage image = ImageIO.read(bais);
-
-        if (image != null) {
-            return image;
-        }
-
-        // Se falhou, tentar com ImageInputStream e iterador de readers
-        bais.reset();
+        // Primeiro, tentar com ImageInputStream e iterador de readers (funciona melhor para HEIC)
         try (ImageInputStream iis = ImageIO.createImageInputStream(bais)) {
+            if (iis == null) {
+                throw new InternalServerError("Não foi possível criar ImageInputStream");
+            }
+
             Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
 
             if (readers.hasNext()) {
                 ImageReader reader = readers.next();
                 try {
-                    reader.setInput(iis);
-                    image = reader.read(0);
+                    reader.setInput(iis, true);
+                    BufferedImage image = reader.read(0);
                     log.info("Imagem lida usando reader: {}", reader.getClass().getSimpleName());
                     return image;
                 } finally {
                     reader.dispose();
                 }
             }
+        }
+
+        // Fallback: tentar ler a imagem com ImageIO diretamente
+        bais.reset();
+        BufferedImage image = ImageIO.read(bais);
+
+        if (image != null) {
+            log.info("Imagem lida usando ImageIO.read()");
+            return image;
         }
 
         throw new InternalServerError("Formato de imagem não suportado");
