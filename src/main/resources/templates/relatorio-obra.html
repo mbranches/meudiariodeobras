@@ -888,7 +888,7 @@
                     <td th:text="${item.presenca != null ? item.presenca.descricao : '-'}">-</td>
                     <td th:text="${item.horaInicio != null ? #temporals.format(item.horaInicio, 'HH:mm') : '-'}">-</td>
                     <td th:text="${item.horaFim != null ? #temporals.format(item.horaFim, 'HH:mm') : '-'}">-</td>
-                    <td th:text="${item.horasIntervalo != null ? #temporals.format(item.horasIntervalo, 'HH:mm') : '-'}">-</td>
+                    <td th:text="${item.getHorasIntervalo() != null ? #temporals.format(item.getHorasIntervalo(), 'HH:mm') : '-'}">-</td>
                     <td class="" th:text="${item.horasTrabalhadas != null ? #temporals.format(item.horasTrabalhadas, 'HH:mm') : '-'}">-</td>
                 </tr>
                 </tbody>

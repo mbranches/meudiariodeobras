@@ -31,4 +31,11 @@ public class MaoDeObraDeRelatorioEntity {
     private LocalTime horaFim;
     private Integer minutosIntervalo;
     private LocalTime horasTrabalhadas;
+
+    public LocalTime getHorasIntervalo() {
+        if (minutosIntervalo == null) {
+            return null;
+        }
+        return LocalTime.of(minutosIntervalo / 60, minutosIntervalo % 60);
+    }
 }
