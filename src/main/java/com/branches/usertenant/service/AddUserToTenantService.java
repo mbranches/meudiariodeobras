@@ -1,7 +1,7 @@
 package com.branches.usertenant.service;
 
-import com.branches.assinatura.domain.AssinaturaEntity;
-import com.branches.assinatura.service.GetAssinaturaActiveByTenantIdService;
+import com.branches.assinaturadeplano.domain.AssinaturaDePlanoEntity;
+import com.branches.assinaturadeplano.service.GetAssinaturaActiveByTenantIdService;
 import com.branches.exception.BadRequestException;
 import com.branches.exception.ForbiddenException;
 import com.branches.obra.domain.ObraEntity;
@@ -186,7 +186,7 @@ public class AddUserToTenantService {
 
         long quantityOfUsers = userTenantRepository.countByTenantId(currentUserTenant.getTenantId());
 
-        AssinaturaEntity activeAssinatura = getAssinaturaActiveByTenantIdService.execute(currentUserTenant.getTenantId());
+        AssinaturaDePlanoEntity activeAssinatura = getAssinaturaActiveByTenantIdService.execute(currentUserTenant.getTenantId());
 
         if (quantityOfUsers >= activeAssinatura.getPlano().getLimiteUsuarios()) {
             throw new BadRequestException("Limite de usuários atingido para o plano atual.");

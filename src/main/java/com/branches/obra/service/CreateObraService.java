@@ -1,7 +1,7 @@
 package com.branches.obra.service;
 
-import com.branches.assinatura.domain.AssinaturaEntity;
-import com.branches.assinatura.service.GetAssinaturaActiveByTenantIdService;
+import com.branches.assinaturadeplano.domain.AssinaturaDePlanoEntity;
+import com.branches.assinaturadeplano.service.GetAssinaturaActiveByTenantIdService;
 import com.branches.configuradores.domain.ModeloDeRelatorioEntity;
 import com.branches.configuradores.service.GetModeloDeRelatorioByIdAndTenantIdService;
 import com.branches.obra.domain.ConfiguracaoRelatoriosEntity;
@@ -101,7 +101,7 @@ public class CreateObraService {
 
         Integer quantityObrasActive = obraRepository.countByTenantIdAndAtivoIsTrue(tenantId);
 
-        AssinaturaEntity assinaturaAtiva = getAssinaturaActiveByTenantIdService.execute(tenantId);
+        AssinaturaDePlanoEntity assinaturaAtiva = getAssinaturaActiveByTenantIdService.execute(tenantId);
 
         if (assinaturaAtiva.getPlano().getLimiteObras() - quantityObrasActive <= 0) {
             throw new BadRequestException("Limite de obras atingido");

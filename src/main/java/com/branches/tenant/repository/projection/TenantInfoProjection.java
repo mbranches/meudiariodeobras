@@ -1,6 +1,6 @@
 package com.branches.tenant.repository.projection;
 
-import com.branches.assinatura.domain.AssinaturaEntity;
+import com.branches.assinaturadeplano.domain.AssinaturaDePlanoEntity;
 import com.branches.plano.domain.PeriodoTesteEntity;
 import com.branches.user.domain.UserEntity;
 
@@ -12,7 +12,7 @@ public interface TenantInfoProjection {
     String getTelefone();
     String getLogoUrl();
     UserEntity getResponsavel();
-    AssinaturaEntity getAssinaturaCorrente();
+    AssinaturaDePlanoEntity getAssinaturaCorrente();
     Long getQuantidadeDeUsersCriados();
     Long getQuantidadeDeObrasCriadas();
     Long getQuantidadeDeRelatoriosCriados();

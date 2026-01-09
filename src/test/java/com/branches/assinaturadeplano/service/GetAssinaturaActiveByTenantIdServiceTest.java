@@ -1,8 +1,8 @@
-package com.branches.assinatura.service;
+package com.branches.assinaturadeplano.service;
 
-import com.branches.assinatura.domain.AssinaturaEntity;
-import com.branches.assinatura.domain.enums.AssinaturaStatus;
-import com.branches.assinatura.repository.AssinaturaRepository;
+import com.branches.assinaturadeplano.domain.AssinaturaDePlanoEntity;
+import com.branches.assinaturadeplano.domain.enums.AssinaturaStatus;
+import com.branches.assinaturadeplano.repository.AssinaturaDePlanoRepository;
 import com.branches.exception.NotFoundException;
 import com.branches.plano.domain.PlanoEntity;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,11 +24,11 @@ class GetAssinaturaActiveByTenantIdServiceTest {
     @InjectMocks
     private GetAssinaturaActiveByTenantIdService service;
     @Mock
-    private AssinaturaRepository assinaturaRepository;
+    private AssinaturaDePlanoRepository assinaturaDePlanoRepository;
 
     private Long tenantId;
     private PlanoEntity plano;
-    private AssinaturaEntity assinatura;
+    private AssinaturaDePlanoEntity assinatura;
 
     @BeforeEach
     void setup() {
@@ -39,7 +39,7 @@ class GetAssinaturaActiveByTenantIdServiceTest {
                 .valor(BigDecimal.valueOf(99.90))
                 .build();
 
-        assinatura = AssinaturaEntity.builder()
+        assinatura = AssinaturaDePlanoEntity.builder()
                 .id(1L)
                 .tenantId(1L)
                 .plano(plano)
@@ -52,10 +52,10 @@ class GetAssinaturaActiveByTenantIdServiceTest {
 
     @Test
     void deveExecutarGetAssinaturaByTenantIdComSucesso() {
-        when(assinaturaRepository.findByStatusInAndTenantId(AssinaturaStatus.ATIVO, tenantId))
+        when(assinaturaDePlanoRepository.findByStatusInAndTenantId(AssinaturaStatus.ATIVO, tenantId))
             .thenReturn(Optional.of(assinatura));
 
-        AssinaturaEntity response = service.execute(tenantId);
+        AssinaturaDePlanoEntity response = service.execute(tenantId);
 
         assertNotNull(response);
         assertEquals(assinatura.getId(), response.getId());
@@ -65,7 +65,7 @@ class GetAssinaturaActiveByTenantIdServiceTest {
 
     @Test
     void deveLancarNotFoundExceptionQuandoAssinaturaNaoExistir() {
-        when(assinaturaRepository.findByStatusInAndTenantId(AssinaturaStatus.ATIVO, tenantId))
+        when(assinaturaDePlanoRepository.findByStatusInAndTenantId(AssinaturaStatus.ATIVO, tenantId))
             .thenReturn(Optional.empty());
 
          NotFoundException exception = assertThrows(NotFoundException.class, () -> service.execute(tenantId));

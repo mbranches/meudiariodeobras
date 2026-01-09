@@ -1,28 +1,26 @@
-package com.branches.assinatura.domain;
+package com.branches.assinaturadeplano.domain;
 
-import com.branches.assinatura.domain.enums.AssinaturaStatus;
-import com.branches.config.envers.Auditable;
+import com.branches.assinaturadeplano.domain.enums.AssinaturaStatus;
+import com.branches.config.envers.AuditableTenantOwned;
 import com.branches.plano.domain.IntencaoDePagamentoEntity;
 import com.branches.plano.domain.PlanoEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Setter
 @Getter
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class AssinaturaEntity extends Auditable {
+public class AssinaturaDePlanoEntity extends AuditableTenantOwned {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
-    private Long tenantId;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "plano_id")

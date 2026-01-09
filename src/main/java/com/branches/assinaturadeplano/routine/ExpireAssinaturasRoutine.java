@@ -1,8 +1,8 @@
-package com.branches.assinatura.routine;
+package com.branches.assinaturadeplano.routine;
 
-import com.branches.assinatura.domain.AssinaturaEntity;
-import com.branches.assinatura.domain.enums.AssinaturaStatus;
-import com.branches.assinatura.repository.AssinaturaRepository;
+import com.branches.assinaturadeplano.domain.AssinaturaDePlanoEntity;
+import com.branches.assinaturadeplano.domain.enums.AssinaturaStatus;
+import com.branches.assinaturadeplano.repository.AssinaturaDePlanoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,7 +17,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ExpireAssinaturasRoutine {
-    private final AssinaturaRepository assinaturaRepository;
+    private final AssinaturaDePlanoRepository assinaturaDePlanoRepository;
 
     /**
      * Executa diariamente à meia-noite para verificar e encerrar assinaturas expiradas
@@ -31,7 +31,7 @@ public class ExpireAssinaturasRoutine {
         LocalDate hoje = LocalDate.now();
 
         // Busca assinaturas ativas que já passaram da data de fim
-        List<AssinaturaEntity> assinaturasExpiradas = assinaturaRepository
+        List<AssinaturaDePlanoEntity> assinaturasExpiradas = assinaturaDePlanoRepository
                 .findAssinaturasDePlanosMensalAvulsoAtivasComDataFimBefore(hoje);
 
         if (assinaturasExpiradas.isEmpty()) {
@@ -41,7 +41,7 @@ public class ExpireAssinaturasRoutine {
 
         log.info("Encontradas {} assinaturas expiradas", assinaturasExpiradas.size());
 
-        List<AssinaturaEntity> toSave = assinaturasExpiradas.stream().peek(assinatura -> {
+        List<AssinaturaDePlanoEntity> toSave = assinaturasExpiradas.stream().peek(assinatura -> {
             assinatura.setStatus(AssinaturaStatus.ENCERRADO);
 
             log.info("Assinatura ID {} do tenant {} foi encerrada. Data de fim: {}",
@@ -51,7 +51,7 @@ public class ExpireAssinaturasRoutine {
 
         }).toList();
 
-        assinaturaRepository.saveAll(toSave);
+        assinaturaDePlanoRepository.saveAll(toSave);
 
         log.info("Processo de expiração de assinaturas concluído");
     }

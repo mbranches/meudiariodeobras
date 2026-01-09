@@ -1,8 +1,8 @@
 package com.branches.auth.service;
 
-import com.branches.assinatura.domain.AssinaturaEntity;
-import com.branches.assinatura.domain.enums.AssinaturaStatus;
-import com.branches.assinatura.repository.AssinaturaRepository;
+import com.branches.assinaturadeplano.domain.AssinaturaDePlanoEntity;
+import com.branches.assinaturadeplano.domain.enums.AssinaturaStatus;
+import com.branches.assinaturadeplano.repository.AssinaturaDePlanoRepository;
 import com.branches.auth.dto.request.RegisterRequest;
 import com.branches.configuradores.domain.ModeloDeRelatorioEntity;
 import com.branches.configuradores.domain.enums.RecorrenciaRelatorio;
@@ -45,7 +45,7 @@ public class RegisterService {
     private final ValidateCnpj validateCnpj;
     private final ModeloDeRelatorioRepository modeloDeRelatorioRepository;
     private final PlanoRepository planoRepository;
-    private final AssinaturaRepository assinaturaRepository;
+    private final AssinaturaDePlanoRepository assinaturaDePlanoRepository;
 
     @Transactional
     public void execute(RegisterRequest request) {
@@ -93,7 +93,7 @@ public class RegisterService {
                 case MENSAL_AVULSO -> LocalDate.now().plusMonths(1); // Pagamento único com duração de 1 mês
             };
 
-            AssinaturaEntity assinatura = AssinaturaEntity.builder()
+            AssinaturaDePlanoEntity assinatura = AssinaturaDePlanoEntity.builder()
                     .status(AssinaturaStatus.ATIVO)
                     .plano(plano)
                     .tenantId(savedTenant.getId())
@@ -101,7 +101,7 @@ public class RegisterService {
                     .dataFim(dataFim)
                     .build();
 
-            assinaturaRepository.save(assinatura);
+            assinaturaDePlanoRepository.save(assinatura);
         });
 
         userTenantRepository.save(userTenantToSave);

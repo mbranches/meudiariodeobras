@@ -1,8 +1,8 @@
 package com.branches.external.stripe;
 
-import com.branches.assinatura.domain.AssinaturaEntity;
-import com.branches.assinatura.domain.enums.AssinaturaStatus;
-import com.branches.assinatura.repository.AssinaturaRepository;
+import com.branches.assinaturadeplano.domain.AssinaturaDePlanoEntity;
+import com.branches.assinaturadeplano.domain.enums.AssinaturaStatus;
+import com.branches.assinaturadeplano.repository.AssinaturaDePlanoRepository;
 import com.branches.exception.NotFoundException;
 import com.branches.plano.domain.IntencaoDePagamentoEntity;
 import com.branches.plano.domain.PlanoEntity;
@@ -27,7 +27,7 @@ import java.time.ZoneId;
 public class StripeSubscriptionService {
     private final IntencaoDePagamentoRepository intencaoDePagamentoRepository;
     private final PlanoRepository planoRepository;
-    private final AssinaturaRepository assinaturaRepository;
+    private final AssinaturaDePlanoRepository assinaturaDePlanoRepository;
     private final FinalizarPeriodoDeTesteIfToExistService finalizarPeriodoDeTesteIfToExistService;
 
     public void register(String sessionId, Subscription subscription) {
@@ -51,7 +51,7 @@ public class StripeSubscriptionService {
                 .atZone(ZoneId.of("America/Sao_Paulo")).toLocalDate() : LocalDate.now().plusMonths(1);
 
         Long tenantId = intencaoDePagamentoEntity.getTenantId();
-        AssinaturaEntity assinatura = AssinaturaEntity.builder()
+        AssinaturaDePlanoEntity assinatura = AssinaturaDePlanoEntity.builder()
                 .status(AssinaturaStatus.PENDENTE)
                 .stripeSubscriptionId(subscriptionId)
                 .plano(plano)
@@ -67,7 +67,7 @@ public class StripeSubscriptionService {
             finalizarPeriodoDeTesteIfToExistService.execute(tenantId);
         }
 
-        assinaturaRepository.save(assinatura);
+        assinaturaDePlanoRepository.save(assinatura);
 
         log.info("Assinatura criada com sucesso para a sessão: {}", sessionId);
     }
@@ -75,12 +75,12 @@ public class StripeSubscriptionService {
     public void cancel(String subscriptionId) {
         log.info("Cancelando assinatura com ID do Stripe: {}", subscriptionId);
 
-        AssinaturaEntity assinatura = assinaturaRepository.findByStripeSubscriptionId(subscriptionId)
+        AssinaturaDePlanoEntity assinatura = assinaturaDePlanoRepository.findByStripeSubscriptionId(subscriptionId)
                 .orElseThrow(() -> new NotFoundException("Assinatura não encontrada para o ID da assinatura do Stripe: " + subscriptionId));
 
         assinatura.cancelar();
 
-        assinaturaRepository.save(assinatura);
+        assinaturaDePlanoRepository.save(assinatura);
 
         log.info("Assinatura cancelada com sucesso para o ID do Stripe: {}", subscriptionId);
     }
@@ -91,7 +91,7 @@ public class StripeSubscriptionService {
         String subscriptionId = subscription.getId();
         String stripeStatus = subscription.getStatus();
 
-        AssinaturaEntity assinatura = assinaturaRepository.findByStripeSubscriptionId(subscriptionId)
+        AssinaturaDePlanoEntity assinatura = assinaturaDePlanoRepository.findByStripeSubscriptionId(subscriptionId)
                 .orElseThrow(() -> new NotFoundException("Assinatura não encontrada para o ID da assinatura do Stripe: " + subscriptionId));
 
         AssinaturaStatus newStatus = AssinaturaStatus.fromStripeStatus(stripeStatus);
@@ -108,7 +108,7 @@ public class StripeSubscriptionService {
                 );
             }
 
-            assinaturaRepository.save(assinatura);
+            assinaturaDePlanoRepository.save(assinatura);
 
             log.info("Assinatura atualizada com sucesso para o ID do Stripe: {}", subscriptionId);
         }
@@ -118,12 +118,12 @@ public class StripeSubscriptionService {
         log.info("Processando falha de pagamento para assinatura com ID do Stripe: {}", subscription.getId());
         String subscriptionId = subscription.getId();
 
-        AssinaturaEntity assinatura = assinaturaRepository.findByStripeSubscriptionId(subscriptionId)
+        AssinaturaDePlanoEntity assinatura = assinaturaDePlanoRepository.findByStripeSubscriptionId(subscriptionId)
                 .orElseThrow(() -> new NotFoundException("Assinatura não encontrada para o ID da assinatura do Stripe: " + subscriptionId));
 
         assinatura.setStatus(AssinaturaStatus.VENCIDO);
 
-        assinaturaRepository.save(assinatura);
+        assinaturaDePlanoRepository.save(assinatura);
         log.info("Assinatura marcada como VENCIDO para o ID do Stripe: {}", subscriptionId);
     }
 
@@ -131,13 +131,13 @@ public class StripeSubscriptionService {
         log.info("Processando pagamento bem-sucedido para assinatura com ID do Stripe: {}", subscription.getId());
         String subscriptionId = subscription.getId();
 
-        AssinaturaEntity assinatura = assinaturaRepository.findByStripeSubscriptionId(subscriptionId)
+        AssinaturaDePlanoEntity assinatura = assinaturaDePlanoRepository.findByStripeSubscriptionId(subscriptionId)
                 .orElseThrow(() -> new NotFoundException("Assinatura não encontrada para o ID da assinatura do Stripe: " + subscriptionId));
 
         assinatura.ativar();
         finalizarPeriodoDeTesteIfToExistService.execute(assinatura.getTenantId());
 
-        assinaturaRepository.save(assinatura);
+        assinaturaDePlanoRepository.save(assinatura);
         log.info("Assinatura marcada como ATIVO para o ID do Stripe: {}", subscriptionId);
     }
 }

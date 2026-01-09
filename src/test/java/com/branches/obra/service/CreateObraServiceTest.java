@@ -1,8 +1,8 @@
 package com.branches.obra.service;
 
-import com.branches.assinatura.domain.AssinaturaEntity;
-import com.branches.assinatura.domain.enums.AssinaturaStatus;
-import com.branches.assinatura.service.GetAssinaturaActiveByTenantIdService;
+import com.branches.assinaturadeplano.domain.AssinaturaDePlanoEntity;
+import com.branches.assinaturadeplano.domain.enums.AssinaturaStatus;
+import com.branches.assinaturadeplano.service.GetAssinaturaActiveByTenantIdService;
 import com.branches.configuradores.domain.ModeloDeRelatorioEntity;
 import com.branches.configuradores.service.GetModeloDeRelatorioByIdAndTenantIdService;
 import com.branches.exception.BadRequestException;
@@ -68,7 +68,7 @@ class CreateObraServiceTest {
     private Long grupoId;
 
     private TenantEntity tenant;
-    private AssinaturaEntity assinatura;
+    private AssinaturaDePlanoEntity assinatura;
     private ModeloDeRelatorioEntity modeloDeRelatorio;
     private GrupoDeObraEntity grupo;
 
@@ -98,7 +98,7 @@ class CreateObraServiceTest {
                 .limiteObras(10)
                 .build();
 
-        assinatura = AssinaturaEntity.builder()
+        assinatura = AssinaturaDePlanoEntity.builder()
                 .id(1L)
                 .tenantId(tenantId)
                 .plano(plano)

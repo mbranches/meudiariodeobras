@@ -1,4 +1,4 @@
-package com.branches.assinatura.domain.enums;
+package com.branches.assinaturadeplano.domain.enums;
 
 public enum AssinaturaStatus {
     ATIVO,
