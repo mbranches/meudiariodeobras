@@ -41,6 +41,9 @@ public class CompressImage {
             String formattedImage = imageBase64.substring(imageBase64.indexOf(",") + 1);
             if (imageBase64.startsWith("data:image/heic;base64,") || imageBase64.startsWith("data:image/heif;base64,")) {
                 log.info("Imagem HEIC/HEIF detectada");
+                log.info("Retornando bytes decodificados sem compressão adicional");
+
+                return Base64.getDecoder().decode(formattedImage);
             }
 
             byte[] imageBytes = Base64.getDecoder().decode(formattedImage);
