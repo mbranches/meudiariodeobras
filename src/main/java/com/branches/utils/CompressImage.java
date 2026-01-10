@@ -1,5 +1,6 @@
 package com.branches.utils;
 
+import com.branches.exception.BadRequestException;
 import com.branches.exception.InternalServerError;
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Metadata;
@@ -24,15 +25,11 @@ public class CompressImage {
         try {
             log.info("Iniciando compressão de imagem");
             log.info("maxWidth: {}, maxHeight: {}, percentageQuality: {}, outputFormat: {}", maxWidth, maxHeight, percentageQuality, outputFormat);
+            checkIfImageTypeIsSupported(imageBase64);
+
             String formattedImage = imageBase64.substring(imageBase64.indexOf(",") + 1);
 
             byte[] imageBytes = Base64.getDecoder().decode(formattedImage);
-
-
-            //heic
-            if(imageBase64.startsWith("data:image/heic") || imageBase64.startsWith("data:image/HEIC")){
-                return imageBytes;
-            }
 
             BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(imageBytes));
 
@@ -57,6 +54,14 @@ public class CompressImage {
         } catch (Exception e) {
             log.error("Ocorreu um erro ao comprimir a imagem: {}", e.getMessage());
             throw new InternalServerError("Ocorreu um erro ao comprimir a imagem");
+        }
+    }
+
+    private void checkIfImageTypeIsSupported(String imageBase64) {
+        if (!(imageBase64.startsWith("data:image/jpeg") ||
+              imageBase64.startsWith("data:image/jpg") ||
+              imageBase64.startsWith("data:image/png"))) {
+            throw new BadRequestException("Tipo de imagem não suportado. Apenas JPEG, JPG e PNG são permitidos.");
         }
     }
 

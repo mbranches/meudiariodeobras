@@ -1051,7 +1051,7 @@
                 <thead>
                 <tr>
                     <th>Nome do Vídeo</th>
-                    <th style="text-align: right; width: 150px;">Tamanho</th>
+                    <th style="text-align: right; width: 150px;">Duração</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -1062,7 +1062,7 @@
                         </a>
                         <span th:if="${video.url == null}" th:text="${video.nomeArquivo != null ? video.nomeArquivo : 'video.mp4'}">video.mp4</span>
                     </td>
-                    <td style="text-align: right;" th:text="${(video.tamanhoEmMb != null ? #numbers.formatDecimal(video.tamanhoEmMb, 1, 2) : '0.00') + ' MB'}">0.00</td>
+                    <td style="text-align: right;" th:text="${video.getFormattedSegundosDeDuracao()}">00:00</td>
                 </tr>
                 </tbody>
             </table>

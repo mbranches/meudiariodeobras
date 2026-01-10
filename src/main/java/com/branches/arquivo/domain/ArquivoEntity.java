@@ -8,6 +8,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Setter
 @Getter
@@ -39,11 +40,26 @@ public class ArquivoEntity extends AuditableTenantOwned {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal tamanhoEmMb;
 
+    @Column(precision = 10, scale = 2)
+    private BigDecimal segundosDeDuracao;
+
     public boolean getIsFoto() {
         return this.tipoArquivo == TipoArquivo.FOTO;
     }
 
     public boolean getIsVideo() {
         return this.tipoArquivo == TipoArquivo.VIDEO;
+    }
+
+    public String getFormattedSegundosDeDuracao() {
+        if (segundosDeDuracao == null) {
+            return "00:00";
+        }
+
+        int totalSeconds = segundosDeDuracao.setScale(0, RoundingMode.HALF_UP).intValue();
+        int minutes = totalSeconds / 60;
+        int seconds = totalSeconds % 60;
+
+        return String.format("%02d:%02d", minutes, seconds);
     }
 }

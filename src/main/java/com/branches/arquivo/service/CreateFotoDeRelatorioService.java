@@ -57,7 +57,7 @@ public class CreateFotoDeRelatorioService {
         String base64Image = request.base64Image();
         byte[] imageBytes = compressImage.execute(base64Image, 800, 800, 0.8, ImageOutPutFormat.JPEG);
 
-        FileContentType contentType = !base64Image.startsWith("data:image/heic") && !base64Image.startsWith("data:image/HEIC") ? FileContentType.JPEG : FileContentType.HEIC;
+        FileContentType contentType = FileContentType.JPEG;
         String filename = "%s-%s.%s".formatted(request.fileName().replaceAll("\\.[^.]+$", ""), LocalDateTime.now(), contentType.getExtension());
         String fotoUrl = s3UploadFile.execute(filename, "tenants/%s/obras/%s/relatorios/%s/fotos".formatted(tenantExternalId, relatorioWithObra.getObra().getIdExterno(), relatorioExternalId), imageBytes, contentType);
 

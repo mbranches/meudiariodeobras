@@ -12,14 +12,19 @@ RUN mvn -B -Dmaven.test.skip package
 FROM mcr.microsoft.com/playwright/java:v1.56.0-jammy AS runtime
 WORKDIR /app
 
+# 🔹 INSTALA FFmpeg (ffprobe incluso)
+RUN apt-get update \
+    && apt-get install -y ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copia o JAR
 COPY --from=build /app/target/*.jar /app/app.jar
 
-# Exponha a porta (Ex: Render/Railway usam $PORT)
+# Exponha a porta
 EXPOSE 8080
 
 # Necessário para Playwright funcionar
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 
-# Inicia o app usando a porta da plataforma
+# Inicia o app
 ENTRYPOINT ["sh","-c","java -Dserver.port=${PORT:-8080} -jar /app/app.jar"]

@@ -2,10 +2,10 @@ package com.branches.arquivo.service;
 
 import com.branches.arquivo.domain.ArquivoEntity;
 import com.branches.arquivo.domain.enums.TipoArquivo;
-import com.branches.arquivo.dto.request.CreateVideoDeRelatorioRequest;
 import com.branches.arquivo.dto.response.CreateVideoDeRelatorioResponse;
 import com.branches.arquivo.repository.ArquivoRepository;
 import com.branches.exception.BadRequestException;
+import com.branches.exception.InternalServerError;
 import com.branches.external.aws.S3UploadFile;
 import com.branches.obra.controller.CheckIfUserHasAccessToObraService;
 import com.branches.relatorio.domain.RelatorioEntity;
@@ -18,11 +18,16 @@ import com.branches.usertenant.service.GetCurrentUserTenantService;
 import com.branches.utils.FileContentType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.util.Base64;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -40,7 +45,11 @@ public class CreateVideoDeRelatorioService {
     private final CheckIfUserHasAccessToEditRelatorioService checkIfUserHasAccessToEditRelatorioService;
     private final CheckIfUserHasAccessToObraService checkIfUserHasAccessToObraService;
 
-    public CreateVideoDeRelatorioResponse execute(CreateVideoDeRelatorioRequest request, String tenantExternalId, String relatorioExternalId, List<UserTenantEntity> userTenants) {
+    public CreateVideoDeRelatorioResponse execute(MultipartFile video, String tenantExternalId, String relatorioExternalId, List<UserTenantEntity> userTenants) {
+        if (video == null || video.isEmpty()) {
+            throw new BadRequestException("O vídeo é obrigatório");
+        }
+
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
 
         UserTenantEntity currentUserTenant = getCurrentUserTenantService.execute(userTenants, tenantId);
@@ -55,19 +64,32 @@ public class CreateVideoDeRelatorioService {
 
         byte[] videoBytes;
         try {
-            String validBase64 = request.base64Video().replaceAll("^data:video/\\w+;base64,", "");
-            videoBytes = Base64.getDecoder().decode(validBase64);
-        } catch (IllegalArgumentException e) {
-            throw new BadRequestException("O vídeo enviado não está em formato base64 válido");
+            videoBytes = video.getBytes();
+        } catch (IOException e) {
+            throw new BadRequestException("Erro ao ler o arquivo de vídeo");
         }
 
         if (videoBytes.length > MAX_VIDEO_SIZE_BYTES) {
             throw new BadRequestException("O tamanho do vídeo excede o limite de 100MB");
         }
 
-        FileContentType contentType = getContentTypeFromString(request.contentType());
+        String originalFilename = video.getOriginalFilename();
+        if (originalFilename == null || originalFilename.isEmpty()) {
+            throw new BadRequestException("Nome do arquivo é obrigatório");
+        }
 
-        String fileName = "%s-%s.%s".formatted(formatFileName(request.fileName()), LocalDateTime.now(), contentType.getExtension());
+        String contentTypeStr = video.getContentType();
+        if (contentTypeStr == null || contentTypeStr.isEmpty()) {
+            throw new BadRequestException("Tipo de conteúdo é obrigatório");
+        }
+        FileContentType contentType = getContentTypeFromString(contentTypeStr);
+
+        BigDecimal durationInSeconds = getVideoDurationInSeconds(video);
+        if (durationInSeconds.compareTo(BigDecimal.valueOf(60)) > 0) {
+            throw new BadRequestException("A duração do vídeo não pode exceder 60 segundos");
+        }
+
+        String fileName = "%s-%s.%s".formatted(formatFileName(originalFilename), LocalDateTime.now(), contentType.getExtension());
         String videoUrl = s3UploadFile.execute(
                 fileName,
                 "tenants/%s/obras/%s/relatorios/%s/videos".formatted(tenantExternalId, relatorioWithObra.getObra().getIdExterno(), relatorioExternalId),
@@ -82,6 +104,7 @@ public class CreateVideoDeRelatorioService {
                 .tipoArquivo(TipoArquivo.VIDEO)
                 .relatorio(relatorio)
                 .tamanhoEmMb(fileLengthInMb)
+                .segundosDeDuracao(durationInSeconds)
                 .tenantId(tenantId)
                 .build();
 
@@ -89,6 +112,34 @@ public class CreateVideoDeRelatorioService {
 
         return CreateVideoDeRelatorioResponse.from(saved);
     }
+
+    public static BigDecimal getVideoDurationInSeconds(MultipartFile file) {
+        try {
+            Path tempFile = Files.createTempFile("video-", ".tmp");
+            file.transferTo(tempFile.toFile());
+
+            ProcessBuilder pb = new ProcessBuilder(
+                    "ffprobe",
+                    "-v", "error",
+                    "-show_entries", "format=duration",
+                    "-of", "default=noprint_wrappers=1:nokey=1",
+                    tempFile.toAbsolutePath().toString()
+            );
+
+            Process process = pb.start();
+            String output = new BufferedReader(
+                    new InputStreamReader(process.getInputStream())
+            ).readLine();
+
+            Files.delete(tempFile);
+
+            return new BigDecimal(output);
+
+        } catch (Exception e) {
+            throw new InternalServerError("Erro ao obter duração do vídeo");
+        }
+    }
+
 
     private String formatFileName(String requestFileName) {
         return requestFileName.replaceAll("\\.[^.]+$", "").replaceAll("\\s+", "_");
