@@ -39,7 +39,7 @@ jobs:
           script: |
             set -e
 
-            APP_DIR=/opt/meudiariodeobras
+            APP_DIR=/opt/meudiariodeobras/target
             JAR_NAME=$(ls $APP_DIR/*.jar | head -n 1)
 
             echo "Parando aplicação..."
