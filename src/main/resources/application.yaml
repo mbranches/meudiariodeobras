@@ -12,7 +12,7 @@ spring:
       driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     show-sql: true
 jwt:
   secret: ${ENV_JWT_SECRET}
