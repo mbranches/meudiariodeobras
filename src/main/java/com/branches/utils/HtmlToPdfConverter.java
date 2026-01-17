@@ -34,7 +34,7 @@ public class HtmlToPdfConverter {
 
         } catch (Exception e) {
             log.error("Erro ao gerar PDF a partir do HTML: ", e);
-            throw new InternalServerError("Erro ao gerar PDF");
+            throw new InternalServerError("Erro ao gerar PDF: " + e.getMessage());
         }
     }
 }
