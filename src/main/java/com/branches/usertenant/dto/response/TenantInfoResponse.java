@@ -17,12 +17,14 @@ public record TenantInfoResponse(
         Long quantidadeDeRelatoriosCriados,
         PeriodoDeTesteResponse periodoDeTeste,
         Boolean isPeriodoDeTesteDisponivel,
-        Boolean jaTeveAssinaturaAtiva
+        Boolean jaTeveAssinaturaAtiva,
+        Boolean foiCriadoPorUsuarioQueJaTestouOSistema
 ) {
     public static TenantInfoResponse from(TenantInfoProjection tenant) {
         AssinaturaInfoResponse assinatura = tenant.getAssinaturaCorrente() != null ? AssinaturaInfoResponse.from(tenant.getAssinaturaCorrente())
                 : null;
 
+        boolean isPeriodoDeTesteDisponivel = tenant.getPeriodoDeTeste() == null && !tenant.getAlreadyHadSubscription() && !tenant.getFoiCriadoPorUsuarioQueJaTestouOSistema();
         return new TenantInfoResponse(
                 tenant.getIdExterno(),
                 tenant.getRazaoSocial(),
@@ -35,9 +37,10 @@ public record TenantInfoResponse(
                 tenant.getQuantidadeDeUsersCriados(),
                 tenant.getQuantidadeDeObrasCriadas(),
                 tenant.getQuantidadeDeRelatoriosCriados(),
-                tenant.getPeriodoDeTeste() != null ? com.branches.plano.dto.response.PeriodoDeTesteResponse.from(tenant.getPeriodoDeTeste()) : null,
-                tenant.getPeriodoDeTeste() == null && !tenant.getAlreadyHadSubscription(),
-                tenant.getAlreadyHadSubscription()
+                tenant.getPeriodoDeTeste() != null ? PeriodoDeTesteResponse.from(tenant.getPeriodoDeTeste()) : null,
+                isPeriodoDeTesteDisponivel,
+                tenant.getAlreadyHadSubscription(),
+                tenant.getFoiCriadoPorUsuarioQueJaTestouOSistema()
         );
     }
 }

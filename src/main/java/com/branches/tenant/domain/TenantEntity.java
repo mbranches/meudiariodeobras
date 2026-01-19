@@ -45,4 +45,8 @@ public class TenantEntity extends Auditable {
     @Builder.Default
     @Column(nullable = false)
     private Boolean ativo = true;
+
+    @Builder.Default
+    @Column(nullable = false, name = "foi_criado_por_usuario_que_ja_testou_o_sistema")
+    private Boolean foiCriadoPorUsuarioQueJaTestouOSistema = false;
 }

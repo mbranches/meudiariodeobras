@@ -28,6 +28,7 @@ public interface TenantRepository extends JpaRepository<TenantEntity, Long> {
         t.cnpj AS cnpj,
         t.telefone AS telefone,
         t.logoUrl AS logoUrl,
+        t.foiCriadoPorUsuarioQueJaTestouOSistema AS foiCriadoPorUsuarioQueJaTestouOSistema,
         u AS responsavel,
         a AS assinaturaCorrente,
         pt AS periodoDeTeste,

@@ -26,5 +26,7 @@ public interface AssinaturaDePlanoRepository extends JpaRepository<AssinaturaDeP
     """)
     List<AssinaturaDePlanoEntity> findAssinaturasDePlanosMensalAvulsoAtivasComDataFimBefore(LocalDate dataFim);
 
-    boolean existsByStatusIn(Collection<AssinaturaStatus> statuses);
+    boolean existsByStatusInAndTenantId(Collection<AssinaturaStatus> status, Long tenantId);
+
+    boolean existsByTenantIdInAndStatusIn(Collection<Long> tenantIds, Collection<AssinaturaStatus> status);
 }
