@@ -14,6 +14,8 @@ import com.branches.usertenant.domain.Authorities;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.domain.enums.PerfilUserTenant;
 import com.branches.usertenant.repository.UserTenantRepository;
+import com.branches.utils.ValidateCnpj;
+import com.branches.utils.ValidatePhoneNumber;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
@@ -31,8 +33,14 @@ public class CreateTenantService {
     private final EmailSender emailSender;
     private final AssinaturaDePlanoRepository assinaturaDePlanoRepository;
     private final VerifyIfAlreadyHasPeriodoDeTesteService verifyIfAlreadyHasPeriodoDeTesteService;
+    private final ValidatePhoneNumber validatePhoneNumber;
+    private final ValidateCnpj validateCnpj;
+    private final CheckIfDoesntExistsTenantWithTheCnpjService checkIfDoesntExistsTenantWithTheCnpjService;
+    private final CheckIfDoesntExistsTenantWithTheTelefoneService checkIfDoesntExistsTenantWithTheTelefoneService;
 
     public CreateTenantResponse execute(CreateTenantRequest request, UserEntity user) {
+        validateFields(request);
+
         boolean usuarioPossuiTenantQueJaTestouOSistema = verifyIfUserHasTenantThatAlreadyTestedTheSystem(user);
         TenantEntity tenantToSave = TenantEntity.builder()
                 .userResponsavelId(user.getId())
@@ -60,6 +68,13 @@ public class CreateTenantService {
         sendEmail(user.getEmail(), saved);
 
         return CreateTenantResponse.from(saved);
+    }
+
+    private void validateFields(CreateTenantRequest request) {
+        validatePhoneNumber.execute(request.telefone());
+        validateCnpj.execute(request.cnpj());
+        checkIfDoesntExistsTenantWithTheCnpjService.execute(request.cnpj());
+        checkIfDoesntExistsTenantWithTheTelefoneService.execute(request.telefone());
     }
 
     private boolean verifyIfUserHasTenantThatAlreadyTestedTheSystem(UserEntity userEntity) {
