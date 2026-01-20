@@ -783,6 +783,35 @@
 <!--        </section>-->
 
 
+<!--        Horário de Trabalho -->
+        <section class="section-card" th:if="${userCanViewHorarioDeTrabalho == true and details.horaInicioTrabalhos != null}">
+            <div class="section-title">Horário de Trabalho</div>
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th>Início</th>
+                    <th>Fim</th>
+                    <th>Intervalo</th>
+                    <th>Total</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td th:text="${details.horaInicioTrabalhos != null ? #temporals.format(details.horaInicioTrabalhos, 'HH:mm') : '-'}">-</td>
+                    <td th:text="${details.horaFimTrabalhos != null ? #temporals.format(details.horaFimTrabalhos, 'HH:mm') : '-'}">-</td>
+                    <td>
+                        <span th:if="${details.minutosIntervalo != null}">
+                            <span th:text="${details.minutosIntervalo / 60}">0</span>h
+                            <span th:if="${details.minutosIntervalo % 60 > 0}" th:text="${details.minutosIntervalo % 60}">0</span><span th:if="${details.minutosIntervalo % 60 > 0}">min</span>
+                        </span>
+                        <span th:if="${details.minutosIntervalo == null}">-</span>
+                    </td>
+                    <td th:text="${details.horasTrabalhadas != null ? #temporals.format(details.horasTrabalhadas, 'HH:mm') : '-'}">-</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+
 <!--        Refazendo seçao de condicoes climaticas tabulado-->
         <section class="section-card" th:if="${userCanViewCondicoesClimaticas == true and ((details.caracteristicasManha != null && details.caracteristicasManha.ativo) or (details.caracteristicasTarde != null && details.caracteristicasTarde.ativo) or (details.caracteristicasNoite != null && details.caracteristicasNoite.ativo) or details.indicePluviometrico != null)}">
             <div class="section-title">Condiçao Climática</div>
@@ -917,41 +946,48 @@
         <!-- Atividades -->
         <section th:if="${atividades != null and !atividades.isEmpty()}" class="section-card">
             <div class="section-title">Atividades (<span th:text="${atividades.size()}">0</span>)</div>
-            <div th:each="item : ${atividades}" class="item-card">
-                <div class="item-header">
-                    <div style="flex: 1;">
-                        <div class="item-title">
-                            <span th:text="${item.descricao != null ? item.descricao : '-'}">Descrição da atividade</span>
-                            <span th:if="${item.horaInicio != null and item.horaFim != null}" class="item-time"
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th style="width: 55%;">Descrição</th>
+                    <th style="width: 20%; text-align: center;">Quantidade</th>
+                    <th style="width: 10%; text-align: center;">%</th>
+                    <th style="width: 15%; text-align: center;">Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${atividades}">
+                    <td style="vertical-align: top;">
+                        <div style="font-weight: 600; margin-bottom: 4px;">
+                            <span th:text="${item.descricao != null ? item.descricao : '-'}" style="font-size: 10pt">Descrição da atividade</span>
+                            <span th:if="${item.horaInicio != null and item.horaFim != null}"
+                                  style="font-size: 8pt; color: #888; font-weight: 400; margin-left: 8px;"
                                   th:text="${#temporals.format(item.horaInicio, 'HH:mm') + ' - ' + #temporals.format(item.horaFim, 'HH:mm') + (item.totalHoras != null ? ' (' + #temporals.format(item.totalHoras, 'HH:mm') + ')' : '')}"></span>
                         </div>
 
-                        <div class="item-details">
-                            <div th:if="${item.quantidadeRealizada != null}">
-                                <div class="item-detail-label">Quantidade realizada</div>
-                                <div class="item-detail-value" th:text="${item.quantidadeRealizada + (item.unidadeMedida != null ? ' ' + item.unidadeMedida : '')}">-</div>
-                            </div>
-                            <div th:if="${item.maoDeObra != null and !item.maoDeObra.isEmpty()}" style="grid-column: span 2;">
-                                <div class="item-detail-label">Mão de Obra</div>
-                                <div class="item-detail-value">
-                                    <span th:each="mdo, stat : ${item.maoDeObra}" th:text="${mdo.getMaoDeObra().getNome() + (!stat.last ? ', ' : '')}">Nome</span>
-                                </div>
-                            </div>
+                        <div th:if="${item.maoDeObra != null and !item.maoDeObra.isEmpty()}" style="margin-top: 6px; font-size: 9pt;">
+                            <span style="color: #888;">Mão de Obra:</span>
+                            <span style="font-weight: 500; color: #1a1a1a;">
+                                <span th:each="mdo, stat : ${item.maoDeObra}" th:text="${mdo.getMaoDeObra().getNome() + (!stat.last ? ', ' : '')}">Nome</span>
+                            </span>
                         </div>
 
-                        <div th:if="${item.camposPersonalizados != null and !item.camposPersonalizados.isEmpty()}" class="custom-fields">
-                            <div th:each="campo : ${item.camposPersonalizados}" class="custom-field"
+                        <div th:if="${item.camposPersonalizados != null and !item.camposPersonalizados.isEmpty()}"
+                             style="margin-top: 6px; font-size: 9pt; color: #666;">
+                            <div th:each="campo : ${item.camposPersonalizados}" style="margin-left: 12px;"
                                  th:text="'- ' + ${campo.getCampoPersonalizado().campo} + ': ' + ${campo.getCampoPersonalizado().descricao}">- Campo: Valor</div>
                         </div>
-                    </div>
-                    <div class="item-right">
-                        <div class="item-percentage" th:text="${item.porcentagemConcluida != null ? item.porcentagemConcluida + '%' : '-'}">-%</div>
-                        <div class="item-status"
-                             th:classappend="${'status-' + item.status.name().toLowerCase().replace('_', '-')}"
-                             th:text="${item.status != null ? item.status.descricao : '-'}">Status</div>
-                    </div>
-                </div>
-            </div>
+                    </td>
+                    <td style="text-align: center; vertical-align: center;"
+                        th:text="${item.quantidadeRealizada != null ? item.quantidadeRealizada + (item.unidadeMedida != null ? ' ' + item.unidadeMedida : '') : '-'}">-</td>
+                    <td style="text-align: center; vertical-align: center;"
+                        th:text="${item.porcentagemConcluida != null ? item.porcentagemConcluida + '%' : '-'}">-%</td>
+                    <td style="text-align: center; vertical-align: center;">
+                        <span th:text="${item.status != null ? item.status.descricao.toLowerCase() : '-'}">Status</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </section>
 
         <!-- Ocorrências -->
