@@ -1,12 +1,15 @@
 package com.branches.relatorio.service;
 
+import com.branches.relatorio.controller.params.ListRelatoriosRequestParams;
+import com.branches.relatorio.domain.enums.StatusRelatorio;
+import com.branches.relatorio.dto.response.PageRelatorioResponse;
 import com.branches.relatorio.dto.response.RelatorioResponse;
 import com.branches.relatorio.repository.RelatorioRepository;
+import com.branches.relatorio.repository.projections.RelatorioCountersProjection;
 import com.branches.relatorio.repository.projections.RelatorioProjection;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
-import com.branches.shared.pagination.PageResponse;
 import com.branches.shared.pagination.PageableRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,7 +25,7 @@ public class ListarRelatoriosService {
     private final GetCurrentUserTenantService getCurrentUserTenantService;
     private final RelatorioRepository relatorioRepository;
 
-    public PageResponse<RelatorioResponse> execute(String tenantExternalId, List<UserTenantEntity> userTenants, PageableRequest pageableRequest) {
+    public PageRelatorioResponse execute(String tenantExternalId, List<UserTenantEntity> userTenants, PageableRequest pageableRequest, ListRelatoriosRequestParams params) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
         UserTenantEntity currentUserTenant = getCurrentUserTenantService.execute(userTenants, tenantId);
 
@@ -36,11 +39,28 @@ public class ListarRelatoriosService {
                 "enversCreatedDate"
         );
 
-        Page<RelatorioProjection> relatorios = canViewOnlyAprovados ? relatorioRepository.findAllByTenantIdAndIsAprovadoAndUserAccessToTheObraPai(tenantId, currentUserTenant.getObrasPermitidasIds(), currentUserTenant.isAdministrador(), pageRequest)
-                : relatorioRepository.findAllByTenantIdAndUserAccessToTheObraPai(tenantId, currentUserTenant.getObrasPermitidasIds(), currentUserTenant.isAdministrador(), pageRequest);
+        boolean userCanViewOnlyAprovadoAndWasPastAnotherStatus = canViewOnlyAprovados && params.status() != null && params.status().equals(StatusRelatorio.APROVADO);
+        Page<RelatorioProjection> relatorios = userCanViewOnlyAprovadoAndWasPastAnotherStatus ? Page.empty() : relatorioRepository.findAllByTenantIdAndUserAccessToTheObraPaiWithFilters(
+                tenantId,
+                currentUserTenant.getObrasPermitidasIds(),
+                currentUserTenant.isAdministrador(),
+                params.status(),
+                params.obraId(),
+                params.numero(),
+                params.dataInicio(),
+                pageRequest
+        );
 
         Page<RelatorioResponse> response = relatorios.map(RelatorioResponse::from);
 
-        return PageResponse.from(response);
+        RelatorioCountersProjection counters = relatorioRepository.findCountByStatus(
+                tenantId,
+                currentUserTenant.getObrasPermitidasIds(),
+                currentUserTenant.isAdministrador(),
+                canViewOnlyAprovados,
+                params.obraId()
+        );
+
+        return PageRelatorioResponse.from(response, counters);
     }
 }

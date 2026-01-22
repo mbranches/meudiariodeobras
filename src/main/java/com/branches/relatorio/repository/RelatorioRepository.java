@@ -2,6 +2,7 @@ package com.branches.relatorio.repository;
 
 import com.branches.relatorio.domain.RelatorioEntity;
 import com.branches.relatorio.domain.enums.StatusRelatorio;
+import com.branches.relatorio.repository.projections.RelatorioCountersProjection;
 import com.branches.relatorio.repository.projections.RelatorioDetailsProjection;
 import com.branches.relatorio.repository.projections.RelatorioProjection;
 import com.branches.relatorio.repository.projections.RelatorioWithObraProjection;
@@ -11,6 +12,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -111,57 +113,6 @@ public interface RelatorioRepository extends JpaRepository<RelatorioEntity, Long
     List<RelatorioProjection> findTop5ByObraIdProjection(Long id);
 
     @Query("""
-    SELECT r.idExterno AS idExterno,
-        r.dataInicio AS dataInicio,
-        r.dataFim AS dataFim,
-        r.numero AS numero,
-        r.status AS status,
-        o.idExterno AS obraIdExterno,
-        o.nome AS obraNome,
-        o.endereco AS obraEndereco,
-        o.contratante AS obraContratante,
-        o.responsavel AS obraResponsavel,
-        o.numeroContrato AS obraNumeroContrato,
-        (
-            SELECT COUNT(1)
-            FROM ArquivoEntity a
-            WHERE a.tipoArquivo = 'FOTO'
-                AND a.relatorio.id = r.id
-        ) AS quantidadeFotos
-    FROM RelatorioEntity r
-    JOIN ObraEntity o ON o.id = r.obraId AND o.tenantId = r.tenantId
-    WHERE r.obraId = :obraId
-        AND r.status = :statusRelatorio
-        AND r.ativo IS TRUE
-""")
-    Page<RelatorioProjection> findAllByObraIdAndStatusProjection(Long obraId, StatusRelatorio statusRelatorio, Pageable pageable);
-
-    @Query("""
-    SELECT r.idExterno AS idExterno,
-        r.dataInicio AS dataInicio,
-        r.dataFim AS dataFim,
-        r.numero AS numero,
-        r.status AS status,
-        o.idExterno AS obraIdExterno,
-        o.nome AS obraNome,
-        o.endereco AS obraEndereco,
-        o.contratante AS obraContratante,
-        o.responsavel AS obraResponsavel,
-        o.numeroContrato AS obraNumeroContrato,
-        (
-            SELECT COUNT(1)
-            FROM ArquivoEntity a
-            WHERE a.tipoArquivo = 'FOTO'
-                AND a.relatorio.id = r.id
-        ) AS quantidadeFotos
-    FROM RelatorioEntity r
-    JOIN ObraEntity o ON o.id = r.obraId AND o.tenantId = r.tenantId
-    WHERE r.obraId = :obraId
-        AND r.ativo IS TRUE
-""")
-    Page<RelatorioProjection> findAllByObraIdProjection(Long obraId, Pageable pageable);
-
-    @Query("""
         SELECT r as relatorio,
                o as obra
         FROM RelatorioEntity r
@@ -195,39 +146,38 @@ public interface RelatorioRepository extends JpaRepository<RelatorioEntity, Long
     FROM RelatorioEntity r
     JOIN ObraEntity o ON o.id = r.obraId AND o.tenantId = r.tenantId
     WHERE r.tenantId = :tenantId
-      AND r.status = 'APROVADO'
-      AND (:perfilIsAdministrador = true OR o.id IN :obrasIdAllowed)
-      AND r.ativo IS TRUE
-       
+        AND (:perfilIsAdministrador = true OR o.id IN :obrasIdAllowed)
+        AND r.ativo IS TRUE
+        AND (:status IS NULL OR r.status = :status)
+        AND (:obraExternalId IS NULL OR o.idExterno = :obraExternalId)
+        AND (:numero IS NULL OR CAST(r.numero AS string) LIKE CONCAT(CAST(:numero AS string), '%'))
+        AND (CAST(:dataInicio AS string) IS NULL OR r.dataInicio = :dataInicio)
 """)
-    Page<RelatorioProjection> findAllByTenantIdAndIsAprovadoAndUserAccessToTheObraPai(Long tenantId, List<Long> obrasIdAllowed, boolean perfilIsAdministrador, Pageable pageable);
+    Page<RelatorioProjection> findAllByTenantIdAndUserAccessToTheObraPaiWithFilters(
+            Long tenantId,
+            List<Long> obrasIdAllowed,
+            boolean perfilIsAdministrador,
+            StatusRelatorio status,
+            String obraExternalId,
+            Long numero,
+            LocalDate dataInicio,
+            Pageable pageable
+    );
+
 
     @Query("""
-    SELECT r.idExterno AS idExterno,
-        r.dataInicio AS dataInicio,
-        r.dataFim AS dataFim,
-        r.numero AS numero,
-        r.status AS status,
-        o.idExterno AS obraIdExterno,
-        o.nome AS obraNome,
-        o.endereco AS obraEndereco,
-        o.contratante AS obraContratante,
-        o.responsavel AS obraResponsavel,
-        o.numeroContrato AS obraNumeroContrato,
-        (
-            SELECT COUNT(1)
-            FROM ArquivoEntity a
-            WHERE a.tipoArquivo = 'FOTO'
-                AND a.relatorio.id = r.id
-        ) AS quantidadeFotos
+    SELECT
+        COUNT(1) AS total,
+        SUM(CASE WHEN r.status = 'ANDAMENTO' THEN 1 ELSE 0 END) AS totalEmAndamento,
+        SUM(CASE WHEN r.status = 'REVISAO' THEN 1 ELSE 0 END) AS totalEmRevisao,
+        SUM(CASE WHEN r.status = 'APROVADO' THEN 1 ELSE 0 END) AS totalAprovados
     FROM RelatorioEntity r
     JOIN ObraEntity o ON o.id = r.obraId AND o.tenantId = r.tenantId
     WHERE r.tenantId = :tenantId
-        AND (:perfilIsAdministrador = true OR o.id IN :obrasIdAllowed)
+        AND (:isAdministrador = true OR o.id IN :obrasPermitidasIds)
         AND r.ativo IS TRUE
+        AND (:canViewOnlyAprovados = false OR r.status = 'APROVADO')
+        AND (:obraExternalId IS NULL OR o.idExterno = :obraExternalId)
 """)
-    Page<RelatorioProjection> findAllByTenantIdAndUserAccessToTheObraPai(Long tenantId, List<Long> obrasIdAllowed, boolean perfilIsAdministrador, Pageable pageable);
-
-
-
+    RelatorioCountersProjection findCountByStatus(Long tenantId, List<Long> obrasPermitidasIds, boolean isAdministrador, Boolean canViewOnlyAprovados, String obraExternalId);
 }

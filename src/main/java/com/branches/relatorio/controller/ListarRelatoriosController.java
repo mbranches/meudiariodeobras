@@ -1,10 +1,10 @@
 package com.branches.relatorio.controller;
 
 import com.branches.config.security.UserTenantsContext;
-import com.branches.relatorio.dto.response.RelatorioResponse;
+import com.branches.relatorio.controller.params.ListRelatoriosRequestParams;
+import com.branches.relatorio.dto.response.PageRelatorioResponse;
 import com.branches.relatorio.service.ListarRelatoriosService;
 import com.branches.usertenant.domain.UserTenantEntity;
-import com.branches.shared.pagination.PageResponse;
 import com.branches.shared.pagination.PageableRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -32,11 +32,13 @@ public class ListarRelatoriosController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     })
-    public ResponseEntity<PageResponse<RelatorioResponse>> execute(@PathVariable String tenantExternalId,
-                                                                   @Valid PageableRequest pageableRequest) {
+    public ResponseEntity<PageRelatorioResponse> execute(@PathVariable String tenantExternalId,
+                                                         @Valid PageableRequest pageableRequest,
+                                                         ListRelatoriosRequestParams params
+                                                                   ) {
         List<UserTenantEntity> userTenants = UserTenantsContext.getUserTenants();
 
-        PageResponse<RelatorioResponse> response = listarRelatoriosService.execute(tenantExternalId, userTenants, pageableRequest);
+        PageRelatorioResponse response = listarRelatoriosService.execute(tenantExternalId, userTenants, pageableRequest, params);
 
         return ResponseEntity.ok(response);
     }
