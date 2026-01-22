@@ -2,7 +2,8 @@ package com.branches.arquivo.service;
 
 import com.branches.arquivo.domain.ArquivoEntity;
 import com.branches.arquivo.domain.enums.TipoArquivo;
-import com.branches.arquivo.dto.response.ArquivosDeObraPorRelatorioResponse;
+import com.branches.arquivo.dto.response.ArquivoResponse;
+import com.branches.relatorio.dto.response.ItemPorRelatorioResponse;
 import com.branches.arquivo.repository.ArquivoRepository;
 import com.branches.exception.InternalServerError;
 import com.branches.obra.controller.CheckIfUserHasAccessToObraService;
@@ -35,7 +36,7 @@ public class ListArquivosDeObraPorRelatorioService {
     private final CheckIfUserCanViewVideosService checkIfUserCanViewVideosService;
     private final ArquivoRepository arquivoRepository;
 
-    public PageResponse<ArquivosDeObraPorRelatorioResponse> execute(String tenantExternalId, String obraExternalId, TipoArquivo tipo, List<UserTenantEntity> userTenants, PageableRequest pageableRequest) {
+    public PageResponse<ItemPorRelatorioResponse<ArquivoResponse>> execute(String tenantExternalId, String obraExternalId, TipoArquivo tipo, List<UserTenantEntity> userTenants, PageableRequest pageableRequest) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
 
         UserTenantEntity currentUserTenant = getCurrentUserTenantService.execute(userTenants, tenantId);
@@ -58,8 +59,8 @@ public class ListArquivosDeObraPorRelatorioService {
         Map<RelatorioEntity, List<ArquivoEntity>> MapRelatorioAndArquivos = arquivos.stream()
                 .collect(Collectors.groupingBy(ArquivoEntity::getRelatorio));
 
-        List<ArquivosDeObraPorRelatorioResponse> content = MapRelatorioAndArquivos.entrySet().stream()
-                .map(entry -> ArquivosDeObraPorRelatorioResponse.from(entry.getKey(), entry.getValue()))
+        List<ItemPorRelatorioResponse<ArquivoResponse>> content = MapRelatorioAndArquivos.entrySet().stream()
+                .map(entry -> ItemPorRelatorioResponse.from(entry.getKey(), entry.getValue().stream().map(ArquivoResponse::from).toList()))
                 .toList();
 
         return new PageResponse<>(

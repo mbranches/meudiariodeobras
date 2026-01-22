@@ -1,7 +1,8 @@
 package com.branches.arquivo.controller;
 
 import com.branches.arquivo.domain.enums.TipoArquivo;
-import com.branches.arquivo.dto.response.ArquivosDeObraPorRelatorioResponse;
+import com.branches.arquivo.dto.response.ArquivoResponse;
+import com.branches.relatorio.dto.response.ItemPorRelatorioResponse;
 import com.branches.arquivo.service.ListArquivosDeObraPorRelatorioService;
 import com.branches.config.security.UserTenantsContext;
 import com.branches.shared.pagination.PageResponse;
@@ -38,13 +39,13 @@ public class ListArquivosDeObraPorRelatorioController {
             @ApiResponse(responseCode = "404", description = "Relatório não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     })
-    public ResponseEntity<PageResponse<ArquivosDeObraPorRelatorioResponse>> execute(@PathVariable String tenantExternalId,
-                                                                                    @PathVariable String obraExternalId,
-                                                                                    @RequestParam @NotNull(message = "O parâmetro 'tipo' é obrigatório") TipoArquivo tipo,
-                                                                                    @Valid PageableRequest pageRequest) {
+    public ResponseEntity<PageResponse<ItemPorRelatorioResponse<ArquivoResponse>>> execute(@PathVariable String tenantExternalId,
+                                                                                           @PathVariable String obraExternalId,
+                                                                                           @RequestParam @NotNull(message = "O parâmetro 'tipo' é obrigatório") TipoArquivo tipo,
+                                                                                           @Valid PageableRequest pageRequest) {
         List<UserTenantEntity> userTenants = UserTenantsContext.getUserTenants();
 
-        PageResponse<ArquivosDeObraPorRelatorioResponse> response = listArquivosDeObraPorRelatorioService.execute(tenantExternalId, obraExternalId, tipo, userTenants, pageRequest);
+        PageResponse<ItemPorRelatorioResponse<ArquivoResponse>> response = listArquivosDeObraPorRelatorioService.execute(tenantExternalId, obraExternalId, tipo, userTenants, pageRequest);
 
         return ResponseEntity.ok(response);
     }
