@@ -2,10 +2,7 @@ package com.branches.relatorio.repository;
 
 import com.branches.relatorio.domain.RelatorioEntity;
 import com.branches.relatorio.domain.enums.StatusRelatorio;
-import com.branches.relatorio.repository.projections.RelatorioCountersProjection;
-import com.branches.relatorio.repository.projections.RelatorioDetailsProjection;
-import com.branches.relatorio.repository.projections.RelatorioProjection;
-import com.branches.relatorio.repository.projections.RelatorioWithObraProjection;
+import com.branches.relatorio.repository.projections.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -180,4 +177,21 @@ public interface RelatorioRepository extends JpaRepository<RelatorioEntity, Long
         AND (:obraExternalId IS NULL OR o.idExterno = :obraExternalId)
 """)
     RelatorioCountersProjection findCountByStatus(Long tenantId, List<Long> obrasPermitidasIds, boolean isAdministrador, Boolean canViewOnlyAprovados, String obraExternalId);
+
+    @Query("""
+    SELECT
+        COUNT(cc.id) AS total,
+        SUM(CASE WHEN cc.clima = 'CLARO' THEN 1 ELSE 0 END) AS totalClaro,
+        SUM(CASE WHEN cc.clima = 'NUBLADO' THEN 1 ELSE 0 END) AS totalNublado,
+        SUM(CASE WHEN cc.clima = 'CHUVOSO' THEN 1 ELSE 0 END) AS totalChuvoso,
+        SUM(CASE WHEN cc.condicaoDoTempo = 'PRATICAVEL' THEN 1 ELSE 0 END) AS totalPraticavel,
+        SUM(CASE WHEN cc.condicaoDoTempo = 'NAO_PRATICAVEL' THEN 1 ELSE 0 END) AS totalImpraticavel
+    FROM RelatorioEntity r
+    JOIN ObraEntity o ON o.id = r.obraId AND o.tenantId = r.tenantId
+    JOIN CondicaoClimaticaEntity cc ON cc.id IN (r.caracteristicasManha.id, r.caracteristicasTarde.id, r.caracteristicasNoite.id)
+       AND cc.ativo = TRUE
+    WHERE r.tenantId = :tenantId
+      AND (:obraExternalId IS NULL OR o.idExterno = :obraExternalId)
+""")
+    CondicaoClimaticaAnalysisProjection findCondicaoClimaticaAnalysis(Long tenantId, String obraExternalId);
 }
