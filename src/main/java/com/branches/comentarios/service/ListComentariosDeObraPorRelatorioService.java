@@ -30,6 +30,8 @@ public class ListComentariosDeObraPorRelatorioService {
     private final GetObraByIdExternoAndTenantIdService getObraByIdExternoAndTenantIdService;
     private final CheckIfUserHasAccessToObraService checkIfUserHasAccessToObraService;
     private final ComentarioDeRelatorioRepository comentarioDeRelatorioRepository;
+    private final CheckIfUserCanViewComentariosService checkIfUserCanViewComentariosService;
+    private final CheckIfConfiguracaoDeRelatorioDaObraPermiteComentarioService checkIfConfiguracaoDeRelatorioDaObraPermiteComentarioService;
 
     public PageResponse<ItemPorRelatorioResponse<ComentarioDeRelatorioResponse>> execute(String tenantExternalId, String obraExternalId, List<UserTenantEntity> userTenants, PageableRequest pageableRequest) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -39,6 +41,8 @@ public class ListComentariosDeObraPorRelatorioService {
         ObraEntity obra = getObraByIdExternoAndTenantIdService.execute(obraExternalId, tenantId);
 
         checkIfUserHasAccessToObraService.execute(currentUserTenant, obra.getId());
+        checkIfUserCanViewComentariosService.execute(currentUserTenant);
+        checkIfConfiguracaoDeRelatorioDaObraPermiteComentarioService.execute(obra);
 
         PageRequest pageRequest = pageableRequest.toPageRequest("dataCriacao");
         Boolean canViewOnlyAprovados = currentUserTenant.getAuthorities().getRelatorios().getCanViewOnlyAprovados();

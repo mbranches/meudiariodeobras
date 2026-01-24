@@ -41,11 +41,11 @@ public class ListArquivosDeRelatorioService {
         checkIfUserHasAccessToObraService.execute(currentUserTenant, relatorio.getObraId());
         switch (tipo) {
             case FOTO -> {
-                checkIfConfiguracaoDeRelatorioDaObraPermiteFoto.execute(relatorioWithObra);
+                checkIfConfiguracaoDeRelatorioDaObraPermiteFoto.execute(relatorioWithObra.getObra());
                 checkIfUserCanViewFotosService.execute(currentUserTenant);
             }
             case VIDEO -> {
-                checkIfConfiguracaoDeRelatorioDaObraPermiteVideo.execute(relatorioWithObra);
+                checkIfConfiguracaoDeRelatorioDaObraPermiteVideo.execute(relatorioWithObra.getObra());
                 checkIfUserCanViewVideosService.execute(currentUserTenant);
             }
 

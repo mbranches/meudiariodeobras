@@ -18,4 +18,10 @@ public class CheckIfConfiguracaoDeRelatorioDaObraPermiteOcorrenciaService {
 
         throw new ForbiddenException();
     }
+
+    public void execute(ObraEntity obra) {
+        if (obra.getConfiguracaoRelatorios().getShowOcorrencias()) return;
+
+        throw new ForbiddenException();
+    }
 }

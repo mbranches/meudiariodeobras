@@ -30,6 +30,8 @@ public class ListOcorrenciasDeObraPorRelatorioService {
     private final GetObraByIdExternoAndTenantIdService getObraByIdExternoAndTenantIdService;
     private final CheckIfUserHasAccessToObraService checkIfUserHasAccessToObraService;
     private final OcorrenciaDeRelatorioRepository ocorrenciaDeRelatorioRepository;
+    private final CheckIfUserCanViewOcorrenciasService checkIfUserCanViewOcorrenciasService;
+    private final CheckIfConfiguracaoDeRelatorioDaObraPermiteOcorrenciaService checkIfConfiguracaoDeRelatorioDaObraPermiteOcorrenciaService;
 
     public PageResponse<ItemPorRelatorioResponse<OcorrenciaDeRelatorioResponse>> execute(String tenantExternalId, String obraExternalId, List<UserTenantEntity> userTenants, PageableRequest pageableRequest) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -39,6 +41,8 @@ public class ListOcorrenciasDeObraPorRelatorioService {
         ObraEntity obra = getObraByIdExternoAndTenantIdService.execute(obraExternalId, tenantId);
 
         checkIfUserHasAccessToObraService.execute(currentUserTenant, obra.getId());
+        checkIfUserCanViewOcorrenciasService.execute(currentUserTenant);
+        checkIfConfiguracaoDeRelatorioDaObraPermiteOcorrenciaService.execute(obra);
 
         PageRequest pageRequest = pageableRequest.toPageRequest("enversCreatedDate");
         Boolean canViewOnlyAprovados = currentUserTenant.getAuthorities().getRelatorios().getCanViewOnlyAprovados();

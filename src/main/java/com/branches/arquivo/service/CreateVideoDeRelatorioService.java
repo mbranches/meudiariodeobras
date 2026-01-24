@@ -61,7 +61,7 @@ public class CreateVideoDeRelatorioService {
         RelatorioEntity relatorio = relatorioWithObra.getRelatorio();
 
         checkIfUserHasAccessToObraService.execute(currentUserTenant, relatorio.getObraId());
-        checkIfConfiguracaoDeRelatorioDaObraPermiteVideo.execute(relatorioWithObra);
+        checkIfConfiguracaoDeRelatorioDaObraPermiteVideo.execute(relatorioWithObra.getObra());
         checkIfUserCanViewVideosService.execute(currentUserTenant);
         checkIfUserHasAccessToEditRelatorioService.execute(currentUserTenant, relatorio.getStatus());
 

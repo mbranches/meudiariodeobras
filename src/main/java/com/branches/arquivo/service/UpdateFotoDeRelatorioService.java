@@ -39,7 +39,7 @@ public class UpdateFotoDeRelatorioService {
         RelatorioEntity relatorio = relatorioWithObra.getRelatorio();
 
         checkIfUserHasAccessToObraService.execute(currentUserTenant, relatorio.getObraId());
-        checkIfConfiguracaoDeRelatorioDaObraPermiteFoto.execute(relatorioWithObra);
+        checkIfConfiguracaoDeRelatorioDaObraPermiteFoto.execute(relatorioWithObra.getObra());
         checkIfUserCanViewFotosService.execute(currentUserTenant);
         checkIfUserHasAccessToEditRelatorioService.execute(currentUserTenant, relatorio.getStatus());
 

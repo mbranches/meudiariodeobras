@@ -18,4 +18,10 @@ public class CheckIfConfiguracaoDeRelatorioDaObraPermiteComentarioService {
 
         throw new ForbiddenException();
     }
+
+    public void execute(ObraEntity obra) {
+        if (obra.getConfiguracaoRelatorios().getShowComentarios()) return;
+
+        throw new ForbiddenException();
+    }
 }

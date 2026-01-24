@@ -52,11 +52,11 @@ public class DeleteArquivoDeRelatorioService {
 
         switch (arquivoEntity.getTipoArquivo()) {
             case FOTO -> {
-                checkIfConfiguracaoDeRelatorioDaObraPermiteFoto.execute(relatorioWithObra);
+                checkIfConfiguracaoDeRelatorioDaObraPermiteFoto.execute(relatorioWithObra.getObra());
                 checkIfUserCanViewFotosService.execute(currentUserTenant);
             }
             case VIDEO -> {
-                checkIfConfiguracaoDeRelatorioDaObraPermiteVideo.execute(relatorioWithObra);
+                checkIfConfiguracaoDeRelatorioDaObraPermiteVideo.execute(relatorioWithObra.getObra());
                 checkIfUserCanViewVideosService.execute(currentUserTenant);
             }
 

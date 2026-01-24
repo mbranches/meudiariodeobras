@@ -2,7 +2,6 @@ package com.branches.arquivo.service;
 
 import com.branches.exception.ForbiddenException;
 import com.branches.obra.domain.ObraEntity;
-import com.branches.relatorio.repository.projections.RelatorioWithObraProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -10,9 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class CheckIfConfiguracaoDeRelatorioDaObraPermiteFoto {
 
-    public void execute(RelatorioWithObraProjection relatorio) {
-        ObraEntity obra = relatorio.getObra();
-
+    public void execute(ObraEntity obra) {
         if (obra.getConfiguracaoRelatorios().getShowFotos()) return;
 
         throw new ForbiddenException();

@@ -35,6 +35,8 @@ public class ListArquivosDeObraPorRelatorioService {
     private final CheckIfUserCanViewFotosService checkIfUserCanViewFotosService;
     private final CheckIfUserCanViewVideosService checkIfUserCanViewVideosService;
     private final ArquivoRepository arquivoRepository;
+    private final CheckIfConfiguracaoDeRelatorioDaObraPermiteFoto checkIfConfiguracaoDeRelatorioDaObraPermiteFoto;
+    private final CheckIfConfiguracaoDeRelatorioDaObraPermiteVideo checkIfConfiguracaoDeRelatorioDaObraPermiteVideo;
 
     public PageResponse<ItemPorRelatorioResponse<ArquivoResponse>> execute(String tenantExternalId, String obraExternalId, TipoArquivo tipo, List<UserTenantEntity> userTenants, PageableRequest pageableRequest) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
@@ -45,8 +47,14 @@ public class ListArquivosDeObraPorRelatorioService {
 
         checkIfUserHasAccessToObraService.execute(currentUserTenant, obra.getId());
         switch (tipo) {
-            case FOTO -> checkIfUserCanViewFotosService.execute(currentUserTenant);
-            case VIDEO -> checkIfUserCanViewVideosService.execute(currentUserTenant);
+            case FOTO -> {
+                checkIfUserCanViewFotosService.execute(currentUserTenant);
+                checkIfConfiguracaoDeRelatorioDaObraPermiteFoto.execute(obra);
+            }
+            case VIDEO -> {
+                checkIfUserCanViewVideosService.execute(currentUserTenant);
+                checkIfConfiguracaoDeRelatorioDaObraPermiteVideo.execute(obra);
+            }
             default -> throw new InternalServerError("Tipo de arquivo não suportado");
         }
 
