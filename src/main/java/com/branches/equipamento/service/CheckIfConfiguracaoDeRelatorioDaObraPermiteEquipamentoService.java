@@ -18,4 +18,10 @@ public class CheckIfConfiguracaoDeRelatorioDaObraPermiteEquipamentoService {
 
         throw new ForbiddenException();
     }
+
+    public void execute(ObraEntity obra) {
+        if (obra.getConfiguracaoRelatorios().getShowEquipamentos()) return;
+
+        throw new ForbiddenException();
+    }
 }
