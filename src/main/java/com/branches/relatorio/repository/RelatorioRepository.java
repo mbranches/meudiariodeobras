@@ -193,6 +193,7 @@ public interface RelatorioRepository extends JpaRepository<RelatorioEntity, Long
     WHERE r.tenantId = :tenantId
       AND (:obraExternalId IS NULL OR o.idExterno = :obraExternalId)
       AND r.ativo IS TRUE
+      AND o.ativo IS TRUE
 """)
     CondicaoClimaticaAnalysisProjection findCondicaoClimaticaAnalysis(Long tenantId, String obraExternalId);
 }
