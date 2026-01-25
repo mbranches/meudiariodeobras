@@ -32,7 +32,7 @@ public class GetCondicaoClimaticaAnalysisController {
             @ApiResponse(responseCode = "404", description = "Relatório não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     })
-    @GetMapping("/api/tenants/{tenantExternalId}/analysis/condicao-climatica")
+    @GetMapping("/api/tenants/{tenantExternalId}/condicao-climatica/analysis/geral")
     public ResponseEntity<CondicaoClimaticaAnalisysResponse> execute(
             @PathVariable String tenantExternalId,
             @RequestParam(required = false) String obraExternalId
