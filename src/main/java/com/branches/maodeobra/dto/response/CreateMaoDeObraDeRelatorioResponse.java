@@ -13,7 +13,7 @@ public record CreateMaoDeObraDeRelatorioResponse(
         LocalTime horaInicio,
         LocalTime horaFim,
         Integer minutosIntervalo,
-        LocalTime horasTrabalhadas
+        Integer minutosTrabalhados
 ) {
     public static CreateMaoDeObraDeRelatorioResponse from(MaoDeObraDeRelatorioEntity entity) {
         return new CreateMaoDeObraDeRelatorioResponse(
@@ -24,7 +24,7 @@ public record CreateMaoDeObraDeRelatorioResponse(
                 entity.getHoraInicio(),
                 entity.getHoraFim(),
                 entity.getMinutosIntervalo(),
-                entity.getHorasTrabalhadas()
+                entity.getMinutosTrabalhados()
         );
 
     }

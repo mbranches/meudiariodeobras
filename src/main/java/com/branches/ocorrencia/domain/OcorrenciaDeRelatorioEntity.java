@@ -38,7 +38,7 @@ public class OcorrenciaDeRelatorioEntity extends AuditableTenantOwned {
 
     private LocalTime horaInicio;
     private LocalTime horaFim;
-    private LocalTime totalHoras;
+    private Integer minutosTotais;
 
     @ManyToOne
     @JoinColumn(name = "atividade_vinculada_id")

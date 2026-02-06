@@ -31,7 +31,7 @@ public class MaoDeObraEntity extends AuditableTenantOwned {
     private LocalTime horaInicio;
     private LocalTime horaFim;
     private Integer minutosIntervalo;
-    private LocalTime horasTrabalhadas;
+    private Integer minutosTrabalhados;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

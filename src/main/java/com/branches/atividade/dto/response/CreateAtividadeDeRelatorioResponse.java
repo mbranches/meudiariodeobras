@@ -19,7 +19,7 @@ public record CreateAtividadeDeRelatorioResponse(
         StatusAtividade status,
         LocalTime horaInicio,
         LocalTime horaFim,
-        LocalTime totalHoras,
+        Integer minutosTotais,
         List<MaoDeObraDeAtividadeResponse> maoDeObra,
         List<CampoPersonalizadoResponse> camposPersonalizados
 
@@ -43,7 +43,7 @@ public record CreateAtividadeDeRelatorioResponse(
                 saved.getStatus(),
                 saved.getHoraInicio(),
                 saved.getHoraFim(),
-                saved.getTotalHoras(),
+                saved.getMinutosTotais(),
                 maoDeObraResponse,
                 camposPersonalizadosResponse
         );

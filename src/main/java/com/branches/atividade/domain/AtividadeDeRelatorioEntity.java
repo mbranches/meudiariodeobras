@@ -35,7 +35,7 @@ public class AtividadeDeRelatorioEntity extends AuditableTenantOwned {
     private StatusAtividade status;
     private LocalTime horaInicio;
     private LocalTime horaFim;
-    private LocalTime totalHoras;
+    private Integer minutosTotais;
     @OneToMany(mappedBy = "atividadeDeRelatorio", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<AtividadeDeRelatorioCampoPersonalizadoEntity> camposPersonalizados;
     @OneToMany(mappedBy = "atividadeDeRelatorio", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)

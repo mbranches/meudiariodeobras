@@ -14,7 +14,7 @@ public record CreateOcorrenciaDeRelatorioResponse(
         List<TipoDeOcorrenciaResponse> tiposOcorrencia,
         LocalTime horaInicio,
         LocalTime horaFim,
-        LocalTime totalHoras,
+        Integer minutosTotais,
         AtividadeDeOcorrenciaResponse atividadeVinculada,
         List<CampoPersonalizadoResponse> camposPersonalizados
 ) {
@@ -38,7 +38,7 @@ public record CreateOcorrenciaDeRelatorioResponse(
                 tiposOcorrencia,
                 ocorrenciaDeRelatorioEntity.getHoraInicio(),
                 ocorrenciaDeRelatorioEntity.getHoraFim(),
-                ocorrenciaDeRelatorioEntity.getTotalHoras(),
+                ocorrenciaDeRelatorioEntity.getMinutosTotais(),
                 atividadeVinculadaResponse,
                 camposPersonalizados
         );

@@ -47,7 +47,7 @@ public record GetRelatorioDetailsResponse(
         LocalTime horaInicioTrabalhos,
         LocalTime horaFimTrabalhos,
         Integer minutosIntervalo,
-        LocalTime horasTrabalhadas,
+        Integer minutosTrabalhados,
         String diaDaSemana,
         Long numeroRelatorio,
         Long prazoContratual,
@@ -100,8 +100,8 @@ public record GetRelatorioDetailsResponse(
                 relatorioDetails.getHoraFimTrabalhos() : null;
         var minutosIntervalo = canViewHorarioDeTrabalho ?
                 relatorioDetails.getMinutosIntervalo() : null;
-        var horasTrabalhadas = canViewHorarioDeTrabalho ?
-                relatorioDetails.getHorasTrabalhadas() : null;
+        var minutosTrabalhados = canViewHorarioDeTrabalho ?
+                relatorioDetails.getMinutosTrabalhados() : null;
 
         var equipamentosResponse = equipamentos != null ?
                 equipamentos.stream().map(EquipamentoDeRelatorioResponse::from).toList() : null;
@@ -143,7 +143,7 @@ public record GetRelatorioDetailsResponse(
                 horarioInicioTrabalhos,
                 horarioFimTrabalhos,
                 minutosIntervalo,
-                horasTrabalhadas,
+                minutosTrabalhados,
                 dayOfWeekResponse,
                 relatorioDetails.getNumero(),
                 relatorioDetails.getPrazoContratual(),

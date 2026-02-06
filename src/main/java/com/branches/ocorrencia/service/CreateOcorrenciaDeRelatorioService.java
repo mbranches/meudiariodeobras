@@ -16,7 +16,7 @@ import com.branches.relatorio.service.GetRelatorioByIdExternoAndTenantIdService;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
-import com.branches.utils.CalculateHorasTotais;
+import com.branches.utils.CalculateMinutosTotais;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +35,7 @@ public class CreateOcorrenciaDeRelatorioService {
     private final CheckIfUserCanViewOcorrenciasService checkIfUserCanViewOcorrenciasService;
     private final OcorrenciaDeRelatorioRepository ocorrenciaDeRelatorioRepository;
     private final GetTiposDeOcorrenciaByTenantIdAndIdInService getTiposDeOcorrenciaByTenantIdAndIdInService;
-    private final CalculateHorasTotais calculateHorasTotais;
+    private final CalculateMinutosTotais calculateMinutosTotais;
     private final GetAtividadeDeRelatorioByIdAndRelatorioIdService getAtividadeDeRelatorioByIdAndRelatorioIdService;
     private final CheckIfUserHasAccessToObraService checkIfUserHasAccessToObraService;
 
@@ -61,7 +61,7 @@ public class CreateOcorrenciaDeRelatorioService {
                 .descricao(request.descricao())
                 .horaInicio(request.horaInicio())
                 .horaFim(request.horaFim())
-                .totalHoras(calculateHorasTotais.execute(request.horaInicio(), request.horaFim(), null))
+                .minutosTotais(calculateMinutosTotais.execute(request.horaInicio(), request.horaFim(), null))
                 .tiposDeOcorrencia(tiposDeOcorrencia)
                 .tenantId(tenantId)
                 .build();

@@ -806,7 +806,7 @@
                         </span>
                         <span th:if="${details.minutosIntervalo == null}">-</span>
                     </td>
-                    <td th:text="${details.horasTrabalhadas != null ? #temporals.format(details.horasTrabalhadas, 'HH:mm') : '-'}">-</td>
+                    <td th:text="${details.minutosTrabalhados != null ? (T(java.lang.String).format('%02d:%02d', details.minutosTrabalhados / 60, details.minutosTrabalhados % 60)) : '-'}">-</td>
                 </tr>
                 </tbody>
             </table>
@@ -918,7 +918,7 @@
                     <td th:text="${item.horaInicio != null ? #temporals.format(item.horaInicio, 'HH:mm') : '-'}">-</td>
                     <td th:text="${item.horaFim != null ? #temporals.format(item.horaFim, 'HH:mm') : '-'}">-</td>
                     <td th:text="${item.getHorasIntervalo() != null ? #temporals.format(item.getHorasIntervalo(), 'HH:mm') : '-'}">-</td>
-                    <td class="" th:text="${item.horasTrabalhadas != null ? #temporals.format(item.horasTrabalhadas, 'HH:mm') : '-'}">-</td>
+                    <td class="" th:text="${item.minutosTrabalhados != null ? (T(java.lang.String).format('%02d:%02d', item.minutosTrabalhados / 60, item.minutosTrabalhados % 60)) : '-'}">-</td>
                 </tr>
                 </tbody>
             </table>
@@ -962,7 +962,7 @@
                             <span th:text="${item.descricao != null ? item.descricao : '-'}" style="font-size: 10pt">Descrição da atividade</span>
                             <span th:if="${item.horaInicio != null and item.horaFim != null}"
                                   style="font-size: 8pt; color: #888; font-weight: 400; margin-left: 8px;"
-                                  th:text="${#temporals.format(item.horaInicio, 'HH:mm') + ' - ' + #temporals.format(item.horaFim, 'HH:mm') + (item.totalHoras != null ? ' (' + #temporals.format(item.totalHoras, 'HH:mm') + ')' : '')}"></span>
+                                  th:text="${#temporals.format(item.horaInicio, 'HH:mm') + ' - ' + #temporals.format(item.horaFim, 'HH:mm') + (item.minutosTotais != null ? ' (' + T(java.lang.String).format('%02d:%02d', item.minutosTotais / 60, item.minutosTotais % 60) + ')' : '')}"></span>
                         </div>
 
                         <div th:if="${item.maoDeObra != null and !item.maoDeObra.isEmpty()}" style="margin-top: 6px; font-size: 9pt;">
@@ -997,7 +997,7 @@
                 <div class="item-title">
                     <span th:text="${item.descricao != null ? item.descricao : '-'}">Descrição</span>
                     <span th:if="${item.horaInicio != null and item.horaFim != null}" class="item-time"
-                          th:text="${#temporals.format(item.horaInicio, 'HH:mm') + ' - ' + #temporals.format(item.horaFim, 'HH:mm') + (item.totalHoras != null ? ' (' + #temporals.format(item.totalHoras, 'HH:mm') + ')' : '')}"></span>
+                          th:text="${#temporals.format(item.horaInicio, 'HH:mm') + ' - ' + #temporals.format(item.horaFim, 'HH:mm') + (item.minutosTotais != null ? ' (' + T(java.lang.String).format('%02d:%02d', item.minutosTotais / 60, item.minutosTotais % 60) + ')' : '')}"></span>
                 </div>
                 <div style="margin-top: 8px;">
                     <div th:if="${item.tiposDeOcorrencia != null and !item.tiposDeOcorrencia.isEmpty()}" style="display: flex; gap: 4px; flex-wrap: wrap;">

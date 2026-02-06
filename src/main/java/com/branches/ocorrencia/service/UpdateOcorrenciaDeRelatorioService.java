@@ -10,7 +10,7 @@ import com.branches.relatorio.service.GetRelatorioByIdExternoAndTenantIdService;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
-import com.branches.utils.CalculateHorasTotais;
+import com.branches.utils.CalculateMinutosTotais;
 import com.branches.ocorrencia.domain.OcorrenciaDeRelatorioEntity;
 import com.branches.relatorio.domain.RelatorioEntity;
 import com.branches.ocorrencia.dto.request.UpdateOcorrenciaDeRelatorioRequest;
@@ -29,7 +29,7 @@ public class UpdateOcorrenciaDeRelatorioService {
     private final OcorrenciaDeRelatorioRepository ocorrenciaDeRelatorioRepository;
     private final GetOcorrenciaByIdAndRelatorioIdService getOcorrenciaByIdAndRelatorioIdService;
     private final GetTiposDeOcorrenciaByTenantIdAndIdInService getTiposDeOcorrenciaByTenantIdAndIdInService;
-    private final CalculateHorasTotais calculateHorasTotais;
+    private final CalculateMinutosTotais calculateMinutosTotais;
     private final GetTenantIdByIdExternoService getTenantIdByIdExternoService;
     private final GetCurrentUserTenantService getCurrentUserTenantService;
     private final CheckIfUserHasAccessToEditRelatorioService checkIfUserHasAccessToEditRelatorioService;
@@ -57,7 +57,7 @@ public class UpdateOcorrenciaDeRelatorioService {
 
         entity.setHoraInicio(request.horaInicio());
         entity.setHoraFim(request.horaFim());
-        entity.setTotalHoras(calculateHorasTotais.execute(request.horaInicio(), request.horaFim(), null));
+        entity.setMinutosTotais(calculateMinutosTotais.execute(request.horaInicio(), request.horaFim(), null));
 
         AtividadeDeRelatorioEntity atividadeVinculada = request.atividadeVinculadaId() != null
                 ? getAtividadeDeRelatorioByIdAndRelatorioIdService.execute(request.atividadeVinculadaId(), relatorio.getId())

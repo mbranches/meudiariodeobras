@@ -7,7 +7,7 @@ import com.branches.relatorio.service.GetRelatorioByIdExternoAndTenantIdService;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
-import com.branches.utils.CalculateHorasTotais;
+import com.branches.utils.CalculateMinutosTotais;
 import com.branches.maodeobra.domain.MaoDeObraDeRelatorioEntity;
 import com.branches.relatorio.domain.RelatorioEntity;
 import com.branches.maodeobra.dto.request.UpdateMaoDeObraDeRelatorioRequest;
@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalTime;
 import java.util.*;
 
 @Transactional
@@ -25,7 +24,7 @@ import java.util.*;
 public class UpdateMaoDeObraDeRelatorioService {
     private final MaoDeObraDeRelatorioRepository maoDeObraDeRelatorioRepository;
     private final GetMaoDeObraDeRelatorioByIdAndRelatorioId getMaoDeObraDeRelatorioByIdAndRelatorioId;
-    private final CalculateHorasTotais calculateHorasTotais;
+    private final CalculateMinutosTotais calculateMinutosTotais;
     private final GetTenantIdByIdExternoService getTenantIdByIdExternoService;
     private final GetRelatorioByIdExternoAndTenantIdService getRelatorioByIdExternoAndTenantIdService;
     private final CheckIfUserHasAccessToEditRelatorioService checkIfUserHasAccessToEditRelatorioService;
@@ -54,8 +53,8 @@ public class UpdateMaoDeObraDeRelatorioService {
             entity.setHoraInicio(request.horaInicio());
             entity.setHoraFim(request.horaFim());
             entity.setMinutosIntervalo(request.minutosIntervalo());
-            LocalTime horasTrabalhadas = calculateHorasTotais.execute(request.horaInicio(), request.horaFim(), request.minutosIntervalo());
-            entity.setHorasTrabalhadas(horasTrabalhadas);
+            int minutosTrabalhos = calculateMinutosTotais.execute(request.horaInicio(), request.horaFim(), request.minutosIntervalo());
+            entity.setMinutosTrabalhados(minutosTrabalhos);
         }
 
         maoDeObraDeRelatorioRepository.save(entity);

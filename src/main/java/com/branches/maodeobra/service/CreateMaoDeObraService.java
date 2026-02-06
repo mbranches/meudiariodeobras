@@ -10,7 +10,7 @@ import com.branches.maodeobra.repository.MaoDeObraRepository;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
-import com.branches.utils.CalculateHorasTotais;
+import com.branches.utils.CalculateMinutosTotais;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +24,7 @@ public class CreateMaoDeObraService {
     private final GetCurrentUserTenantService getCurrentUserTenantService;
     private final GetGrupoMaoDeObraByIdAndTenantIdService getGrupoMaoDeObraByIdAndTenantIdService;
     private final MaoDeObraRepository maoDeObraRepository;
-    private final CalculateHorasTotais calculateHorasTotais;
+    private final CalculateMinutosTotais calculateMinutosTotais;
     private final CheckIfUserHasAccessToMaoDeObraService checkIfUserHasAccessToMaoDeObraService;
 
     public CreateMaoDeObraResponse execute(CreateMaoDeObraRequest request, String tenantExternalId, List<UserTenantEntity> userTenants) {
@@ -64,7 +64,7 @@ public class CreateMaoDeObraService {
                 .horaInicio(horaInicio)
                 .minutosIntervalo(request.minutosIntervalo())
                 .horaFim(horaFim)
-                .horasTrabalhadas(calculateHorasTotais.execute(horaInicio, horaFim, request.minutosIntervalo()))
+                .minutosTrabalhados(calculateMinutosTotais.execute(horaInicio, horaFim, request.minutosIntervalo()))
                 .horaFim(request.horaFim())
                 .funcao(request.funcao())
                 .build();

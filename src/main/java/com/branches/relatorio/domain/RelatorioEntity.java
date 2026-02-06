@@ -35,7 +35,7 @@ public class RelatorioEntity extends AuditableTenantOwned {
     private LocalTime horaInicioTrabalhos;
     private LocalTime horaFimTrabalhos;
     private Integer minutosIntervalo;
-    private LocalTime horasTrabalhadas;
+    private Integer minutosTrabalhados;
 
     @Column(nullable = false)
     private Long numero;

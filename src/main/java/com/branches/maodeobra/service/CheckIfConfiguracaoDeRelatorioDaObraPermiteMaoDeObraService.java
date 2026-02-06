@@ -18,4 +18,10 @@ public class CheckIfConfiguracaoDeRelatorioDaObraPermiteMaoDeObraService {
 
         throw new ForbiddenException();
     }
+
+    public void execute(ObraEntity obra) {
+        if (obra.getConfiguracaoRelatorios().getShowMaoDeObra()) return;
+
+        throw new ForbiddenException();
+    }
 }

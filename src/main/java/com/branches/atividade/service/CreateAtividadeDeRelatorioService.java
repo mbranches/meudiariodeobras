@@ -18,7 +18,7 @@ import com.branches.relatorio.service.GetRelatorioByIdExternoAndTenantIdService;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
-import com.branches.utils.CalculateHorasTotais;
+import com.branches.utils.CalculateMinutosTotais;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +39,7 @@ public class CreateAtividadeDeRelatorioService {
     private final CheckIfConfiguracaoDeRelatorioDaObraPermiteAtividade checkIfConfiguracaoDeRelatorioDaObraPermiteAtividade;
     private final CheckIfUserCanViewAtividadesService checkIfUserCanViewAtividadesService;
     private final GetMaoDeObraListByIdInAndTenantIdAndTypeService getMaoDeObraListByIdInAndTenantIdAndTypeService;
-    private final CalculateHorasTotais calculateHorasTotais;
+    private final CalculateMinutosTotais calculateMinutosTotais;
     private final AtividadeDeRelatorioRepository atividadeDeRelatorioRepository;
     private final MaoDeObraDeAtividadeDeRelatorioRepository maoDeObraDeAtividadeDeRelatorioRepository;
     private final CheckIfUserHasAccessToObraService checkIfUserHasAccessToObraService;
@@ -67,7 +67,7 @@ public class CreateAtividadeDeRelatorioService {
                 .porcentagemConcluida(request.porcentagemConcluida())
                 .horaInicio(request.horaInicio())
                 .horaFim(request.horaFim())
-                .totalHoras(calculateHorasTotais.execute(request.horaInicio(), request.horaFim(), null))
+                .minutosTotais(calculateMinutosTotais.execute(request.horaInicio(), request.horaFim(), null))
                 .status(request.status())
                 .tenantId(tenantId)
                 .build();

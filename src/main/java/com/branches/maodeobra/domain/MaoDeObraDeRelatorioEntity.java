@@ -32,7 +32,7 @@ public class MaoDeObraDeRelatorioEntity extends AuditableTenantOwned {
     private LocalTime horaInicio;
     private LocalTime horaFim;
     private Integer minutosIntervalo;
-    private LocalTime horasTrabalhadas;
+    private Integer minutosTrabalhados;
 
     public LocalTime getHorasIntervalo() {
         if (minutosIntervalo == null) {

@@ -11,7 +11,7 @@ import com.branches.relatorio.service.GetRelatorioByIdExternoAndTenantIdService;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
-import com.branches.utils.CalculateHorasTotais;
+import com.branches.utils.CalculateMinutosTotais;
 import com.branches.atividade.domain.AtividadeDeRelatorioEntity;
 import com.branches.maodeobra.domain.MaoDeObraDeAtividadeDeRelatorioEntity;
 import com.branches.relatorio.domain.RelatorioEntity;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 public class UpdateAtividadeDeRelatorioService {
 
     private final AtividadeDeRelatorioRepository atividadeDeRelatorioRepository;
-    private final CalculateHorasTotais calculateHorasTotais;
+    private final CalculateMinutosTotais calculateMinutosTotais;
     private final GetTenantIdByIdExternoService getTenantIdByIdExternoService;
     private final GetCurrentUserTenantService getCurrentUserTenantService;
     private final CheckIfUserHasAccessToEditRelatorioService checkIfUserHasAccessToEditRelatorioService;
@@ -63,7 +63,7 @@ public class UpdateAtividadeDeRelatorioService {
         entity.setStatus(request.status());
         entity.setHoraInicio(request.horaInicio());
         entity.setHoraFim(request.horaFim());
-        entity.setTotalHoras(calculateHorasTotais.execute(request.horaInicio(), request.horaFim(), null));
+        entity.setMinutosTotais(calculateMinutosTotais.execute(request.horaInicio(), request.horaFim(), null));
 
         entity.getCamposPersonalizados().clear();
         entity.getCamposPersonalizados().addAll(camposPersonalizadosToSave);

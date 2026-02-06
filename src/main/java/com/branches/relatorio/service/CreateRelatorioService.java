@@ -159,7 +159,7 @@ public class CreateRelatorioService {
         relatorio.setHoraInicioTrabalhos(lastRelatorio.getHoraInicioTrabalhos());
         relatorio.setHoraFimTrabalhos(lastRelatorio.getHoraFimTrabalhos());
         relatorio.setMinutosIntervalo(lastRelatorio.getMinutosIntervalo());
-        relatorio.setHorasTrabalhadas(lastRelatorio.getHorasTrabalhadas());
+        relatorio.setMinutosTrabalhados(lastRelatorio.getMinutosTrabalhados());
 
         relatorioRepository.save(relatorio);
     }

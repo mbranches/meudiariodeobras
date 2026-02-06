@@ -19,7 +19,7 @@ public record AtividadeDeRelatorioResponse(
         StatusAtividade status,
         LocalTime horaInicio,
         LocalTime horaFim,
-        LocalTime totalHoras,
+        Integer minutosTotais,
         List<MaoDeObraDeAtividadeResponse> maoDeObra,
         List<CampoPersonalizadoResponse> camposPersonalizados
 ) {
@@ -33,7 +33,7 @@ public record AtividadeDeRelatorioResponse(
                 atividadeDeRelatorioEntity.getStatus(),
                 atividadeDeRelatorioEntity.getHoraInicio(),
                 atividadeDeRelatorioEntity.getHoraFim(),
-                atividadeDeRelatorioEntity.getTotalHoras(),
+                atividadeDeRelatorioEntity.getMinutosTotais(),
                 atividadeDeRelatorioEntity.getMaoDeObra().stream()
                         .map(MaoDeObraDeAtividadeResponse::from)
                         .toList(),

@@ -8,13 +8,13 @@ import java.time.LocalTime;
 
 @RequiredArgsConstructor
 @Service
-public class CalculateHorasTotais {
+public class CalculateMinutosTotais {
     private final ValidateHoraInicioAndHoraFim validateHoraInicioAndHoraFimAndIntervalo;
 
-    public LocalTime execute(LocalTime horaInicio, LocalTime horaFim, Integer minutosIntervalo) {
+    public Integer execute(LocalTime horaInicio, LocalTime horaFim, Integer minutosIntervalo) {
         validateHoraInicioAndHoraFimAndIntervalo.execute(horaInicio, horaFim, minutosIntervalo);
 
-        if (horaFim  == null || horaInicio == null) {
+        if (horaFim == null || horaInicio == null) {
             return null;
         }
         Duration durationIntervalo = minutosIntervalo != null ? Duration.ofMinutes(minutosIntervalo) : Duration.ZERO;
@@ -22,6 +22,6 @@ public class CalculateHorasTotais {
         Duration duration = Duration.between(horaInicio, horaFim)
                 .minus(durationIntervalo);
 
-        return LocalTime.MIDNIGHT.plus(duration);
+        return (int) duration.toMinutes();
     }
 }

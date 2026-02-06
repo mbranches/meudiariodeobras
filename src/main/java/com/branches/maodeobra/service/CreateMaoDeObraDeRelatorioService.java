@@ -14,7 +14,7 @@ import com.branches.relatorio.service.GetRelatorioByIdExternoAndTenantIdService;
 import com.branches.tenant.service.GetTenantIdByIdExternoService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
-import com.branches.utils.CalculateHorasTotais;
+import com.branches.utils.CalculateMinutosTotais;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +31,7 @@ public class CreateMaoDeObraDeRelatorioService {
     private final CheckIfUserCanViewMaoDeObraService checkIfUserCanViewMaoDeObraService;
     private final MaoDeObraDeRelatorioRepository maoDeObraDeRelatorioRepository;
     private final GetMaoDeObraByIdAndTenantIdService getMaoDeObraByIdAndTenantIdService;
-    private final CalculateHorasTotais calculateHorasTotais;
+    private final CalculateMinutosTotais calculateMinutosTotais;
     private final CheckIfUserHasAccessToObraService checkIfUserHasAccessToObraService;
 
     public CreateMaoDeObraDeRelatorioResponse execute(CreateMaoDeObraDeRelatorioRequest request, String relatorioExternalId, String tenantExternalId, List<UserTenantEntity> userTenants) {
@@ -65,7 +65,7 @@ public class CreateMaoDeObraDeRelatorioService {
             toSave.setHoraInicio(request.horaInicio());
             toSave.setHoraFim(request.horaFim());
             toSave.setMinutosIntervalo(request.minutosIntervalo());
-            toSave.setHorasTrabalhadas(calculateHorasTotais.execute(request.horaInicio(), request.horaFim(), request.minutosIntervalo()));
+            toSave.setMinutosTrabalhados(calculateMinutosTotais.execute(request.horaInicio(), request.horaFim(), request.minutosIntervalo()));
         }
 
         MaoDeObraDeRelatorioEntity saved = maoDeObraDeRelatorioRepository.save(toSave);
