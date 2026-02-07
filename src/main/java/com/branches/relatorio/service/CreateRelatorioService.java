@@ -156,6 +156,8 @@ public class CreateRelatorioService {
     }
 
     private void copyHorarioDeTrabalhoFromLastRelatorio(RelatorioEntity lastRelatorio, RelatorioEntity relatorio) {
+        if (relatorio.getHoraInicioTrabalhos() == null && relatorio.getHoraFimTrabalhos() == null) return;
+
         relatorio.setHoraInicioTrabalhos(lastRelatorio.getHoraInicioTrabalhos());
         relatorio.setHoraFimTrabalhos(lastRelatorio.getHoraFimTrabalhos());
         relatorio.setMinutosIntervalo(lastRelatorio.getMinutosIntervalo());
