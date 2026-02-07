@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/me/**").authenticated()
                         .requestMatchers("/api/users/exists-by-email").authenticated()
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
+                        .requestMatchers("/api/formulario-contato").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/planos").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/planos").permitAll()
                         .requestMatchers("/webhook/**").permitAll()
