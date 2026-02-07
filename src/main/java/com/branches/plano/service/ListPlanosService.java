@@ -14,7 +14,7 @@ public class ListPlanosService {
     private final PlanoRepository planoRepository;
 
     public List<PlanoResponse> execute() {
-        List<PlanoEntity> planos = planoRepository.findAllByAtivoIsTrueOrderByValorAsc();
+        List<PlanoEntity> planos = planoRepository.findAllByAtivoIsTrueOrderByValorPorMesAsc();
 
         return planos.stream()
                 .map(PlanoResponse::from)
