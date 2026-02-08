@@ -119,7 +119,7 @@ public class CreateRelatorioService {
                 .condicaoDoTempo(CondicaoDoTempo.PRATICAVEL)
                 .clima(Clima.CLARO)
                 .tenantId(tenantId)
-                .ativo(false)
+                .ativo(true)
                 .build();
     }
 
