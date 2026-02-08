@@ -944,7 +944,7 @@
                 <tbody>
                 <tr th:each="item : ${equipamentos}">
                     <td th:text="${item.equipamento != null and item.equipamento.descricao != null ? item.equipamento.descricao : '-'}">-</td>
-                    <td style="font-weight: 600;" th:text="${item.quantidade != null ? item.quantidade : '-'}">-</td>
+                    <td th:text="${item.quantidade != null ? item.quantidade : '-'}">-</td>
                 </tr>
                 </tbody>
             </table>
@@ -956,11 +956,11 @@
             <table class="data-table">
                 <thead>
                 <tr>
-                    <th style="width: 65%;">Descrição</th>
-                    <th style="width: 10%; text-align: center;">UND</th>
+                    <th style="width: 60%;">Descrição</th>
+                    <th style="width: 10%; text-align: center;">Unidade</th>
                     <th style="width: 8%; text-align: center;">Quantidade</th>
-                    <th style="width: 7%; text-align: center;">%</th>
-                    <th style="width: 10%; text-align: center;">Status</th>
+                    <th style="width: 9.5%; text-align: center;">%</th>
+                    <th style="width: 12.5%; text-align: center;">Status</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -994,7 +994,7 @@
                     <td style="text-align: center; vertical-align: center;"
                         th:text="${item.porcentagemConcluida != null ? item.porcentagemConcluida + '%' : '-'}">-%</td>
                     <td style="text-align: center; vertical-align: center;">
-                        <span th:text="${item.status != null ? item.status.descricao.toLowerCase() : '-'}">Status</span>
+                        <span th:text="${item.status != null ? item.status.descricao : '-'}">Status</span>
                     </td>
                 </tr>
                 </tbody>
@@ -1039,7 +1039,7 @@
                 <tr th:each="item : ${materiaisRecebidos}">
                     <td th:text="${item.getMaterial().getDescricao()}">Descrição</td>
                     <td style="text-align: center;" th:text="${item.unidadeMedida != null ? item.unidadeMedida : '-'}">-</td>
-                    <td th:text="${item.quantidade != null ? item.quantidade : '-'}">-</td>
+                    <td style="text-align: center;" th:text="${item.quantidade != null ? item.quantidade : '-'}">-</td>
                 </tr>
                 </tbody>
             </table>
