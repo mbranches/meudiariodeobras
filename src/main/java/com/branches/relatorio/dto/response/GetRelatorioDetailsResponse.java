@@ -68,7 +68,8 @@ public record GetRelatorioDetailsResponse(
         List<FileResponse> videos,
         StatusRelatorio status,
         ModifyerByRelatorioResponse criadoPor,
-        ModifyerByRelatorioResponse ultimaModificacao
+        ModifyerByRelatorioResponse ultimaModificacao,
+        String linkPdf
 
 ) {
     public static GetRelatorioDetailsResponse from(RelatorioDetailsProjection relatorioDetails,
@@ -82,7 +83,8 @@ public record GetRelatorioDetailsResponse(
                                                    List<ArquivoEntity> fotos,
                                                    List<ArquivoEntity> videos,
                                                    Boolean canViewCondicaoDoClima,
-                                                   Boolean canViewHorarioDeTrabalho) {
+                                                   Boolean canViewHorarioDeTrabalho,
+                                                   String link) {
         ObraByRelatorioResponse obra = new ObraByRelatorioResponse(relatorioDetails.getObraIdExterno(), relatorioDetails.getObraNome(), relatorioDetails.getObraEndereco(), relatorioDetails.getObraContratante(), relatorioDetails.getObraResponsavel(), relatorioDetails.getObraNumeroContrato());
 
         String dayOfWeekResponse = relatorioDetails.getDataInicio().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.of("pt", "BR"));
@@ -164,7 +166,8 @@ public record GetRelatorioDetailsResponse(
                 videosResponse,
                 relatorioDetails.getStatus(),
                 new ModifyerByRelatorioResponse(relatorioDetails.getCriadoPor(), relatorioDetails.getCriadoEm()),
-                new ModifyerByRelatorioResponse(relatorioDetails.getUltimaModificacaoPor(), relatorioDetails.getUltimaModificacaoEm())
+                new ModifyerByRelatorioResponse(relatorioDetails.getUltimaModificacaoPor(), relatorioDetails.getUltimaModificacaoEm()),
+                link
         );
     }
 }

@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -33,13 +34,15 @@ public class GetRelatorioDetailsController {
             @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     })
     public ResponseEntity<GetRelatorioDetailsResponse> execute(@PathVariable String tenantExternalId,
-                                                               @PathVariable String relatorioExternalId) {
+                                                               @PathVariable String relatorioExternalId,
+                                                               @RequestParam(required = false) Boolean withLinkPdf) {
         List<UserTenantEntity> userTenants = UserTenantsContext.getUserTenants();
 
         GetRelatorioDetailsResponse response = getRelatorioDetailsService.execute(
                 tenantExternalId,
                 relatorioExternalId,
-                userTenants
+                userTenants,
+                withLinkPdf != null && withLinkPdf
         );
 
         return ResponseEntity.ok(response);

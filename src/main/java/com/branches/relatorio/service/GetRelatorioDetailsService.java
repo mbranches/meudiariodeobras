@@ -46,10 +46,12 @@ public class GetRelatorioDetailsService {
     private final AssinaturaDeRelatorioRepository assinaturaDeRelatorioRepository;
     private final ArquivoRepository arquivoRepository;
     private final CheckIfUserHasAccessToObraService checkIfUserHasAccessToObraService;
+    private final GenerateRelatorioFileService generateRelatorioFileService;
 
     public GetRelatorioDetailsResponse execute(String tenantExternalId,
                                                String relatorioExternalId,
-                                               List<UserTenantEntity> userTenants) {
+                                               List<UserTenantEntity> userTenants,
+                                               boolean withLinkPdf) {
         Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
 
         UserTenantEntity currentUserTenant = getCurrentUserTenantService.execute(userTenants, tenantId);
@@ -86,6 +88,21 @@ public class GetRelatorioDetailsService {
         List<ArquivoEntity> fotos = canViewFotos ? arquivos.stream().filter(ArquivoEntity::getIsFoto).toList() : null;
         List<ArquivoEntity> videos = canViewVideos ? arquivos.stream().filter(ArquivoEntity::getIsVideo).toList() : null;
 
+        String relatorioLink = withLinkPdf ? generateRelatorioFileService.execute(
+                relatorioDetails,
+                currentUserTenant,
+                ocorrencias,
+                atividades,
+                equipamentos,
+                maoDeObra,
+                comentarios,
+                materiais,
+                fotos,
+                videos,
+                assinaturas
+        ) : null;
+
+
         return GetRelatorioDetailsResponse.from(
                 relatorioDetails,
                 ocorrencias,
@@ -98,7 +115,8 @@ public class GetRelatorioDetailsService {
                 fotos,
                 videos,
                 canViewCondicaoDoClima,
-                canViewHorarioDeTrabalho
+                canViewHorarioDeTrabalho,
+                relatorioLink
         );
     }
 
