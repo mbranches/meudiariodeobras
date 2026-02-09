@@ -44,7 +44,7 @@ public class UpdateMaterialDeRelatorioService {
 
         MaterialDeRelatorioEntity entity = getMaterialDeRelatorioByIdAndRelatorioIdService.execute(id, relatorio.getId());
         entity.setUnidadeMedida(request.unidadeMedida());
-        entity.setQuantidade(request.quantidade().setScale(2, RoundingMode.HALF_UP));
+        entity.setQuantidade(request.quantidade().setScale(4, RoundingMode.HALF_UP));
 
         materialDeRelatorioRepository.save(entity);
     }
