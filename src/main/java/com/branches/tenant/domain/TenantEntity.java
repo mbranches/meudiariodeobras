@@ -46,6 +46,8 @@ public class TenantEntity extends Auditable {
     @Column(nullable = false)
     private Boolean ativo = true;
 
+    private String stripeCustomerId;
+
     @Builder.Default
     @Column(nullable = false, name = "foi_criado_por_usuario_que_ja_testou_o_sistema")
     private Boolean foiCriadoPorUsuarioQueJaTestouOSistema = false;

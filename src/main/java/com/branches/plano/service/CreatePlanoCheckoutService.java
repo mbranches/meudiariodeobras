@@ -4,12 +4,16 @@ import com.branches.assinaturadeplano.service.FindAssinaturaCorrenteByTenantIdSe
 import com.branches.exception.BadRequestException;
 import com.branches.external.stripe.CreateStripeCheckoutSession;
 import com.branches.external.stripe.CreateStripeCheckoutSessionResponse;
+import com.branches.external.stripe.CreateStripeCustomer;
 import com.branches.plano.domain.IntencaoDePagamentoEntity;
 import com.branches.plano.domain.PlanoEntity;
 import com.branches.plano.dto.request.CreatePlanoCheckoutRequest;
 import com.branches.plano.dto.response.PlanoCheckoutResponse;
 import com.branches.plano.repository.IntencaoDePagamentoRepository;
-import com.branches.tenant.service.GetTenantIdByIdExternoService;
+import com.branches.tenant.domain.TenantEntity;
+import com.branches.tenant.service.GetTenantByIdExternoService;
+import com.branches.user.domain.UserEntity;
+import com.branches.user.service.GetUserByIdService;
 import com.branches.usertenant.domain.UserTenantEntity;
 import com.branches.usertenant.service.GetCurrentUserTenantService;
 import lombok.RequiredArgsConstructor;
@@ -25,25 +29,35 @@ import java.util.List;
 @Service
 public class CreatePlanoCheckoutService {
     private final IntencaoDePagamentoRepository intencaoDePagamentoRepository;
-    private final GetTenantIdByIdExternoService getTenantIdByIdExternoService;
     private final GetCurrentUserTenantService getCurrentUserTenantService;
     private final GetPlanoByIdService getPlanoByIdService;
     private final CreateStripeCheckoutSession createStripeCheckoutSession;
     private final FindAssinaturaCorrenteByTenantIdService findAssinaturaCorrenteByTenantIdService;
+    private final GetTenantByIdExternoService getTenantByIdExternoService;
+    private final CreateStripeCustomer createStripeCustomer;
+    private final GetUserByIdService getUserByIdService;
 
     public PlanoCheckoutResponse execute(CreatePlanoCheckoutRequest request, String tenantExternalId, List<UserTenantEntity> userTenants) {
         log.info("Iniciando criação de checkout para o plano: {} e tenant: {}", request.planoId(), tenantExternalId);
-        Long tenantId = getTenantIdByIdExternoService.execute(tenantExternalId);
+        TenantEntity tenant = getTenantByIdExternoService.execute(tenantExternalId);
 
+        Long tenantId = tenant.getId();
         getCurrentUserTenantService.execute(userTenants, tenantId);
 
         checkIfTenantCanCreateCheckout(tenantId);
 
         PlanoEntity plano = getPlanoByIdService.execute(request.planoId());
 
+        UserEntity user = getUserByIdService.execute(tenant.getUserResponsavelId());
+
+        boolean tenantHasNotStripeId = tenant.getStripeCustomerId() == null;
+        String stripeCustomerId = tenantHasNotStripeId ? createStripeCustomer.execute(tenant.getRazaoSocial(), user.getEmail())
+                : tenant.getStripeCustomerId();
+
         CreateStripeCheckoutSessionResponse stripeResponse = createStripeCheckoutSession.execute(
                 plano.getStripePriceId(),
-                plano.getRecorrencia()
+                plano.getRecorrencia(),
+                stripeCustomerId
         );
 
         IntencaoDePagamentoEntity intencao = IntencaoDePagamentoEntity.builder()

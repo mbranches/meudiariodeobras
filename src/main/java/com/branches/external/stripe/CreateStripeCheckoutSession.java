@@ -23,7 +23,7 @@ public class CreateStripeCheckoutSession {
     @Value("${stripe.cancel-url:http://localhost:3000/checkout/cancelado}")
     private String cancelUrl;
 
-    public CreateStripeCheckoutSessionResponse execute(String stripePriceId, RecorrenciaPlano recorrencia) {
+    public CreateStripeCheckoutSessionResponse execute(String stripePriceId, RecorrenciaPlano recorrencia, String customerId) {
         try {
             log.info("Criando sessão de checkout no Stripe para o tenant com recorrência: {}", recorrencia);
 
@@ -54,6 +54,7 @@ public class CreateStripeCheckoutSession {
                                     .setQuantity(1L)
                                     .build()
                     )
+                    .setCustomer(customerId)
                     .build();
 
             Session session = Session.create(params);

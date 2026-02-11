@@ -17,9 +17,9 @@ public class CreatePlanoService {
     private final CheckIfAlreadyExistsAnotherPlanoWithTheNameService checkIfAlreadyExistsAnotherPlanoWithTheNameService;
 
     public PlanoResponse execute(CreatePlanoRequest request) {
-        CreateStripePlanoResponse stripeResponse = createStripePlano.execute(request);
-
         checkIfAlreadyExistsAnotherPlanoWithTheNameService.execute(request.nome());
+
+        CreateStripePlanoResponse stripeResponse = createStripePlano.execute(request);
 
         PlanoEntity toSave = PlanoEntity.builder()
                 .nome(request.nome())
