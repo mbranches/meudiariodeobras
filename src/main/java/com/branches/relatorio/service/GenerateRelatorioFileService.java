@@ -60,19 +60,28 @@ public class GenerateRelatorioFileService {
 
         byte[] pdfBytes = htmlToPdfConverter.execute(html);
 
-        String fileName = buildFileName(relatorioDetails.getDataInicio(), relatorioDetails.getDataFim(), relatorioDetails.getNumero());
+        String fileName = buildFileName(relatorioDetails.getDataInicio(), relatorioDetails.getDataFim());
         String path = "tenants/%s/obras/%s/relatorios/%s/users/%s".formatted(relatorioDetails.getTenantIdExterno(), relatorioDetails.getObraIdExterno(), relatorioDetails.getIdExterno(), userTenant.getUser().getIdExterno());
 
         return s3UploadFile.execute(fileName, path, pdfBytes, FileContentType.PDF);
     }
 
-    private String buildFileName(LocalDate dataInicio, LocalDate dataFim, long numero) {
+    private String buildFileName(LocalDate dataInicio, LocalDate dataFim) {
 
         String formattedDataInicio = dataInicio.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         String formattedDataFim = dataFim != null ? dataFim.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) : null;
 
-        if (formattedDataFim == null) return "Relatório Diário de Obra (RDO) N° " + numero + " - " + formattedDataInicio + ".pdf";
+        StringBuilder baseFileName = new StringBuilder("relatorio-diario-obra-" + formattedDataInicio);
 
-        return "Relatório Diário de Obra (RDO) N° " + numero + " - " + formattedDataInicio + " a " + formattedDataFim + ".pdf";
+        if (formattedDataFim == null) {
+            return baseFileName
+                    .append(".pdf")
+                    .toString();
+        }
+
+        return baseFileName.append("-")
+                .append(formattedDataFim)
+                .append(".pdf")
+                .toString();
     }
 }
