@@ -13,7 +13,7 @@ import java.util.List;
 public record CreateAtividadeDeRelatorioResponse(
         Long id,
         String descricao,
-        Integer quantidadeRealizada,
+        BigDecimal quantidadeRealizada,
         String unidadeMedida,
         BigDecimal porcentagemConcluida,
         StatusAtividade status,

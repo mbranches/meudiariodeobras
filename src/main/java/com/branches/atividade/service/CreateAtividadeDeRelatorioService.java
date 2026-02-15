@@ -32,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Collections;
@@ -77,7 +78,7 @@ public class CreateAtividadeDeRelatorioService {
         AtividadeDeRelatorioEntity atividadeDeRelatorio = AtividadeDeRelatorioEntity.builder()
                 .relatorio(relatorio)
                 .descricao(request.descricao())
-                .quantidadeRealizada(request.quantidadeRealizada())
+                .quantidadeRealizada(request.quantidadeRealizada() != null ? request.quantidadeRealizada().setScale(2, RoundingMode.HALF_UP) : null)
                 .unidadeMedida(request.unidadeMedida())
                 .porcentagemConcluida(request.porcentagemConcluida())
                 .horaInicio(request.horaInicio())

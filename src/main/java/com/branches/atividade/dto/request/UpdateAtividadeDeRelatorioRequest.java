@@ -12,7 +12,7 @@ import java.util.List;
 public record UpdateAtividadeDeRelatorioRequest(
         @NotBlank(message = "O campo 'descricao' é obrigatório")
         String descricao,
-        Integer quantidadeRealizada,
+        BigDecimal quantidadeRealizada,
         String unidadeMedida,
         @DecimalMax(value = "100.00", message = "O campo 'porcentagemConcluida' deve ser no máximo 100.00")
         @DecimalMin(value = "0.00", message = "O campo 'porcentagemConcluida' deve ser no mínimo 0.00")

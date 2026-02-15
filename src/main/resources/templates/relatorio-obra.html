@@ -999,7 +999,7 @@
                         th:text="${item.unidadeMedida != null ? item.unidadeMedida : '-'}">-
                     </td>
                     <td style="text-align: center; vertical-align: center;"
-                        th:text="${item.quantidadeRealizada != null ? item.quantidadeRealizada : '-'}">-</td>
+                        th:text="${item.quantidadeRealizada != null ? #numbers.formatDecimal(item.quantidadeRealizada, 1, 'POINT', 2, 'COMMA') : '-'}">-</td>
                     <td style="text-align: center; vertical-align: center;"
                         th:text="${item.porcentagemConcluida != null ? item.porcentagemConcluida + '%' : '-'}">-%</td>
                     <td style="text-align: center; vertical-align: center;">

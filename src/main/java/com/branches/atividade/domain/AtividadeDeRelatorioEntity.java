@@ -25,7 +25,8 @@ public class AtividadeDeRelatorioEntity extends AuditableTenantOwned {
     private Long id;
     @Column(nullable = false)
     private String descricao;
-    private Integer quantidadeRealizada;
+    @Column(precision = 10, scale = 2)
+    private BigDecimal quantidadeRealizada;
     @Column(length = 10)
     private String unidadeMedida;
     @Column(precision = 5, scale = 2)

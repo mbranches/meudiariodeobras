@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -57,7 +58,7 @@ public class UpdateAtividadeDeRelatorioService {
         List<AtividadeDeRelatorioCampoPersonalizadoEntity> camposPersonalizadosToSave = getCamposPersonalizadosToSave(request.camposPersonalizados(), tenantId, entity);
 
         entity.setDescricao(request.descricao());
-        entity.setQuantidadeRealizada(request.quantidadeRealizada());
+        entity.setQuantidadeRealizada(request.quantidadeRealizada() != null ? request.quantidadeRealizada().setScale(2, RoundingMode.HALF_UP) : null);
         entity.setUnidadeMedida(request.unidadeMedida());
         entity.setPorcentagemConcluida(request.porcentagemConcluida());
         entity.setStatus(request.status());

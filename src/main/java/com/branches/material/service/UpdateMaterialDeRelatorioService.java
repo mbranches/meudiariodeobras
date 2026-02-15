@@ -13,6 +13,7 @@ import com.branches.usertenant.service.GetCurrentUserTenantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
 
@@ -44,7 +45,8 @@ public class UpdateMaterialDeRelatorioService {
 
         MaterialDeRelatorioEntity entity = getMaterialDeRelatorioByIdAndRelatorioIdService.execute(id, relatorio.getId());
         entity.setUnidadeMedida(request.unidadeMedida());
-        entity.setQuantidade(request.quantidade().setScale(4, RoundingMode.HALF_UP));
+        BigDecimal quantidade = request.quantidade() != null ? request.quantidade().setScale(4, RoundingMode.HALF_UP) : null;
+        entity.setQuantidade(quantidade);
 
         materialDeRelatorioRepository.save(entity);
     }
