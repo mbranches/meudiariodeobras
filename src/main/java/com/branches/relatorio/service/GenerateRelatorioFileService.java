@@ -17,7 +17,8 @@ import com.branches.utils.HtmlToPdfConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -59,9 +60,19 @@ public class GenerateRelatorioFileService {
 
         byte[] pdfBytes = htmlToPdfConverter.execute(html);
 
-        String fileName = "relatorio-" + LocalDateTime.now() + ".pdf";
-        String path = "tenants/%s/obras/%s/relatorios/%s".formatted(relatorioDetails.getTenantIdExterno(), relatorioDetails.getObraIdExterno(), relatorioDetails.getIdExterno());
+        String fileName = buildFileName(relatorioDetails.getDataInicio(), relatorioDetails.getDataFim(), relatorioDetails.getNumero());
+        String path = "tenants/%s/obras/%s/relatorios/%s/users/%s".formatted(relatorioDetails.getTenantIdExterno(), relatorioDetails.getObraIdExterno(), relatorioDetails.getIdExterno(), userTenant.getUser().getIdExterno());
 
         return s3UploadFile.execute(fileName, path, pdfBytes, FileContentType.PDF);
+    }
+
+    private String buildFileName(LocalDate dataInicio, LocalDate dataFim, long numero) {
+
+        String formattedDataInicio = dataInicio.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        String formattedDataFim = dataFim != null ? dataFim.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : null;
+
+        if (formattedDataFim == null) return "Relatório Diário de Obra (RDO) N° " + numero + " - " + formattedDataInicio + ".pdf";
+
+        return "Relatório Diário de Obra (RDO) N°" + numero + " - " + formattedDataInicio + " a " + formattedDataFim + ".pdf";
     }
 }
