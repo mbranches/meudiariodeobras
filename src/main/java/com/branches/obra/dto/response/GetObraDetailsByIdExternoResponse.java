@@ -38,6 +38,7 @@ public record GetObraDetailsByIdExternoResponse(
         Long quantidadeOcorrencias,
         Long quantidadeComentarios,
         Long quantidadeFotos,
+        Long quantidadeVideos,
         List<RelatorioResponse> relatoriosRecentes,
         List<ArquivoResponse> fotosRecentes
 ) {
@@ -67,6 +68,7 @@ public record GetObraDetailsByIdExternoResponse(
             obra.getQuantidadeOcorrencias(),
             obra.getQuantidadeComentarios(),
             obra.getQuantidadeFotos(),
+            obra.getQuantidadeVideos(),
             relatoriosRecentesProjections.stream()
                     .map(RelatorioResponse::from)
                     .toList(),
