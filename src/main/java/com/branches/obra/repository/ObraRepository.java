@@ -50,6 +50,7 @@ public interface ObraRepository extends JpaRepository<ObraEntity, Long> {
     FROM ObraEntity o
     JOIN o.configuracaoRelatorios cr
     WHERE o.tenantId = :tenantId AND o.ativo IS TRUE
+    ORDER BY o.enversCreatedDate DESC
 """)
     List<ObraProjection> findAllByTenantIdProjection(Long tenantId);
 
@@ -85,6 +86,7 @@ public interface ObraRepository extends JpaRepository<ObraEntity, Long> {
     WHERE o.id IN :userAllowedObrasIds
         AND o.tenantId = :tenantId
         AND o.ativo IS TRUE
+    ORDER BY o.enversCreatedDate DESC
 """)
     List<ObraProjection> findAllByTenantIdAndIdInProjection(Long tenantId, List<Long> userAllowedObrasIds);
 
