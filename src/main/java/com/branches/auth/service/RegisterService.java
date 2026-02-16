@@ -8,6 +8,8 @@ import com.branches.configuradores.domain.ModeloDeRelatorioEntity;
 import com.branches.configuradores.domain.enums.RecorrenciaRelatorio;
 import com.branches.configuradores.repositorio.ModeloDeRelatorioRepository;
 import com.branches.plano.repository.PlanoRepository;
+import com.branches.shared.email.EmailSender;
+import com.branches.shared.email.SendEmailRequest;
 import com.branches.tenant.domain.TenantEntity;
 import com.branches.tenant.repository.TenantRepository;
 import com.branches.tenant.service.CheckIfDoesntExistsTenantWithTheCnpjService;
@@ -25,12 +27,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
 public class RegisterService {
+    private static final String LINK_SISTEMA = "https://app.rdodigital.com.br";
+
     private final CheckIfDoesntExistsTenantWithTheCnpjService checkIfDoesntExistsTenantWithTheCnpjService;
     private final CheckIfDoesntExistsTenantWithTheTelefoneService checkIfDoesntExistsTenantWithTheTelefoneService;
     private final CheckIfDoesntExistsUserWithTheEmailService checkIfDoesntExistsUserWithTheEmailService;
@@ -46,6 +53,8 @@ public class RegisterService {
     private final ModeloDeRelatorioRepository modeloDeRelatorioRepository;
     private final PlanoRepository planoRepository;
     private final AssinaturaDePlanoRepository assinaturaDePlanoRepository;
+    private final EmailSender emailSender;
+    private final TemplateEngine templateEngine;
 
     @Transactional
     public void execute(RegisterRequest request) {
@@ -131,7 +140,25 @@ public class RegisterService {
     }
 
     private void sendWelcomeEmail(String email, String responsavelFormattedName, String tenantNome) {
-        // todo: implementar Lógica para enviar o email de boas-vindas
+        Map<String, Object> variables = Map.ofEntries(
+                Map.entry("userName", responsavelFormattedName),
+                Map.entry("tenantName", tenantNome),
+                Map.entry("linkToAccess", LINK_SISTEMA)
+        );
+
+        Context context = new Context();
+        context.setVariables(variables);
+
+        String html = templateEngine.process("email-welcome-register", context);
+
+        System.out.println(html);
+        SendEmailRequest emailRequest = SendEmailRequest.builder()
+                .to(email)
+                .subject("Bem-vindo ao RDO Digital")
+                .body(html)
+                .build();
+
+        emailSender.sendEmail(emailRequest, true);
     }
 
     private void validateFields(RegisterRequest request) {
