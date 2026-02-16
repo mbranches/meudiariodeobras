@@ -20,6 +20,15 @@ public interface RelatorioRepository extends JpaRepository<RelatorioEntity, Long
 
     long countByTenantIdAndObraIdAndAtivoIsTrue(Long tenantId, Long obraId);
 
+    @Query("""
+    SELECT r
+    FROM RelatorioEntity r
+    JOIN ObraEntity o ON o.id = r.obraId AND o.tenantId = r.tenantId
+    WHERE r.idExterno = :relatorioExternalId
+      AND r.tenantId = :tenantId
+      AND r.ativo IS TRUE
+      AND o.ativo IS TRUE
+""")
     Optional<RelatorioEntity> findByIdExternoAndTenantIdAndAtivoIsTrue(String relatorioExternalId, Long tenantId);
 
     @Query("""
@@ -81,6 +90,7 @@ public interface RelatorioRepository extends JpaRepository<RelatorioEntity, Long
     WHERE r.idExterno = :relatorioExternalId
       AND r.tenantId = :tenantId
       AND t.ativo IS TRUE
+      AND o.ativo IS TRUE
 """)
     Optional<RelatorioDetailsProjection> findDetailsByIdExternoAndTenantId(String relatorioExternalId, Long tenantId);
 
@@ -104,6 +114,7 @@ public interface RelatorioRepository extends JpaRepository<RelatorioEntity, Long
     FROM RelatorioEntity r
         JOIN ObraEntity o ON o.id = r.obraId AND o.tenantId = r.tenantId
     WHERE r.obraId = :id
+      AND o.ativo IS TRUE
       AND r.ativo IS TRUE
     ORDER BY r.dataInicio DESC, r.enversCreatedDate DESC
     LIMIT 5
@@ -117,6 +128,7 @@ public interface RelatorioRepository extends JpaRepository<RelatorioEntity, Long
             JOIN ObraEntity o ON o.id = r.obraId
         WHERE r.idExterno = :relatorioExternalId
           AND r.tenantId = :tenantId
+          AND o.ativo IS TRUE
           AND r.ativo IS TRUE
     """)
     Optional<RelatorioWithObraProjection> findRelatorioWithObraByIdExternoAndTenantId(String relatorioExternalId, Long tenantId);
@@ -146,6 +158,7 @@ public interface RelatorioRepository extends JpaRepository<RelatorioEntity, Long
     WHERE r.tenantId = :tenantId
         AND (:perfilIsAdministrador = true OR o.id IN :obrasIdAllowed)
         AND r.ativo IS TRUE
+        AND o.ativo IS TRUE
         AND (:canViewOnlyAprovados = false OR r.status = 'APROVADO')
         AND (:status IS NULL OR r.status = :status)
         AND (:obraExternalId IS NULL OR o.idExterno = :obraExternalId)
@@ -178,6 +191,7 @@ public interface RelatorioRepository extends JpaRepository<RelatorioEntity, Long
         AND r.ativo IS TRUE
         AND (:canViewOnlyAprovados = false OR r.status = 'APROVADO')
         AND (:obraExternalId IS NULL OR o.idExterno = :obraExternalId)
+        AND o.ativo IS TRUE
 """)
     RelatorioCountersProjection findCountByStatus(Long tenantId, List<Long> obrasPermitidasIds, boolean isAdministrador, Boolean canViewOnlyAprovados, String obraExternalId);
 
