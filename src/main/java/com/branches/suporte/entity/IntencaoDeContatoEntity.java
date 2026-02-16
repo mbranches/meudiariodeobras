@@ -1,4 +1,4 @@
-package com.branches.contato.entity;
+package com.branches.suporte.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

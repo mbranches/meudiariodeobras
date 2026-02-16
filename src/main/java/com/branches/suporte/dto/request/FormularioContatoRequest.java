@@ -1,4 +1,4 @@
-package com.branches.contato.dto.request;
+package com.branches.suporte.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 

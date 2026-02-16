@@ -1,8 +1,8 @@
-package com.branches.contato.controller;
+package com.branches.suporte.controller;
 
-import com.branches.contato.dto.request.FormularioContatoRequest;
-import com.branches.contato.entity.IntencaoDeContatoEntity;
-import com.branches.contato.repository.IntencaoDeContatoRepository;
+import com.branches.suporte.dto.request.FormularioContatoRequest;
+import com.branches.suporte.entity.IntencaoDeContatoEntity;
+import com.branches.suporte.repository.IntencaoDeContatoRepository;
 import com.branches.shared.email.EmailSender;
 import com.branches.shared.email.SendEmailRequest;
 import io.swagger.v3.oas.annotations.tags.Tag;
