@@ -91,7 +91,7 @@ public class StripeEventsHandlerService {
                 .atZone(ZoneId.of("America/Sao_Paulo"))
                 .toLocalDate();
 
-        AssinaturaDePlanoEntity assinatura = getAssinaturaByStripeIdService.execute(invoice.getSubscription());
+        AssinaturaDePlanoEntity assinatura = getAssinaturaByStripeIdService.execute(invoice.getParent().getSubscriptionDetails().getSubscription());
 
         CobrancaEntity cobranca = CobrancaEntity.builder()
                 .tenantId(assinatura.getTenantId())
@@ -209,13 +209,12 @@ public class StripeEventsHandlerService {
 
         PlanoEntity plano = getPlanoByStripeIdService.execute(priceId);
 
-        LocalDate dataInicio = Instant.ofEpochSecond(subscription.getCurrentPeriodStart())
+        Instant instantStartDate = Instant.ofEpochSecond(subscription.getStartDate());
+        LocalDate dataInicio = instantStartDate
                 .atZone(ZoneId.of("America/Sao_Paulo"))
                 .toLocalDate();
 
-        LocalDate dataFim = Instant.ofEpochSecond(subscription.getCurrentPeriodEnd())
-                .atZone(ZoneId.of("America/Sao_Paulo"))
-                .toLocalDate();
+        LocalDate dataFim = plano.calcularDataFim(dataInicio);
 
         AssinaturaDePlanoEntity assinatura = AssinaturaDePlanoEntity.builder()
                 .tenantId(tenant.getId())
@@ -235,6 +234,7 @@ public class StripeEventsHandlerService {
 
         log.info("Assinatura criada com sucesso via checkout.session.completed. SubscriptionId={}", subscriptionId);
     }
+
     private void handleSubscriptionUpdated(Event event) {
         Subscription subscription = (Subscription) event.getDataObjectDeserializer()
                 .getObject()
@@ -275,9 +275,11 @@ public class StripeEventsHandlerService {
 
         switch (stripeStatus) {
             case "active" -> {
-                LocalDate dataFimAssinatura = Instant.ofEpochSecond(subscription.getCurrentPeriodEnd()).atZone(ZoneId.of("America/Sao_Paulo")).toLocalDate();
+                LocalDate dataInicio = Instant.ofEpochSecond(subscription.getStartDate())
+                        .atZone(ZoneId.of("America/Sao_Paulo"))
+                        .toLocalDate();
 
-                assinatura.ativar(dataFimAssinatura);
+                assinatura.ativar(dataInicio);
             }
 
             case "past_due" -> assinatura.definirVencido();

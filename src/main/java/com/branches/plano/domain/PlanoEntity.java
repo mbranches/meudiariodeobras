@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Setter
 @Getter
@@ -43,4 +44,14 @@ public class PlanoEntity extends Auditable {
     @Column(nullable = false)
     @Builder.Default
     private Boolean ativo = true;
+
+    public LocalDate calcularDataFim(LocalDate dataInicio) {
+        return switch (recorrencia) {
+            case DIARIO -> dataInicio.plusDays(1);
+            case MENSAL, MENSAL_AVULSO -> dataInicio.plusMonths(1);
+            case SEMANAL -> dataInicio.plusWeeks(1);
+            case ANUAL -> dataInicio.plusYears(1);
+        };
+
+    }
 }

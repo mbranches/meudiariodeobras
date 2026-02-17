@@ -44,9 +44,10 @@ public class AssinaturaDePlanoEntity extends AuditableTenantOwned {
         this.canceladoEm = LocalDateTime.now();
     }
 
-    public void ativar(LocalDate dataFim) {
+    public void ativar(LocalDate dataInicio) {
+        this.dataInicio = dataInicio;
         this.status = AssinaturaStatus.ATIVO;
-        this.dataFim = dataFim;
+        this.dataFim = this.plano.calcularDataFim(this.dataInicio);
     }
 
     public void desmarcarProcessamentoAtualizacaoPlano() {
