@@ -136,6 +136,12 @@ public class StripeEventsHandlerService {
         cobranca.pagar(dataPagamento);
 
         cobrancaRepository.save(cobranca);
+
+        String subscriptionId = invoice.getParent().getSubscriptionDetails().getSubscription();
+
+        AssinaturaDePlanoEntity assinatura = getAssinaturaByStripeIdService.execute(subscriptionId);
+
+        assinatura.ativar(dataPagamento);
     }
 
     private void handleInvoicePaymentFailed(Event event) {
