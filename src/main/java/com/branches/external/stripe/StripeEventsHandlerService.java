@@ -65,9 +65,13 @@ public class StripeEventsHandlerService {
     }
 
     private void handleInvoiceCreated(Event event) {
+        log.info("Processando evento de invoice.created do Stripe");
         Invoice invoice = (Invoice) event.getDataObjectDeserializer()
                 .getObject()
-                .orElseThrow();
+                .orElseThrow(() -> {
+                    log.error("Invoice não encontrada no evento de invoice.created");
+                    return new NotFoundException("Invoice não encontrada no evento criado");
+                });
 
         if (existsCobrancaByStripeIdService.execute(invoice.getId())) {
             log.error("Cobranca já existe para a invoice: {}", invoice.getId());
@@ -110,9 +114,13 @@ public class StripeEventsHandlerService {
     }
 
     private void handleInvoicePaid(Event event) {
+        log.info("Processando evento de invoice.paid do Stripe");
         Invoice invoice = (Invoice) event.getDataObjectDeserializer()
                 .getObject()
-                .orElseThrow();
+                .orElseThrow(() -> {
+                    log.error("Invoice não encontrada no evento de invoice.paid");
+                    return new NotFoundException("Invoice não encontrada no evento pago");
+                });
 
         log.info("Invoice paga: {}", invoice.getId());
 
@@ -131,9 +139,13 @@ public class StripeEventsHandlerService {
     }
 
     private void handleInvoicePaymentFailed(Event event) {
+        log.info("Processando evento de invoice.payment_failed do Stripe");
         Invoice invoice = (Invoice) event.getDataObjectDeserializer()
                 .getObject()
-                .orElseThrow();
+                .orElseThrow(() -> {
+                    log.error("Invoice não encontrada no evento de invoice.payment_failed");
+                    return new NotFoundException("Invoice não encontrada no evento de falha de pagamento");
+                });
 
         log.info("Pagamento falhou para a invoice: {}", invoice.getId());
 
@@ -147,9 +159,13 @@ public class StripeEventsHandlerService {
     }
 
     private void handleInvoiceFinalized(Event event) {
+        log.info("Processando evento de invoice.finalized do Stripe");
         Invoice invoice = (Invoice) event.getDataObjectDeserializer()
                 .getObject()
-                .orElseThrow();
+                .orElseThrow(() -> {
+                    log.error("Invoice não encontrada no evento de invoice.finalized");
+                    return new NotFoundException("Invoice não encontrada no evento finalizado");
+                });
 
         CobrancaEntity cobranca = getCobrancaByStripeIdService.execute(invoice.getId());
 
@@ -159,9 +175,12 @@ public class StripeEventsHandlerService {
     }
 
     private void handleCheckoutSessionCompleted(Event event) {
+        log.info("Processando evento de checkout.session.completed do Stripe");
         Session session;
         try {
+            log.info("Desserializando sessão de checkout do evento");
             session = (Session) event.getDataObjectDeserializer().deserializeUnsafe();
+            log.info("Sessão de checkout desserializada com sucesso: {}", session.getId());
         } catch (Exception e) {
             log.error("Erro ao desserializar checkout.session.completed: {}", e.getMessage(), e);
             throw new NotFoundException("Erro ao processar evento de checkout session completed");
@@ -204,7 +223,10 @@ public class StripeEventsHandlerService {
         String priceId = subscription.getItems().getData().stream()
                 .map(SubscriptionItem::getPrice)
                 .findFirst()
-                .orElseThrow()
+                .orElseThrow(() -> {
+                    log.error("Price da assinatura não encontrado. SubscriptionId={}", subscriptionId);
+                    return new NotFoundException("Price da assinatura não encontrado para SubscriptionId=" + subscriptionId);
+                })
                 .getId();
 
         PlanoEntity plano = getPlanoByStripeIdService.execute(priceId);
@@ -236,9 +258,13 @@ public class StripeEventsHandlerService {
     }
 
     private void handleSubscriptionUpdated(Event event) {
+        log.info("Processando evento de customer.subscription.updated do Stripe");
         Subscription subscription = (Subscription) event.getDataObjectDeserializer()
                 .getObject()
-                .orElseThrow();
+                .orElseThrow(() -> {
+                    log.error("Subscription não encontrada no evento de customer.subscription.updated");
+                    return new NotFoundException("Subscription não encontrada no evento atualizado");
+                });
 
         log.info("Atualizando assinatura Stripe: {}", subscription.getId());
 
@@ -304,9 +330,13 @@ public class StripeEventsHandlerService {
     }
 
     private void handleSubscriptionDeleted(Event event) {
+        log.info("Processando evento de customer.subscription.deleted do Stripe");
         Subscription subscription = (Subscription) event.getDataObjectDeserializer()
                 .getObject()
-                .orElseThrow();
+                .orElseThrow(() -> {
+                    log.error("Subscription não encontrada no evento de customer.subscription.deleted");
+                    return new NotFoundException("Subscription não encontrada no evento deletado");
+                });
 
         log.info("Recebido evento de encerramento definitivo (deleted) para Assinatura Stripe: {}", subscription.getId());
 
