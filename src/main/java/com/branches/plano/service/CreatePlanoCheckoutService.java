@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
+//adicionar agnosticidade a ordem de eventos com find or create
 @Transactional
 @Slf4j
 @RequiredArgsConstructor

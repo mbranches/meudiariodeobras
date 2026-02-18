@@ -72,4 +72,6 @@ public interface TenantRepository extends JpaRepository<TenantEntity, Long> {
     boolean existsByCnpj(String cnpj);
 
     boolean existsByTelefone(String telefone);
+
+    Optional<TenantEntity> findByStripeCustomerId(String stripeCustomerId);
 }

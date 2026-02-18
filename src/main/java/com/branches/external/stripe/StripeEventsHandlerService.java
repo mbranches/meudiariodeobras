@@ -10,12 +10,11 @@ import com.branches.assinaturadeplano.repository.AssinaturaDePlanoRepository;
 import com.branches.assinaturadeplano.repository.AssinaturaHistoricoRepository;
 import com.branches.assinaturadeplano.repository.CobrancaRepository;
 import com.branches.assinaturadeplano.service.ExistsCobrancaByStripeIdService;
-import com.branches.assinaturadeplano.service.GetAssinaturaByStripeIdService;
-import com.branches.assinaturadeplano.service.GetCobrancaByStripeIdService;
 import com.branches.exception.NotFoundException;
 import com.branches.plano.domain.PlanoEntity;
 import com.branches.plano.service.GetPlanoByStripeIdService;
 import com.branches.tenant.domain.TenantEntity;
+import com.branches.tenant.repository.TenantRepository;
 import com.branches.tenant.service.GetTenantByIdService;
 import com.stripe.model.*;
 import com.stripe.model.checkout.Session;
@@ -36,13 +35,13 @@ import java.time.ZoneId;
 @Service
 public class StripeEventsHandlerService {
     private final ExistsCobrancaByStripeIdService existsCobrancaByStripeIdService;
-    private final GetAssinaturaByStripeIdService getAssinaturaByStripeIdService;
     private final CobrancaRepository cobrancaRepository;
-    private final GetCobrancaByStripeIdService getCobrancaByStripeIdService;
     private final GetPlanoByStripeIdService getPlanoByStripeIdService;
     private final AssinaturaHistoricoRepository assinaturaHistoricoRepository;
     private final AssinaturaDePlanoRepository assinaturaDePlanoRepository;
     private final GetTenantByIdService getTenantByIdService;
+    private final TenantRepository tenantRepository;
+    private static final ZoneId TIMEZONE_SP = ZoneId.of("America/Sao_Paulo");
 
     public void handle(Event event) {
         switch (event.getType()) {
@@ -83,19 +82,32 @@ public class StripeEventsHandlerService {
 
         BigDecimal valor = BigDecimal.valueOf(invoice.getAmountDue()).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
 
-        LocalDate dataVencimento = invoice.getDueDate() != null ? Instant.ofEpochSecond(invoice.getDueDate())
-                .atZone(ZoneId.of("America/Sao_Paulo"))
-                .toLocalDate() : null;
+        LocalDate dataVencimento = invoice.getDueDate() != null ? epochToLocalDate(invoice.getDueDate())
+                : null;
 
-        LocalDate inicioPeriodoCobranca = Instant.ofEpochSecond(invoice.getPeriodStart())
-                .atZone(ZoneId.of("America/Sao_Paulo"))
-                .toLocalDate();
+        LocalDate inicioPeriodoCobranca = epochToLocalDate(invoice.getPeriodStart());
 
-        LocalDate fimPeriodoCobranca = Instant.ofEpochSecond(invoice.getPeriodEnd())
-                .atZone(ZoneId.of("America/Sao_Paulo"))
-                .toLocalDate();
+        LocalDate fimPeriodoCobranca = epochToLocalDate(invoice.getPeriodEnd());
 
-        AssinaturaDePlanoEntity assinatura = getAssinaturaByStripeIdService.execute(invoice.getParent().getSubscriptionDetails().getSubscription());
+        String subscriptionId = invoice.getParent().getSubscriptionDetails().getSubscription();
+        AssinaturaDePlanoEntity assinatura = assinaturaDePlanoRepository.findByStripeSubscriptionId(subscriptionId)
+                .orElseGet(() -> {
+                    Subscription subscription;
+                    try {
+                        subscription = Subscription.retrieve(subscriptionId);
+                    } catch (Exception e) {
+                        log.error("Erro ao buscar subscription no Stripe. SubscriptionId={}. Erro: {}", subscriptionId, e.getMessage(), e);
+                        throw new NotFoundException("Erro ao buscar subscription no Stripe. SubscriptionId=" + subscriptionId);
+                    }
+
+                    AssinaturaDePlanoEntity newAssinatura = createSubscription(subscription);
+
+                    AssinaturaDePlanoEntity savedAssinatura = assinaturaDePlanoRepository.save(newAssinatura);
+
+                    registrarEventoAssinatura(savedAssinatura, EventoHistoricoAssinatura.CRIACAO);
+
+                    return savedAssinatura;
+                });
 
         CobrancaEntity cobranca = CobrancaEntity.builder()
                 .tenantId(assinatura.getTenantId())
@@ -113,6 +125,41 @@ public class StripeEventsHandlerService {
         cobrancaRepository.save(cobranca);
     }
 
+    private AssinaturaDePlanoEntity createSubscription(Subscription subscription) {
+        String subscriptionId = subscription.getId();
+        String priceId = getPriceIdOfSubscription(subscription);
+        String customerId = subscription.getCustomer();
+
+        TenantEntity tenant = tenantRepository.findByStripeCustomerId(customerId)
+                .orElseThrow(() -> {
+                    log.error("Tenant não encontrado para customerId={}", customerId);
+                    return new NotFoundException("Tenant não encontrado para customerId=" + customerId);
+                });
+
+        PlanoEntity plano = getPlanoByStripeIdService.execute(priceId);
+
+        LocalDate dataInicio = epochToLocalDate(subscription.getStartDate());
+        return AssinaturaDePlanoEntity.builder()
+                .tenantId(tenant.getId())
+                .plano(plano)
+                .stripeSubscriptionId(subscriptionId)
+                .dataInicio(dataInicio)
+                .dataFim(plano.calcularDataFim(dataInicio))
+                .status(AssinaturaStatus.PENDENTE)
+                .build();
+    }
+
+    private String getPriceIdOfSubscription(Subscription subscription) {
+        return subscription.getItems().getData().stream()
+                .map(SubscriptionItem::getPrice)
+                .findFirst()
+                .orElseThrow(() -> {
+                    log.error("Price da assinatura não encontrado. SubscriptionId={}", subscription.getId());
+                    return new NotFoundException("Price da assinatura não encontrado para SubscriptionId=" + subscription.getId());
+                })
+                .getId();
+    }
+
     private void handleInvoicePaid(Event event) {
         log.info("Processando evento de invoice.paid do Stripe");
         Invoice invoice = (Invoice) event.getDataObjectDeserializer()
@@ -125,28 +172,100 @@ public class StripeEventsHandlerService {
         log.info("Invoice paga: {}", invoice.getId());
 
         log.info("Buscando cobrança associada à invoice: {}", invoice.getId());
-        CobrancaEntity cobranca = getCobrancaByStripeIdService.execute(invoice.getId());
+        CobrancaEntity cobranca = cobrancaRepository.findByStripeInvoiceId(invoice.getId())
+                .orElse(createCobrancaFromInvoice(invoice));
         log.info("Cobrança encontrada para a invoice: {}. Status atual da cobrança: {}", invoice.getId(), cobranca.getStatus());
 
-        if (cobranca.isPaga()) {
+        if (cobranca.isPaga() && cobranca.getDataPagamento() != null) {
             log.info("Cobrança já paga para a invoice: {}", invoice.getId());
+
+            cobrancaRepository.save(cobranca);
+
             return;
         }
-        LocalDate dataPagamento = Instant.ofEpochSecond(
+        LocalDate dataPagamento = epochToLocalDate(
                 invoice.getStatusTransitions().getPaidAt()
-        ).atZone(ZoneId.of("America/Sao_Paulo")).toLocalDate();
+        );
         cobranca.pagar(dataPagamento);
 
         cobrancaRepository.save(cobranca);
 
         String subscriptionId = invoice.getParent().getSubscriptionDetails().getSubscription();
 
-        AssinaturaDePlanoEntity assinatura = getAssinaturaByStripeIdService.execute(subscriptionId);
+        AssinaturaDePlanoEntity assinatura = assinaturaDePlanoRepository.findByStripeSubscriptionId(subscriptionId)
+                .orElseThrow(() -> {
+                    log.error("Assinatura não encontrada para subscriptionId={}", subscriptionId);
+                    return new NotFoundException("Assinatura não encontrada para subscriptionId=" + subscriptionId);
+                });
 
-        assinatura.ativar(dataPagamento);
+        LocalDate dataFimCicloAtual = assinatura.getPlano().calcularDataFim(now());
+        assinatura.ativar(dataFimCicloAtual);
         assinaturaDePlanoRepository.save(assinatura);
 
         log.info("Cobrança marcada como paga para a invoice: {}. Assinatura ativada: {}", invoice.getId(), assinatura.getId());
+    }
+
+    private CobrancaEntity createCobrancaFromInvoice(Invoice invoice) {
+        BigDecimal valor = BigDecimal.valueOf(invoice.getAmountDue()).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
+
+        LocalDate dataVencimento = invoice.getDueDate() != null ? epochToLocalDate(invoice.getDueDate())
+                : null;
+
+        LocalDate inicioPeriodoCobranca = epochToLocalDate(invoice.getPeriodStart());
+
+        LocalDate fimPeriodoCobranca = epochToLocalDate(invoice.getPeriodEnd());
+
+        String subscriptionId = invoice.getParent().getSubscriptionDetails().getSubscription();
+        AssinaturaDePlanoEntity assinatura = assinaturaDePlanoRepository.findByStripeSubscriptionId(subscriptionId)
+                .orElseGet(() -> {
+                    Subscription subscription;
+                    try {
+                        subscription = Subscription.retrieve(subscriptionId);
+                    } catch (Exception e) {
+                        log.error("Erro ao buscar subscription no Stripe. SubscriptionId={}. Erro: {}", subscriptionId, e.getMessage(), e);
+                        throw new NotFoundException("Erro ao buscar subscription no Stripe. SubscriptionId=" + subscriptionId);
+                    }
+                    AssinaturaDePlanoEntity newAssinatura = createSubscription(subscription);
+                    return assinaturaDePlanoRepository.save(newAssinatura);
+                });
+
+
+        CobrancaEntity cobranca = CobrancaEntity.builder()
+                .tenantId(assinatura.getTenantId())
+                .stripeInvoiceId(invoice.getId())
+                .valorCobranca(valor)
+                .dataVencimento(dataVencimento)
+                .status(StatusCobranca.PENDENTE)
+                .assinatura(assinatura)
+                .inicioPeriodoCobranca(inicioPeriodoCobranca)
+                .fimPeriodoCobranca(fimPeriodoCobranca)
+                .linkCobranca(invoice.getHostedInvoiceUrl())
+                .linkPdfCobranca(invoice.getInvoicePdf())
+                .build();
+
+        LocalDate paidAt = invoice.getStatusTransitions() != null && invoice.getStatusTransitions().getPaidAt() != null
+                ? epochToLocalDate(invoice.getStatusTransitions().getPaidAt())
+                : null;
+
+        if (paidAt != null && "paid".equals(invoice.getStatus())) {
+            cobranca.pagar(paidAt);
+        }
+
+        if (invoice.getStatus().equals("past_due") || invoice.getStatus().equals("uncollectible")) {
+            cobranca.definirFalhaPagamento();
+        }
+
+        return cobranca;
+    }
+
+    private LocalDate now() {
+        return Instant.now().atZone(TIMEZONE_SP).toLocalDate();
+    }
+
+    private LocalDate epochToLocalDate(Long epoch) {
+        return epoch != null
+                ? Instant.ofEpochSecond(epoch).atZone(TIMEZONE_SP).toLocalDate()
+                : null;
     }
 
     private void handleInvoicePaymentFailed(Event event) {
@@ -160,9 +279,14 @@ public class StripeEventsHandlerService {
 
         log.info("Pagamento falhou para a invoice: {}", invoice.getId());
 
+        CobrancaEntity cobranca = cobrancaRepository.findByStripeInvoiceId(invoice.getId())
+                .orElse(createCobrancaFromInvoice(invoice));
 
-
-        CobrancaEntity cobranca = getCobrancaByStripeIdService.execute(invoice.getId());
+        if(cobranca.isFalhaPagamento()) {
+            log.info("Cobrança já marcada como falha de pagamento para a invoice: {}", invoice.getId());
+            cobrancaRepository.save(cobranca);
+            return;
+        }
 
         cobranca.definirFalhaPagamento();
 
@@ -178,7 +302,8 @@ public class StripeEventsHandlerService {
                     return new NotFoundException("Invoice não encontrada no evento finalizado");
                 });
 
-        CobrancaEntity cobranca = getCobrancaByStripeIdService.execute(invoice.getId());
+        CobrancaEntity cobranca = cobrancaRepository.findByStripeInvoiceId(invoice.getId())
+                .orElse(createCobrancaFromInvoice(invoice));
 
         cobranca.updateLinks(invoice.getHostedInvoiceUrl(), invoice.getInvoicePdf());
 
@@ -231,21 +356,11 @@ public class StripeEventsHandlerService {
             throw new NotFoundException("Erro ao buscar subscription no Stripe. SubscriptionId=" + subscriptionId);
         }
 
-        String priceId = subscription.getItems().getData().stream()
-                .map(SubscriptionItem::getPrice)
-                .findFirst()
-                .orElseThrow(() -> {
-                    log.error("Price da assinatura não encontrado. SubscriptionId={}", subscriptionId);
-                    return new NotFoundException("Price da assinatura não encontrado para SubscriptionId=" + subscriptionId);
-                })
-                .getId();
+        String priceId = getPriceIdOfSubscription(subscription);
 
         PlanoEntity plano = getPlanoByStripeIdService.execute(priceId);
 
-        Instant instantStartDate = Instant.ofEpochSecond(subscription.getStartDate());
-        LocalDate dataInicio = instantStartDate
-                .atZone(ZoneId.of("America/Sao_Paulo"))
-                .toLocalDate();
+        LocalDate dataInicio = epochToLocalDate(subscription.getStartDate());
 
         LocalDate dataFim = plano.calcularDataFim(dataInicio);
 
@@ -258,14 +373,17 @@ public class StripeEventsHandlerService {
                 .status(AssinaturaStatus.PENDENTE)
                 .build();
 
-        assinaturaDePlanoRepository.save(assinatura);
+        AssinaturaDePlanoEntity savedAssinatura = assinaturaDePlanoRepository.save(assinatura);
 
-        AssinaturaHistoricoEntity historico = new AssinaturaHistoricoEntity(tenant.getId());
-        historico.registrarEvento(assinatura, EventoHistoricoAssinatura.CRIACAO);
-
-        assinaturaHistoricoRepository.save(historico);
+        registrarEventoAssinatura(savedAssinatura, EventoHistoricoAssinatura.CRIACAO);
 
         log.info("Assinatura criada com sucesso via checkout.session.completed. SubscriptionId={}", subscriptionId);
+    }
+
+    private void registrarEventoAssinatura(AssinaturaDePlanoEntity assinatura, EventoHistoricoAssinatura evento) {
+        AssinaturaHistoricoEntity historico = new AssinaturaHistoricoEntity(assinatura.getTenantId());
+        historico.registrarEvento(assinatura, evento);
+        assinaturaHistoricoRepository.save(historico);
     }
 
     private void handleSubscriptionUpdated(Event event) {
@@ -279,13 +397,10 @@ public class StripeEventsHandlerService {
 
         log.info("Atualizando assinatura Stripe: {}", subscription.getId());
 
-        AssinaturaDePlanoEntity assinatura = getAssinaturaByStripeIdService.execute(subscription.getId());
+        AssinaturaDePlanoEntity assinatura = assinaturaDePlanoRepository.findByStripeSubscriptionId(subscription.getId())
+                .orElse(createSubscription(subscription));
 
-        String planoPriceId = subscription.getItems().getData().stream()
-                .map(SubscriptionItem::getPrice)
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException("Price da assinatura não encontrado"))
-                .getId();
+        String planoPriceId = getPriceIdOfSubscription(subscription);
 
         PlanoEntity stripeCurrentPlano = getPlanoByStripeIdService.execute(planoPriceId);
         PlanoEntity assinaturaCurrentPlano = assinatura.getPlano();
@@ -298,25 +413,20 @@ public class StripeEventsHandlerService {
 
             assinatura.atualizarPlano(stripeCurrentPlano);
 
-            AssinaturaHistoricoEntity assinaturaHistorico = new AssinaturaHistoricoEntity(assinatura.getTenantId());
             boolean isUpgrade = stripeCurrentPlano.getValor().compareTo(assinaturaCurrentPlano.getValor()) > 0;
 
             EventoHistoricoAssinatura evento = isUpgrade ? EventoHistoricoAssinatura.UPGRADE : EventoHistoricoAssinatura.DOWNGRADE;
 
-            assinaturaHistorico.registrarEvento(assinatura, evento);
-
-            assinaturaHistoricoRepository.save(assinaturaHistorico);
+            registrarEventoAssinatura(assinatura, evento);
         }
 
         String stripeStatus = subscription.getStatus();
 
         switch (stripeStatus) {
             case "active" -> {
-                LocalDate dataInicio = Instant.ofEpochSecond(subscription.getStartDate())
-                        .atZone(ZoneId.of("America/Sao_Paulo"))
-                        .toLocalDate();
+                LocalDate dataFimCicloAtual = assinatura.getPlano().calcularDataFim(now());
 
-                assinatura.ativar(dataInicio);
+                assinatura.ativar(dataFimCicloAtual);
             }
 
             case "past_due" -> assinatura.definirVencido();
@@ -328,10 +438,7 @@ public class StripeEventsHandlerService {
                 assinatura.cancelar();
 
                 log.info("Registrando evento de cancelamento para a assinatura Stripe: {}", subscription.getId());
-                AssinaturaHistoricoEntity historico = new AssinaturaHistoricoEntity(assinatura.getTenantId());
-                historico.registrarEvento(assinatura, EventoHistoricoAssinatura.CANCELAMENTO);
-
-                assinaturaHistoricoRepository.save(historico);
+                registrarEventoAssinatura(assinatura, EventoHistoricoAssinatura.CANCELAMENTO);
             }
 
             default -> log.info("Status Stripe não tratado: {}", stripeStatus);
@@ -351,17 +458,16 @@ public class StripeEventsHandlerService {
 
         log.info("Recebido evento de encerramento definitivo (deleted) para Assinatura Stripe: {}", subscription.getId());
 
-        AssinaturaDePlanoEntity assinatura = getAssinaturaByStripeIdService.execute(subscription.getId());
+        AssinaturaDePlanoEntity assinatura = assinaturaDePlanoRepository.findByStripeSubscriptionId(subscription.getId())
+                .orElse(createSubscription(subscription));
 
         if (!assinatura.isCancelada()) {
             log.info("Encerrando assinatura localmente após término do ciclo no Stripe.");
             assinatura.cancelar();
 
-            AssinaturaHistoricoEntity historico = new AssinaturaHistoricoEntity();
-            historico.registrarEvento(assinatura, EventoHistoricoAssinatura.CANCELAMENTO);
-            assinaturaHistoricoRepository.save(historico);
-
             assinaturaDePlanoRepository.save(assinatura);
+
+            registrarEventoAssinatura(assinatura, EventoHistoricoAssinatura.CANCELAMENTO);
         }
     }
 }

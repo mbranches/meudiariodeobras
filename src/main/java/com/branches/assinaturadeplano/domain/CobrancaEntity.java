@@ -59,4 +59,8 @@ public class CobrancaEntity extends AuditableTenantOwned {
     public void definirFalhaPagamento() {
         this.status = StatusCobranca.FALHA_PAGAMENTO;
     }
+
+    public boolean isFalhaPagamento() {
+        return this.status == StatusCobranca.FALHA_PAGAMENTO;
+    }
 }
