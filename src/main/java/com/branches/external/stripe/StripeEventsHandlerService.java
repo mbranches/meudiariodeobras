@@ -3,6 +3,7 @@ package com.branches.external.stripe;
 import com.branches.assinaturadeplano.domain.AssinaturaDePlanoEntity;
 import com.branches.assinaturadeplano.domain.AssinaturaHistoricoEntity;
 import com.branches.assinaturadeplano.domain.CobrancaEntity;
+import com.branches.assinaturadeplano.domain.enums.AssinaturaStatus;
 import com.branches.assinaturadeplano.domain.enums.EventoHistoricoAssinatura;
 import com.branches.assinaturadeplano.domain.enums.StatusCobranca;
 import com.branches.assinaturadeplano.repository.AssinaturaDePlanoRepository;
@@ -11,7 +12,10 @@ import com.branches.assinaturadeplano.repository.CobrancaRepository;
 import com.branches.exception.NotFoundException;
 import com.branches.plano.domain.PlanoEntity;
 import com.branches.plano.service.GetPlanoByStripeIdService;
+import com.branches.tenant.domain.TenantEntity;
+import com.branches.tenant.service.GetTenantByIdService;
 import com.stripe.model.*;
+import com.stripe.model.checkout.Session;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -32,6 +36,7 @@ public class StripeEventsHandlerService {
     private final GetPlanoByStripeIdService getPlanoByStripeIdService;
     private final AssinaturaHistoricoRepository assinaturaHistoricoRepository;
     private final AssinaturaDePlanoRepository assinaturaDePlanoRepository;
+    private final GetTenantByIdService getTenantByIdService;
     private static final ZoneId TIMEZONE_SP = ZoneId.of("America/Sao_Paulo");
 
     public void handle(Event event) {
@@ -42,12 +47,55 @@ public class StripeEventsHandlerService {
 
             case "invoice.finalized" -> handleInvoiceFinalized(event);
 
+            case "checkout.session.completed" -> handleCheckoutSessionCompleted(event);
+
             case "customer.subscription.updated" -> handleSubscriptionUpdated(event);
 
             case "customer.subscription.deleted" -> handleSubscriptionDeleted(event);
 
             default -> log.info("Evento Stripe não implementado: {}", event.getType());
         }
+    }
+
+    private void handleCheckoutSessionCompleted(Event event) {
+        Session session = (Session) event.getDataObjectDeserializer()
+                .getObject()
+                .orElseThrow(() -> {
+                    log.error("Session não encontrada no evento de checkout.session.completed");
+                    return new NotFoundException("Session não encontrada no evento de checkout.session.completed");
+                });
+
+        String subscriptionId = session.getSubscription();
+        Subscription subscription;
+
+        try {
+            subscription = Subscription.retrieve(subscriptionId);
+        } catch (Exception e) {
+            log.error("Erro ao recuperar subscription do Stripe para subscriptionId={}", subscriptionId, e);
+            throw new NotFoundException("Subscription não encontrada para subscriptionId=" + subscriptionId);
+        }
+
+        String tenantIdStr = session.getMetadata().get("tenantId");
+
+        TenantEntity tenant = getTenantByIdService.execute(Long.parseLong(tenantIdStr));
+
+        String priceIdOfSubscription = getPriceIdOfSubscription(subscription);
+        PlanoEntity plano = getPlanoByStripeIdService.execute(priceIdOfSubscription);
+
+        AssinaturaDePlanoEntity assinaturaDePlano = AssinaturaDePlanoEntity.builder()
+                .tenantId(tenant.getId())
+                .stripeSubscriptionId(subscriptionId)
+                .plano(plano)
+                .dataInicio(now())
+                .status(AssinaturaStatus.PENDENTE)
+                .build();
+
+        AssinaturaDePlanoEntity saved = assinaturaDePlanoRepository.save(assinaturaDePlano);
+
+        AssinaturaHistoricoEntity assinaturaHistoricoEntity = new AssinaturaHistoricoEntity(tenant.getId());
+        assinaturaHistoricoEntity.registrarEvento(saved, EventoHistoricoAssinatura.CRIACAO);
+
+        assinaturaHistoricoRepository.save(assinaturaHistoricoEntity);
     }
 
     private String getPriceIdOfSubscription(Subscription subscription) {
@@ -267,9 +315,6 @@ public class StripeEventsHandlerService {
     private void processSubscriptionForStatus(AssinaturaDePlanoEntity assinatura, String stripeStatus) {
         switch (stripeStatus) {
             case "active" -> {
-                if (assinatura.getDataInicio() == null) {
-                    assinatura.setDataInicio(now());
-                }
                 LocalDate dataFimCicloAtual = assinatura.getPlano().calcularDataFim(now());
 
                 assinatura.ativar(dataFimCicloAtual);
