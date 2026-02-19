@@ -1,5 +1,7 @@
 package com.branches.plano.service;
 
+import com.branches.assinaturadeplano.domain.IntencaoDePagamentoEntity;
+import com.branches.assinaturadeplano.repository.IntencaoDePagamentoRepository;
 import com.branches.assinaturadeplano.service.FindAssinaturaCorrenteByTenantIdService;
 import com.branches.exception.BadRequestException;
 import com.branches.external.stripe.CreateStripeCheckoutSession;
@@ -35,6 +37,7 @@ public class CreatePlanoCheckoutService {
     private final GetTenantByIdExternoService getTenantByIdExternoService;
     private final CreateStripeCustomer createStripeCustomer;
     private final GetUserByIdService getUserByIdService;
+    private final IntencaoDePagamentoRepository intencaoDePagamentoRepository;
 
     public PlanoCheckoutResponse execute(CreatePlanoCheckoutRequest request, String tenantExternalId, List<UserTenantEntity> userTenants) {
         log.info("Iniciando criação de checkout para o plano: {} e tenant: {}", request.planoId(), tenantExternalId);
@@ -59,6 +62,13 @@ public class CreatePlanoCheckoutService {
                 tenantId
         );
 
+        IntencaoDePagamentoEntity intencao = IntencaoDePagamentoEntity.builder()
+                .tenantId(tenantId)
+                .planoId(plano.getId())
+                .stripeSessionId(stripeResponse.sessionId())
+                .build();
+
+        intencaoDePagamentoRepository.save(intencao);
 
         log.info("Checkout criado com sucesso para o tenant: {} e plano: {}", tenantId, plano.getNome());
 

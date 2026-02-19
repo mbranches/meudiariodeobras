@@ -36,6 +36,11 @@ public class AssinaturaDePlanoEntity extends AuditableTenantOwned {
 
     private String stripeSubscriptionId;
 
+    @OneToOne
+    @JoinColumn(name = "intencao_de_pagamento_id")
+    private IntencaoDePagamentoEntity intencaoDePagamento;
+
+
     @Builder.Default
     private Boolean processandoAtualizacaoPlano = false;
 
