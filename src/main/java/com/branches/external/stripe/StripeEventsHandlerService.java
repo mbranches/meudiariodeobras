@@ -99,6 +99,10 @@ public class StripeEventsHandlerService {
                     return new NotFoundException("Assinatura não encontrada para subscriptionId=" + subscriptionId);
                 });
 
+        if (assinatura.getDataInicio() == null) {
+            assinatura.setDataInicio(now());
+        }
+
         LocalDate dataFimCicloAtual = assinatura.getPlano().calcularDataFim(now());
         assinatura.ativar(dataFimCicloAtual);
         assinaturaDePlanoRepository.save(assinatura);
@@ -263,6 +267,9 @@ public class StripeEventsHandlerService {
     private void processSubscriptionForStatus(AssinaturaDePlanoEntity assinatura, String stripeStatus) {
         switch (stripeStatus) {
             case "active" -> {
+                if (assinatura.getDataInicio() == null) {
+                    assinatura.setDataInicio(now());
+                }
                 LocalDate dataFimCicloAtual = assinatura.getPlano().calcularDataFim(now());
 
                 assinatura.ativar(dataFimCicloAtual);
