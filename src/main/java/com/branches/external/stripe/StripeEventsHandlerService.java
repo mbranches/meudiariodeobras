@@ -107,6 +107,12 @@ public class StripeEventsHandlerService {
     }
 
     private void handleInvoicePaid(Event event) {
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            log.error("Erro ao aguardar processamento do pagamento no Stripe: {}", e.getMessage());
+            Thread.currentThread().interrupt();
+        }
         Invoice invoice = (Invoice) event.getDataObjectDeserializer()
                 .getObject()
                 .orElseThrow(() -> {
