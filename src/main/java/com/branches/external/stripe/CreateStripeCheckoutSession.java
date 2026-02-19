@@ -53,6 +53,7 @@ public class CreateStripeCheckoutSession {
                     )
                     .setCustomer(customerId)
                     .putMetadata("tenantId", tenantId.toString())
+                    .addExpand("subscription")
                     .build();
 
             Session session = Session.create(params);
